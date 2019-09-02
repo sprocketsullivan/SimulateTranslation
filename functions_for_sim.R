@@ -9,6 +9,9 @@
 #This will result in an initial sample and some derived meaures
 library(tidyverse)
 
+
+
+
 generate_study<- function(ES_true=1,sample_size=10,l_bias=0,pop_sd=1){
   ES_mod<-ES_true+l_bias
   #print(sample_size)
@@ -17,26 +20,26 @@ generate_study<- function(ES_true=1,sample_size=10,l_bias=0,pop_sd=1){
 }
 
 #get some info on effect size and p_value from an exploratory study
-get_summary_study<- function(study_data,confidence=.7){
+get_summary_study<- function(study_data,confidence=.8){
   study_summary<-
     study_data %>% 
     group_by(treatment) %>% 
     summarise(mean_effect=mean(values),
               sd_effect=sd(values)) %>% 
     mutate(p_value=t.test(study_data$values~study_data$treatment)$p.value,
-           CI_80=((t.test(study_data$values~study_data$treatment,conf.level=confidence)$conf.int)))
+           CI=((t.test(study_data$values~study_data$treatment,conf.level=confidence)$conf.int)),
+           CI_95=((t.test(study_data$values~study_data$treatment,conf.level=.95)$conf.int))
+           )
 }
 #based on such a study calculate the sample size needed for an additional study
-calc_sample_size<-function(study_summary,study_data,max_sample_size=100,alpha=.05,power=.8){
+calc_sample_size<-function(study_summary,study_data,max_sample_size=200,alpha=.05,power=.8,method=2){
   aa<-study_summary
-  #if(aa$CI_80[1]*aa$CI_80[2]<0) {
-   # return(0)
-    #}  
-  es_measured<-min(abs(aa$CI_80))
-    #es_measured<-aa$mean_effect[2]-aa$mean_effect[1]
+  if (method==1) es_measured<-min(abs(aa$CI)) #safegueard
+  if (method==2) es_measured<-abs(aa$mean_effect[2]-aa$mean_effect[1]) #take initial study main effect
+  if (method==3) es_measured<-.3 #fixed effect size for all experiments
   sample_size<-nrow(study_data)/2
   sd_measured<-sqrt((aa$sd_effect[1]^2+aa$sd_effect[2]^2)/2)
-  bb<-power.t.test(delta=es_measured,sd=sd_measured,sig.level=alpha,power=.8)
+  bb<-power.t.test(delta=es_measured,sd=sd_measured,sig.level=alpha,power=power)
   if(es_measured>0){
   if(bb$n>max_sample_size) return(max_sample_size) else return(bb$n)
   }

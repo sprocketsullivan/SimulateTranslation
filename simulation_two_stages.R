@@ -1,52 +1,71 @@
-#simulation for two stage design of preclinical studies 
-#third stage multi center to be added later
-
-#first stage
-#conduct an experiment with low sample size
-#generate 1000 effect sizes
-number_of_exp<-1000
-ES_true<-rbeta(number_of_exp,1,5)
-hist(ES_true)
+# Here we simulate a preclinical study
+# in the first stage an exploratory study is cinducted with a limited number of animals
+# in the second stage this experiment is replicated based on some information from the first experiment
+# in the third stage a multi center study is conducted
+# outcome for each experiment is 
+# 1. the measured effect size after each run (with associated CI) and p-value
+# 2. the number of animals 
+# 3. the true effect size
+#source additional functions
 source("functions_for_sim.R")
-exploratory_stage<-list()
-for (i in 1:number_of_exp){
-  exploratory_stage[[i]]<-generate_study(ES_true = ES_true[i])#sample size is 10 per group
-}
-exploratory_stage_summary<-list()
-for(i in 1:number_of_exp){
-  exploratory_stage_summary[[i]]<-get_summary_study(exploratory_stage[[i]],confidence=.8)
-}
-new_sample_size<-rep(0,number_of_exp)
-for (i in 1:number_of_exp)
-  new_sample_size[i]<-ceiling(calc_sample_size(exploratory_stage_summary[[i]],exploratory_stage[[i]],max_sample_size=100,power=.8))
-  #new_sample_size[i]<-ceiling(power.t.test(delta=.5,sd=1,power=.8)$n)
-#show the new sample sizes
-hist(new_sample_size)
-#what were the ES of the very large replications?
-hist(ES_true[which(new_sample_size==0)])
-length(which(new_sample_size==0&ES_true>.3))
-length(which(new_sample_size>0&ES_true<.3))
-sum(ES_true>.3)
-#now generate a replication stage
-replication_stage<-list()
-for (i in 1:number_of_exp){
-  replication_stage[[i]]<-generate_study(ES_true = ES_true[i],sample_size = new_sample_size[i])
+
+# Step  1 Generate an effect size distribution
+ES_true<-c(rbeta(100000,6,5),rbeta(100000,1,5))
+ES_true<-c(rbeta(100000,1,5))
+hist(ES_true)
+#how many hypothesis over .3 threshold
+sum(ES_true>0.3)
+n_exp<-1000
+current_ES<-sample(ES_true,n_exp)
+hist(current_ES)
+#conduct intial study
+exploratory_data<-list()
+for(i in 1:n_exp)
+  exploratory_data[[i]]<-generate_study(current_ES[i])
+#the confidence interval generated here is used in the safeguard power analysis
+exp_data_summary<-list()
+for(i in 1:n_exp)
+  exp_data_summary[[i]]<-get_summary_study(study_data = exploratory_data[[i]], confidence = .8)
+#now estimate sample size
+#A. Safeguard (1 in function)
+#B. Initial effect size (probably the worst solution but good as a floor benchmark, 2 in function)
+#C. Set a minimum detectable effect size. With this all experiments will have the same number of EU (3 as function parameter)
+rep_sample_size<-NULL
+for(i in 1:n_exp)
+  rep_sample_size[i]<-ceiling(calc_sample_size(study_summary=exp_data_summary[[i]],study_data=exploratory_data[[i]],method=3))
+#Decision to go on
+#this decision depends on an equivalence test with a bound of .3
+aa<-(unlist(map(exp_data_summary,"CI")))
+select_experiments<-which(((apply(cbind(aa[seq(1,length(aa)-1,2)],aa[seq(2,length(aa),2)]),1,function(x){min((x))})< -.3)))
+#sum(current_ES[bb]>.3)/length(bb)
+length(select_experiments)
+sum(current_ES[-select_experiments]>.3)/length(current_ES[-select_experiments])
+hist(current_ES[-select_experiments])
+hist(rep_sample_size[select_experiments])
+#conduct replication experiments
+#A. fixed sample size
+#B. Sequential with interim analysis
+#C. Sequential with BF 
+#A
+replication_data<-list()
+rep_exp_no<-0
+for(i in select_experiments){
+  rep_exp_no<-rep_exp_no+1
+  replication_data[[rep_exp_no]]<-generate_study(ES_true=current_ES[i],sample_size=rep_sample_size[i])
 }
 replication_stage_summary<-list()
-for(i in 1:number_of_exp){
-  replication_stage_summary[[i]]<-get_summary_study(replication_stage[[i]])
+for(i in 1:rep_exp_no){
+  replication_stage_summary[[i]]<-get_summary_study(replication_data[[i]])
 }
 
-res_summary<-data.frame(p_value=unlist(map(replication_stage_summary,"p_value"))[seq(1,2*number_of_exp,2)],
-                        mean_control=unlist(map(replication_stage_summary,"mean_effect"))[seq(1,2*number_of_exp,2)],
-                        mean_treatment=unlist(map(replication_stage_summary,"mean_effect"))[seq(2,2*number_of_exp,2)],
-                        ES_true=ES_true,
-                        sample_size=new_sample_size
-                        )
-res_summary<-res_summary %>% 
+res_summary_rep<-data.frame(p_value=unlist(map(replication_stage_summary,"p_value"))[seq(1,2*rep_exp_no,2)],
+                        mean_control=unlist(map(replication_stage_summary,"mean_effect"))[seq(1,2*rep_exp_no,2)],
+                        mean_treatment=unlist(map(replication_stage_summary,"mean_effect"))[seq(2,2*rep_exp_no,2)],
+                        ES_true=current_ES[select_experiments],
+                        sample_size=rep_sample_size[select_experiments]
+)
+res_summary_rep<-res_summary_rep %>% 
   mutate(mean_difference=mean_treatment-mean_control)
-ggplot(aes(y=(mean_difference),x=ES_true,col=p_value<.05),data=res_summary)+geom_point()
-m.1<-lm(mean_difference~ES_true,data=res_summary)
-plot(residuals(m.1)~new_sample_size)
-
+p.rep<-ggplot(aes(y=(mean_difference),x=ES_true,col=p_value<.05),data=res_summary_rep)+geom_point()
+p.rep
 
