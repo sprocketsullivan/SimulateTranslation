@@ -1,7 +1,7 @@
 setwd("~/Documents/QUEST/PhD/R/SimulateTranslation")
 
 
-source("./scripts/prepare_data_for_plotting.R")
+source("./scripts/prepare_data_for_plotting_onesided.R")
 
 plot1 <- 
   ggplot(outcome , aes(x = factor(design), y = factor(sampsize_approach))) +

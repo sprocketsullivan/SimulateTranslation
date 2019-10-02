@@ -1,0 +1,149 @@
+Simulate_Translation
+
+Project folder includes files
+
+- DATA
+
+- SCRIPTS
+
+Below are explanations of variables used in data frames and brief descriptions of scripts used for simulations and anaylses
+
+#####
+#####
+#####
+
+
+DATA
+
+contains data files from different trajectories of the preclinical research chain
+
+equiv		# decision criterion from stage 1 (exploratory study) to stage 2 (confirmatory study) is based on an equivalence test 
+
+sig		# decision criterion from stage 1 (exploratory study) to stage 2 (confirmatory study) is based on a significance threshold of .05
+
+method 1	# approach to determine the sample size for a replication study is a safeguard power analysis
+
+method 2	# approach to determine the sample size for a replication study is a standard power analysis using the initial effect size (from exploratory study)
+
+method 3	# approach to determine the sample size for a replication study is a standard power analysis using the smallest effect size of interest (SESOI); for now .3
+
+seq		# experimental design applied in confirmatory study is a 3-stage sequential design using an O'Brien-Fleming-like alpha spending function for an alpha of .05
+
+fixN		# experimental design applied in confirmatory study is a fixed-N design using a significance threshold of .05
+
+
+##### Variables in the data sets #####
+
+### Sequential designs
+
+rep_no		# number of the experiment that was selected for replication (between 1 and 10000)
+
+ES_true		# true effect size drawn from the population of effect sizes
+
+totalN		# maximum number of subjects available for testing
+
+nstage		# total number of subjects (both groups) used for interim analysis at a certain stage
+
+beta		# type II error used for calculation of bounds in gsDesign (.2 for now)
+
+d_emp		# empirical standardized effect computed from simulated values
+
+t_value		# t-statistic that is computed at each stage
+
+p_value		# p-value computed at each stage 
+
+df		# degrees of freedom that are calculated by t.test() because of unequal variances in the 2 groups
+
+stage		# stage in which an interim analysis was performed
+
+H0		# indicates whether trial was stopped for success (= 2), futility (= 1), or was continued to the next stage (= 0)
+
+prev_pop	# prevalence of SESOI (.3 for now) in the population
+
+rep_attempts	# number of replication attempts, i.e. exploratory studies that proceed to the confirmatory stage
+
+false_omission_rate	# percentage of ES > .3 in the experiments that were NOT selected for replication
+
+true_selection_rate	# percentage of ES > .3 in the experiments that were selected for replication
+
+
+
+### Fixed-N designs
+
+rep_no		# number of the experiment that was selected for replication (between 1 and 10000)
+
+ES_true		# true effect size drawn from the population of effect sizes
+
+totalN		# maximum number of subjects available for testing
+
+mean_control	# mean of the control group
+
+mean_treatment	# mean of the treatment group
+
+d_emp		# empirical standardized effect computed from simulated values computed from mean_control and mean_treatment
+
+p_value		# p-value computed at each stage 
+
+pref_pop	# prevalence of SESOI (.3 for now) in the population
+
+rep_attempts	# number of replication attempts, i.e. exploratory studies that proceed to the confirmatory stage
+
+false_omission_rate	# percentage of ES > .3 in the experiments that were NOT selected for replication
+
+true_selection_rate	# percentage of ES > .3 in the experiments that were selected for replication
+
+
+ 
+
+SCRIPTS
+
+functions_for_simulation_onesided.R 	# contains functions to simulate preclinical research chain from exploratory stage to first confirmatory study
+					# two-sided testing in the exploratory study
+					# one-sided testing in the confirmatory study
+					# get_summary_study_rep() and calc_sample_size() functions are set to one-sided testing
+
+
+functions_for_simulation_twosided.R	# contains functions to simulate preclinical research chain from exploratory stage to first confirmatory study
+					# two-sided testing in the exploratory study
+					# two-sided testing in the confirmatory study
+					# get_summary_study_rep() and calc_sample_size() functions are set to two-sided testing
+
+
+safeguard_function.R			# contains function to determine sample size for a replication study using an adjusted effect size
+					# CI around effect size from exploratory study is .8
+
+
+simulation_two_stages_sequential_onesided.R	# contains simulation of a 3-stage sequential design 
+						# using an O'Brien-Fleming-like alpha spending function for a one-sided alpha of .05 and beta of .2
+						# no lower (futility) bound
+						
+
+simulation_two_stages_sequential_twosided.R	# contains simulation of a 3-stage sequential design 
+						# using an O'Brien-Fleming-like alpha spending function for a two-sided alpha of .05 and beta of .2
+						# asymmetric upper and lower bounds
+						# lower bound = futility
+
+
+simulation_two_stages_sequential_BF.R		# contains simulation of a 3-stage sequential design 
+						# using Bayes factor analysis at interim and final stages
+						# in progress
+
+
+simulation_two_stages_fixN.R			# contains simulation of fixed-N design 
+
+
+prepare_data_for_plotting_onesided.R		# contains code to prepare data from all trajectories of the research chain for plotting
+						# creates data frame containing data from sequential and fixed-N experiments
+						# creates data frame containing main outcome variables
+
+
+plot_outcomes.R					# contains code to plot main outcomes (mean_N, false negative rate, PPV) for each trajectory and design
+						# in progress
+
+						
+
+
+
+
+
+

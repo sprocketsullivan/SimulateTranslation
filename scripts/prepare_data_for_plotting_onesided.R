@@ -18,7 +18,7 @@ final_5 <- read.csv(file = "sig_method2_seq_onesided")
 final_6 <- read.csv(file = "sig_method3_seq_onesided")
 
 
-### create one data file containing all data
+### create one data frame containing all data
 final <- rbind(final_1, final_2, final_3, final_4, final_5, final_6)
 
 ### add column that codes decision criterion from exploratory stage to confirmatory stage
@@ -38,7 +38,9 @@ datseq <-
   final %>% 
   filter(H0 != 0) %>% 
   select(rep_no, decision_crit, sampsize_approach, 
-         design, totalN, nstage, ES_true, d_emp, H0)
+         design, totalN, nstage, ES_true, d_emp, H0,
+         prev_pop, rep_attempts, 
+         false_omission_rate, true_selection_rate)
 
 
 ################################################################################################################
@@ -53,7 +55,7 @@ final_fix4 <- read.csv(file = "sig_method1_fixN_onesided")
 final_fix5 <- read.csv(file = "sig_method2_fixN_onesided")
 final_fix6 <- read.csv(file = "sig_method3_fixN_onesided")
 
-### create one data file containing all data
+### create one data frame containing all data
 finalfix <- rbind(final_fix1, final_fix2, final_fix3, final_fix4, final_fix5, final_fix6)
 
 ### add column that codes decision criterion from exploratory stage to confirmatory stage
@@ -78,7 +80,9 @@ finalfix$nstage <- finalfix$totalN
 datfix <-
   finalfix %>% 
   select(rep_no, decision_crit, sampsize_approach, 
-         design, totalN, nstage, ES_true, d_emp, H0)
+         design, totalN, nstage, ES_true, d_emp, H0,
+         prev_pop, rep_attempts, 
+         false_omission_rate, true_selection_rate)
 
 ### create subsets to refer to row numbers later
 

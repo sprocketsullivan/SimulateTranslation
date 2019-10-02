@@ -19,16 +19,16 @@ library(gsDesign)
 
 #source additional functions
 source("./scripts/safeguard_function.R")
-source("./scripts/functions_for_sim.R")
+source("./scripts/functions_for_simulation_twosided.R")
 
 
 # Step  1 Generate an effect size distribution
 #ES_true <- c(rbeta(100000,6,5),rbeta(100000,1,5))
-ES_true <- c(rbeta(100000, 1, 5))
+ES_true <- c(rbeta(1000000, 1, 5))
 hist(ES_true)
 
 #how many hypothesis over .3 threshold
-sum(ES_true > 0.3)
+prev_pop <- round(sum(ES_true > 0.3)/1000000, 2)
 n_exp <- 10000
 current_ES <- sample(ES_true, n_exp)
 hist(current_ES)
@@ -57,19 +57,19 @@ for(i in 1:n_exp)
   ceiling(calc_sample_size(study_summary = exp_data_summary[[i]],
                            study_data = exploratory_data[[i]],
                            method = 1))
-rep_sample_size
-mean(rep_sample_size)
-
-
+  rep_sample_size
+  mean(rep_sample_size)
+  
+  
 ### combine effect from exploratory study with calculated sample sizes  
-ff <- (unlist(map(exp_data_summary, "mean_effect")))
-ff <- cbind(ff[control = seq(1, length(ff)-1, 2)],
-            ff[treatment = seq(2, length(ff), 2)])
-
-df <- data.frame(control = ff[ , 1], treatment = ff[ , 2])
-df$effect <- (df$treatment - df$control)
-df$rep_sample_size <- rep_sample_size
-
+  ff <- (unlist(map(exp_data_summary, "mean_effect")))
+  ff <- cbind(ff[control = seq(1, length(ff)-1, 2)],
+        ff[treatment = seq(2, length(ff), 2)])
+  
+  df <- data.frame(control = ff[ , 1], treatment = ff[ , 2])
+  df$effect <- (df$treatment - df$control)
+  df$rep_sample_size <- rep_sample_size
+  
 #Decision to go on
 #this decision depends on an equivalence test with a bound of .3
 #only experiments replicated that include .3 in the CI around the ES measured
@@ -88,14 +88,17 @@ select_experiments <- which(((apply(cbind(aa[seq(1, length(aa)-1, 2)],
 length(select_experiments)
 df$effect[select_experiments]
 
+### remove experiments that have ES < 0
 select_experiments <- select_experiments[df$effect[select_experiments] > 0]
 
-length(select_experiments)
+rep_attempts <- length(select_experiments)
 
+false_omission_rate <-
 sum(current_ES[-select_experiments] > .3)/
   length(current_ES[-select_experiments])
 hist(current_ES[-select_experiments])
 
+true_selection_rate <-
 sum(current_ES[select_experiments] > .3)/
   length(current_ES[select_experiments])
 hist(current_ES[select_experiments])
@@ -119,36 +122,34 @@ hist(rep_sample_size[select_experiments], breaks = 50)
 ### B GROUP SEQUENTIAL DESIGN WITH 3 INTERIM ANALYSES 
 
 final_res <- matrix(NA, nrow = 100000,
-                    ncol = 11,
+                    ncol = 15,
                     dimnames = list(NULL, c("rep_no", "ES_true", "totalN", "nstage", "beta", "d_emp", 
-                                            "t_value", "p_value", "df", "stage", "H0")))
+                                            "t_value", "p_value", "df", "stage", "H0", "prev_pop",
+                                            "rep_attempts", "false_omission_rate", "true_selection_rate")))
 
 
 final_res_counter <- 1
 
-
+  
 ### determine bounds and critical values of the sequential design
 ### asymmetric upper and lower bounds
-# gs_design <- gsDesign::gsDesign(k = 3, test.type = 5, alpha = 0.025, beta = .2,
-#                                     delta = .5, n.fix = 1, timing = 1,
-#                                     sfu = sfHSD, sfupar = -4,
-#                                     sfl = sfHSD, sflpar = -6)
+### lower bound = futility
+gs_design <- gsDesign::gsDesign(k = 3, test.type = 5, alpha = 0.025, beta = .2,
+                                    delta = .5, n.fix = 1, timing = 1,
+                                    sfu = sfHSD, sfupar = -4,
+                                    sfl = sfHSD, sflpar = -6)
 
-### determine bounds and critical values of the sequential design
-### one-sided test
-gs_design <- gsDesign::gsDesign(k = 3, test.type = 1, alpha = 0.025, beta = .2,
-                                delta = .1, n.fix = 1, timing = 1,
-                                sfu = sfHSD, sfupar = -4)
-
+  
 plot(gs_design)
 plot(gs_design, plottype = 5)
-
+gs_design
+  
 
 for(exp_no in select_experiments) {
   replication <- 
     generate_study(ES_true = current_ES[exp_no],
-                   sample_size = rep_sample_size[exp_no])
-  print(exp_no)
+                     sample_size = rep_sample_size[exp_no])
+    print(exp_no)
   
   beta <- 0.2
   
@@ -159,20 +160,36 @@ for(exp_no in select_experiments) {
                                  treat   = replication$values[replication$treatment == "treat"][1:ceiling(n/3)]))
   N1         <- nrow(samp1)
   t1         <- t.test(samp1[ , 2], samp1[ , 1], 
-                       alternative = "greater")
-  hit_upper1 <- t1$statistic >= gs_design$upper$bound[1]
+                       alternative = "two.sided")
+  hit_upper1 <- t1$p.value <= 0.0013
+  hit_lower1 <- t1$p.value >= 0.0155
   stage      <- 1
   delta_emp  <- (mean(samp1[ , 2]) - mean(samp1[ , 1]))
-  
+
   if (hit_upper1 == TRUE) {
     print(paste("stage 1 trial success"))
     
     final_res[final_res_counter, ] <- c(rep_no = exp_no, ES_true = current_ES[exp_no], 
                                         totalN = n, nstage = N1, beta,
                                         d_emp = delta_emp, t_value = t1$statistic, p_value = t1$p.value, 
-                                        df = t1$parameter, stage, H0 = 2)
+                                        df = t1$parameter, stage, H0 = 2,
+                                        prev_pop, rep_attempts, false_omission_rate, true_selection_rate)
     
     final_res_counter <- final_res_counter + 1 
+    
+    next;
+    
+  } else if (hit_lower1 == TRUE) {
+    
+    print(paste("stage 1 trial stopped for futility"))
+    
+    final_res[final_res_counter, ] <- c(rep_no = exp_no, ES_true = current_ES[exp_no],
+                                        totalN = n, nstage = N1, beta,
+                                        d_emp = delta_emp, t_value = t1$statistic, p_value = t1$p.value, 
+                                        df = t1$parameter, stage, H0 = 1,
+                                        prev_pop, rep_attempts, false_omission_rate, true_selection_rate)
+    
+    final_res_counter <- final_res_counter + 1
     
     next;
     
@@ -183,7 +200,8 @@ for(exp_no in select_experiments) {
     final_res[final_res_counter, ] <- c(rep_no = exp_no, ES_true = current_ES[exp_no],
                                         totalN = n, nstage = N1, beta,
                                         d_emp = delta_emp, t_value = t1$statistic, p_value = t1$p.value,
-                                        df = t1$parameter, stage, H0 = 0)
+                                        df = t1$parameter, stage, H0 = 0,
+                                        prev_pop, rep_attempts, false_omission_rate, true_selection_rate)
     
     final_res_counter <- final_res_counter + 1
     
@@ -193,8 +211,9 @@ for(exp_no in select_experiments) {
     samp2      <- rbind(samp2, samp1)
     N2         <- nrow(samp2)
     t2         <- t.test(samp2[ , 2], samp2[ , 1],
-                         alternative = "greater")
-    hit_upper2 <- t2$statistic >= gs_design$upper$bound[2]
+                         alternative = "two.sided")
+    hit_upper2 <- t2$p.value <= 0.0054
+    hit_lower2 <- t2$p.value >= 0.1268
     stage      <- 2
     delta_emp  <- (mean(samp2[ , 2]) - mean(samp2[ , 1]))
     
@@ -205,7 +224,22 @@ for(exp_no in select_experiments) {
       final_res[final_res_counter, ] <- c(rep_no = exp_no, ES_true = current_ES[exp_no],
                                           totalN = n, nstage = N2, beta,
                                           d_emp = delta_emp, t_value = t2$statistic, p_value = t2$p.value,
-                                          df = t2$parameter, stage, H0 = 2)
+                                          df = t2$parameter, stage, H0 = 2,
+                                          prev_pop, rep_attempts, false_omission_rate, true_selection_rate)
+      
+      final_res_counter <- final_res_counter + 1
+      
+      next;
+      
+    } else if (hit_lower2 == TRUE) {
+      
+      print(paste("stage 2 trial stopped for futility"))
+      
+      final_res[final_res_counter, ] <- c(rep_no = exp_no, ES_true = current_ES[exp_no],
+                                          totalN = n, nstage = N2, beta,
+                                          d_emp = delta_emp, t_value = t2$statistic, p_value = t2$p.value,
+                                          df = t2$parameter, stage, H0 = 1,
+                                          prev_pop, rep_attempts, false_omission_rate, true_selection_rate)
       
       final_res_counter <- final_res_counter + 1
       
@@ -218,7 +252,8 @@ for(exp_no in select_experiments) {
       final_res[final_res_counter, ] <- c(rep_no = exp_no, ES_true = current_ES[exp_no],
                                           totalN = n, nstage = N2, beta,
                                           d_emp = delta_emp, t_value = t2$statistic, p_value = t2$p.value,
-                                          df = t2$parameter, stage, H0 = 0)
+                                          df = t2$parameter, stage, H0 = 0,
+                                          prev_pop, rep_attempts, false_omission_rate, true_selection_rate)
       
       final_res_counter <- final_res_counter + 1
       
@@ -230,8 +265,9 @@ for(exp_no in select_experiments) {
       samp3      <- na.omit(samp3)
       N3         <- nrow(samp3)
       t3         <- t.test(samp3[, 2], samp3[, 1],
-                           alternative = "greater")
-      hit_upper3 <- t3$statistic >= gs_design$upper$bound[3]
+                           alternative = "two.sided")
+      hit_upper3 <- t3$p.value <= 0.0228
+      hit_lower3 <- t3$p.value >= 0.9772
       stage      <- 3
       delta_emp  <- (mean(samp3[ , 2]) - mean(samp3[ , 1]))
       
@@ -242,7 +278,22 @@ for(exp_no in select_experiments) {
         final_res[final_res_counter, ] <- c(rep_no = exp_no, ES_true = current_ES[exp_no],
                                             totalN = n, nstage = N3, beta,
                                             d_emp = delta_emp, t_value = t3$statistic, p_value = t3$p.value,
-                                            df = t3$parameter, stage, H0 = 2)
+                                            df = t3$parameter, stage, H0 = 2,
+                                            prev_pop, rep_attempts, false_omission_rate, true_selection_rate)
+        
+        final_res_counter <- final_res_counter + 1
+        
+        next;
+        
+      } else if (hit_lower3 == TRUE) {
+        
+        print(paste("stage 3 trial stopped for futility"))
+        
+        final_res[final_res_counter, ] <- c(rep_no = exp_no, ES_true = current_ES[exp_no],
+                                            totalN = n, nstage = N3, beta,
+                                            d_emp = delta_emp, t_value = t3$statistic, p_value = t3$p.value,
+                                            df = t3$parameter, stage, H0 = 1,
+                                            prev_pop, rep_attempts, false_omission_rate, true_selection_rate)
         
         final_res_counter <- final_res_counter + 1
         
@@ -255,7 +306,8 @@ for(exp_no in select_experiments) {
         final_res[final_res_counter, ] <- c(rep_no = exp_no, ES_true = current_ES[exp_no],
                                             totalN = n, nstage = N3, beta,
                                             d_emp = delta_emp, t_value = t3$statistic, p_value = t3$p.value,
-                                            df = t3$parameter, stage, H0 = 1)
+                                            df = t3$parameter, stage, H0 = 0,
+                                            prev_pop, rep_attempts, false_omission_rate, true_selection_rate)
         
         final_res_counter <- final_res_counter + 1
         
@@ -264,14 +316,14 @@ for(exp_no in select_experiments) {
     }
     
   }
-  
-}
 
+}
+  
 
 final <- as.data.frame(final_res)
-
+  
 final <- 
-  final %>% 
-  filter(totalN != "NA")
+    final %>% 
+    filter(totalN != "NA")
 
-write.csv(final, file = "./data/equiv_method1_seq_onesided")
+write.csv(final, file = "./data/equiv_method1_seq_twosided")
