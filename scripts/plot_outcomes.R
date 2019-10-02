@@ -4,7 +4,7 @@ setwd("~/Documents/QUEST/PhD/R/SimulateTranslation")
 source("./scripts/prepare_data_for_plotting_onesided.R")
 
 plot1 <- 
-  ggplot(outcome , aes(x = factor(design), y = factor(sampsize_approach))) +
+  ggplot(outcomes, aes(x = factor(design), y = factor(sampsize_approach))) +
   geom_raster(aes(fill = mean_N), interpolate = F) +
   scale_fill_gradient2(low = "navy", high = "darkgoldenrod1", 
                        mid = "white", midpoint = 100) +
@@ -28,10 +28,10 @@ plot1 <-
 
 
 plot2 <-
-  ggplot(outcome , aes(x = factor(design), y = factor(sampsize_approach))) +
-  geom_raster(aes(fill = false_neg_rate), interpolate = F) +
+  ggplot(outcomes, aes(x = factor(design), y = factor(sampsize_approach))) +
+  geom_raster(aes(fill = FNR*100), interpolate = F) +
   scale_fill_gradient2(low = "navy", high = "darkgoldenrod1",
-                       mid = "white", midpoint = 35) +
+                       mid = "white", midpoint = 40) +
   labs(x = "Design", y = "Approach to determine \nsample size",
        fill = "Rate of \nfalse negatives") +
   scale_x_discrete(labels = c("Fixed-N \ndesign",
@@ -53,10 +53,10 @@ plot2 <-
 
 
 plot3 <- 
-  ggplot(outcome , aes(x = factor(design), y = factor(sampsize_approach))) +
+  ggplot(outcomes, aes(x = factor(design), y = factor(sampsize_approach))) +
   geom_raster(aes(fill = PPV*100), interpolate = F) +
   scale_fill_gradient2(low = "navy", high = "darkgoldenrod1", 
-                       mid = "white", midpoint = 55) +
+                       mid = "white", midpoint = 45) +
   labs(x = "Design", y = "Sample size calculation",
        fill = "Rate of \npositive predictive value") +
   scale_x_discrete(labels = c("Fixed-N \ndesign",

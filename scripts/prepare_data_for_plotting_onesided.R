@@ -84,197 +84,85 @@ datfix <-
          prev_pop, rep_attempts, 
          false_omission_rate, true_selection_rate)
 
-### create subsets to refer to row numbers later
-
-
 ################################################################################################################
 
 ### combine data sets containing sequential and fixed-N experiments
 dat <- rbind(datseq, datfix)
 
 
-### create data sets with only true ES > .3
-dat_large_ES <-
+condition_positive <-
   dat %>%
-  filter(ES_true > .3)
+  group_by(decision_crit, sampsize_approach, design) %>%
+  filter(ES_true > .3) %>%
+  summarize(events = n())
 
-final_1 <-
+
+all_negatives <-
   dat %>% 
-  filter(ES_true > .3 &
-           decision_crit == "equivalence" & 
-           sampsize_approach == 1 &
-           design == "group_sequential")
-
-final_2 <-
+  group_by(decision_crit, sampsize_approach, design, H0) %>% 
+  filter(H0 == 1) %>% 
+  summarize(negatives = n())
+  
+false_negatives <-
   dat %>% 
-  filter(ES_true > .3,
-         decision_crit == "equivalence" & 
-           sampsize_approach == 2 &
-           design == "group_sequential")
+  group_by(decision_crit, sampsize_approach, design, H0) %>% 
+  filter(H0 == 1 & ES_true > .3) %>% 
+  summarize(false_neg = n())
+  
+false_negatives$all_neg <- all_negatives$negatives
 
-final_3 <-
+false_negatives <-
+  false_negatives %>% 
+  group_by(decision_crit, sampsize_approach, design) %>% 
+  mutate(false_negative_rate = false_neg/all_neg)
+
+all_positives <- 
   dat %>% 
-  filter(ES_true > .3,
-         decision_crit == "equivalence" & 
-           sampsize_approach == 3 &
-           design == "group_sequential")
+  group_by(decision_crit, sampsize_approach, design, H0) %>% 
+  filter(H0 == 2) %>% 
+  summarize(positives = n())
 
-final_4 <-
+true_positives <-
   dat %>% 
-  filter(ES_true > .3,
-         decision_crit == "significance" & 
-           sampsize_approach == 1 &
-           design == "group_sequential")
+  group_by(decision_crit, sampsize_approach, design, H0) %>% 
+  filter(H0 == 2 & ES_true > .3) %>% 
+  summarize(true_pos = n())
 
-final_5 <-
+false_positives <-
   dat %>% 
-  filter(ES_true > .3,
-         decision_crit == "significance" & 
-           sampsize_approach == 2 &
-           design == "group_sequential")
+  group_by(decision_crit, sampsize_approach, design, H0) %>% 
+  filter(H0 == 2 & ES_true < .3) %>% 
+  summarize(false_pos = n())
 
-final_6 <-
-  dat %>% 
-  filter(ES_true > .3,
-         decision_crit == "significance" & 
-           sampsize_approach == 3 &
-           design == "group_sequential")
+true_positives$all_pos <- all_positives$positives
+true_positives$false_pos <- false_positives$false_pos
+true_positives$all_neg <- false_negatives$all_neg
+true_positives$false_neg <- false_negatives$false_neg
 
-
-final_fix1 <-
-  datfix %>% 
-  filter(ES_true > .3,
-         decision_crit == "equivalence" & 
-           sampsize_approach == 1 &
-           design == "fixN")
-
-final_fix2 <-
-  datfix %>% 
-  filter(ES_true > .3,
-         decision_crit == "equivalence" & 
-           sampsize_approach == 2 &
-           design == "fixN")
-
-final_fix3<-
-  datfix %>% 
-  filter(ES_true > .3,
-         decision_crit == "equivalence" & 
-           sampsize_approach == 3 &
-           design == "fixN")
-
-final_fix4 <-
-  datfix %>% 
-  filter(ES_true > .3,
-         decision_crit == "significance" & 
-           sampsize_approach == 1 &
-           design == "fixN")
-
-final_fix5 <-
-  datfix %>% 
-  filter(ES_true > .3,
-         decision_crit == "significance" & 
-           sampsize_approach == 2 &
-           design == "fixN")
-
-final_fix6 <-
-  datfix %>% 
-  filter(ES_true > .3,
-         decision_crit == "significance" & 
-           sampsize_approach == 3 &
-           design == "fixN")
+outcomes <-
+  true_positives %>% 
+  select(- H0) %>% 
+  group_by(decision_crit, sampsize_approach, design) %>% 
+  mutate(PPV = true_pos/all_pos,
+         FPR = false_pos/all_pos,
+         TPR = true_pos/(true_pos + false_neg),
+         FNR = false_neg/(true_pos + false_neg))
 
 animal_numbers <-
   dat %>% 
   group_by(decision_crit, sampsize_approach, design) %>% 
   summarize(mean_N = mean(nstage))
 
-### extract and count nonsignificant cases 
-false_neg <-
-  dat_large_ES %>% 
-  group_by(decision_crit, sampsize_approach, design, H0) %>% 
-  filter(H0 == 1) %>% 
-  summarize(false_neg = n())
 
-### add column coding total N of nonsinificant cases for each trajectory
-false_neg$N <- c(nrow(final_fix1), nrow(final_1),
-                 nrow(final_fix2), nrow(final_2),
-                 nrow(final_fix3), nrow(final_3),
-                 nrow(final_fix4), nrow(final_4),
-                 nrow(final_fix5), nrow(final_5),
-                 nrow(final_fix6), nrow(final_6))
+outcomes$mean_N <- animal_numbers$mean_N
 
-### calculate percentage of nonsignificant findings
-false_neg <-
-  false_neg %>% 
-  mutate(false_neg_rate = false_neg/N*100)
+write.csv(outcomes, file = "./final_outcomes")
 
+outcomes$design <- as.factor(outcomes$design)
+levels(outcomes$design)
+levels(outcomes$design) <- c("Fixed-N \ndesign", "Group sequential \ndesign")
 
-### extract and count all significant outcomes
-### (contains true and false positives)
-all_positives <-
-  dat %>% 
-  group_by(decision_crit, sampsize_approach, design, H0) %>% 
-  filter(H0 == 2) %>% 
-  summarize(all_pos = n())
-
-### extract and count significant cases 
-true_pos <-
-  dat_large_ES %>% 
-  group_by(decision_crit, sampsize_approach, design, H0) %>% 
-  filter(H0 == 2) %>% 
-  summarize(true_pos = n())
-
-### add column coding total N of sinificant cases for each trajectory
-true_pos$N <- c(nrow(final_fix1), nrow(final_1),
-                nrow(final_fix2), nrow(final_2),
-                nrow(final_fix3), nrow(final_3),
-                nrow(final_fix4), nrow(final_4),
-                nrow(final_fix5), nrow(final_5),
-                nrow(final_fix6), nrow(final_6))
-
-### calculate percentage of significant findings
-true_pos <-
-  true_pos %>% 
-  mutate(true_pos_rate = true_pos/N*100)
-
-
-
-true_pos$all_positives <- all_positives$all_pos
-
-true_pos$false_pos <- true_pos$all_positives - true_pos$true_pos
-
-true_pos$FDR <- true_pos$false_pos/true_pos$all_positives
-
-true_pos$PPV <- true_pos$true_pos/true_pos$all_positives
-
-outcome <- 
-  true_pos %>% 
-  select(decision_crit, sampsize_approach,
-         design, true_pos_rate, FDR, PPV)
-
-outcome$false_neg_rate <- false_neg$false_neg_rate
-
-outcome$mean_N <- animal_numbers$mean_N
-
-#write.csv(outcome, file = "./final_outcomes")
-
-
-outcome$design <- as.factor(outcome$design)
-levels(outcome$design)
-levels(outcome$design) <- c("Fixed-N \ndesign", "Group sequential \ndesign")
-
-outcome$decision_crit <- as.factor(outcome$decision_crit)
-levels(outcome$decision_crit)
-levels(outcome$decision_crit) <- c("Equivalence", "Significance")
-
-
-
-
-
-
-
-
-
-
-
+outcomes$decision_crit <- as.factor(outcomes$decision_crit)
+levels(outcomes$decision_crit)
+levels(outcomes$decision_crit) <- c("Equivalence", "Significance")
 
