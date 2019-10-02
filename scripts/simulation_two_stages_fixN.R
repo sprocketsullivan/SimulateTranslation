@@ -19,15 +19,17 @@ library(gsDesign)
 
 #source additional functions
 source("./scripts/safeguard_function.R")
-source("./scripts/functions_for_sim.R")
+#source("./scripts/functions_for_simulation_onesided.R")
+source("./scripts/functions_for_simulation_twosided.R")
+
 
 # Step  1 Generate an effect size distribution
 #ES_true <- c(rbeta(100000,6,5),rbeta(100000,1,5))
-ES_true <- c(rbeta(100000, 1, 5))
+ES_true <- c(rbeta(1000000, 1, 5))
 hist(ES_true)
 
 #how many hypothesis over .3 threshold
-sum(ES_true > 0.3)
+prev_pop <- round(sum(ES_true > 0.3)/1000000, 2)
 n_exp <- 10000
 current_ES <- sample(ES_true, n_exp)
 hist(current_ES)
@@ -74,29 +76,32 @@ df$rep_sample_size <- rep_sample_size
 #Decision to go on
 #this decision depends on an equivalence test with a bound of .3
 #only experiments replicated that include .3 in the CI around the ES measured
-aa <- (unlist(map(exp_data_summary, "CI")))
-select_experiments <- which(((apply(cbind(aa[seq(1, length(aa)-1, 2)],
-                                          aa[seq(2, length(aa), 2)]),
-                                    1, function(x) {min((x))} ) < -.3)))
+# aa <- (unlist(map(exp_data_summary, "CI")))
+# select_experiments <- which(((apply(cbind(aa[seq(1, length(aa)-1, 2)],
+#                                           aa[seq(2, length(aa), 2)]),
+#                                     1, function(x) {min((x))} ) < -.3)))
 
 
 #alternative: this decision depends on whether exploratory result is significant (p <= .05) or not
-# bb <- (unlist(map(exp_data_summary, "p_value")))
-# select_experiments <- which(((apply(cbind(bb[seq(1, length(bb)-1, 2)],
-#                                               bb[seq(2, length(bb), 2)]),
-#                                         1, function(x){min((x))}) < .05)))
+bb <- (unlist(map(exp_data_summary, "p_value")))
+select_experiments <- which(((apply(cbind(bb[seq(1, length(bb)-1, 2)],
+                                              bb[seq(2, length(bb), 2)]),
+                                        1, function(x){min((x))}) < .05)))
 
 length(select_experiments)
 df$effect[select_experiments]
 
+### remove experiments that have ES < 0
 select_experiments <- select_experiments[df$effect[select_experiments] > 0]
 
-length(select_experiments)
+rep_attempts <- length(select_experiments)
 
+false_omission_rate <-
 sum(current_ES[-select_experiments] > .3)/
   length(current_ES[-select_experiments])
 hist(current_ES[-select_experiments])
 
+true_selection_rate <-
 sum(current_ES[select_experiments] > .3)/
   length(current_ES[select_experiments])
 hist(current_ES[select_experiments])
@@ -110,7 +115,6 @@ sum(df$effect[-select_experiments] > .3)/
 hist(df$effect[-select_experiments])
 
 hist(rep_sample_size[select_experiments])
-
 
 
 #conduct replication experiments
@@ -151,14 +155,16 @@ res_summary_rep <-
 
 res_summary_rep <-
   res_summary_rep %>% 
-  mutate(d_emp = mean_treatment - mean_control)
+  mutate(d_emp = mean_treatment - mean_control,
+         prev_pop, rep_attempts, 
+         false_omission_rate, true_selection_rate)
 
 ggplot(aes(y = d_emp, x = ES_true, col = p_value < .05),
        data = res_summary_rep) +
   geom_point(alpha = 0.4)
 
 
-write.csv(res_summary_rep, file = "./data/equiv_method1_fixN_onesided")
+write.csv(res_summary_rep, file = "./data/sig_method1_fixN_twosided")
 
 
 
