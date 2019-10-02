@@ -32,6 +32,7 @@ prev_pop <- round(sum(ES_true > 0.3)/1000000, 2)
 n_exp <- 10000
 current_ES <- sample(ES_true, n_exp)
 hist(current_ES)
+sum(current_ES > 0.3)/10000
 
 #conduct intial study
 exploratory_data <- list()

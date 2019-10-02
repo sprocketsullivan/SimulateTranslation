@@ -1,13 +1,13 @@
 setwd("~/Documents/QUEST/PhD/R/SimulateTranslation")
 
 
-source("./scripts/prepare_data_for_plotting_onesided.R")
+source("./scripts/calculating_outcomes_onesided.R")
 
 plot1 <- 
   ggplot(outcomes, aes(x = factor(design), y = factor(sampsize_approach))) +
   geom_raster(aes(fill = mean_N), interpolate = F) +
-  scale_fill_gradient2(low = "navy", high = "darkgoldenrod1", 
-                       mid = "white", midpoint = 100) +
+  # scale_fill_gradient2(low = "navy", high = "darkgoldenrod1", 
+  #                      mid = "white", midpoint = 100) +
   labs(x = "Design", y = "Sample size calculation",
        fill = "Mean # of \nanimals needed") +
   scale_x_discrete(labels = c("Fixed-N \ndesign",
@@ -29,11 +29,11 @@ plot1 <-
 
 plot2 <-
   ggplot(outcomes, aes(x = factor(design), y = factor(sampsize_approach))) +
-  geom_raster(aes(fill = FNR*100), interpolate = F) +
-  scale_fill_gradient2(low = "navy", high = "darkgoldenrod1",
-                       mid = "white", midpoint = 40) +
+  geom_raster(aes(fill = 1-Sensitivity), interpolate = F) +
+  # scale_fill_gradient2(low = "navy", high = "darkgoldenrod1",
+  #                      mid = "white", midpoint = 40) +
   labs(x = "Design", y = "Approach to determine \nsample size",
-       fill = "Rate of \nfalse negatives") +
+       fill = "False negative \nrate") +
   scale_x_discrete(labels = c("Fixed-N \ndesign",
                               "Sequential \ndesign")) +
   scale_y_discrete(labels = c("Safeguard", "Standard", "SESOI")) +
@@ -54,11 +54,11 @@ plot2 <-
 
 plot3 <- 
   ggplot(outcomes, aes(x = factor(design), y = factor(sampsize_approach))) +
-  geom_raster(aes(fill = PPV*100), interpolate = F) +
-  scale_fill_gradient2(low = "navy", high = "darkgoldenrod1", 
-                       mid = "white", midpoint = 45) +
+  geom_raster(aes(fill = PPV_sample_prev), interpolate = F) +
+  # scale_fill_gradient2(low = "navy", high = "darkgoldenrod1", 
+  #                      mid = "white", midpoint = 45) +
   labs(x = "Design", y = "Sample size calculation",
-       fill = "Rate of \npositive predictive value") +
+       fill = "Positive predictive \nvalue") +
   scale_x_discrete(labels = c("Fixed-N \ndesign",
                               "Sequential \ndesign")) +
   scale_y_discrete(labels = c("Safeguard", "Standard", "SESOI")) +

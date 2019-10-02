@@ -23,7 +23,7 @@ es_measured <- min(abs(aa$CI))
 es_measured <-abs(aa$mean_effect[2]-aa$mean_effect[1])
 es_measured <-.3
 
-power.t.test(n = NULL, delta=0.275,sd=1,sig.level=.05,power=.8,
+power.t.test(n = 13.78630, delta=0.2801463,sd=1,sig.level=.05,power=NULL,
              type = "two.sample", 
              alternative = "one.sided")
 

@@ -90,73 +90,89 @@ datfix <-
 dat <- rbind(datseq, datfix)
 
 
-condition_positive <-
-  dat %>%
-  group_by(decision_crit, sampsize_approach, design) %>%
-  filter(ES_true > .3) %>%
-  summarize(events = n())
-
-
-all_negatives <-
-  dat %>% 
-  group_by(decision_crit, sampsize_approach, design, H0) %>% 
-  filter(H0 == 1) %>% 
-  summarize(negatives = n())
-  
-false_negatives <-
-  dat %>% 
-  group_by(decision_crit, sampsize_approach, design, H0) %>% 
-  filter(H0 == 1 & ES_true > .3) %>% 
-  summarize(false_neg = n())
-  
-false_negatives$all_neg <- all_negatives$negatives
-
-false_negatives <-
-  false_negatives %>% 
-  group_by(decision_crit, sampsize_approach, design) %>% 
-  mutate(false_negative_rate = false_neg/all_neg)
-
-all_positives <- 
-  dat %>% 
-  group_by(decision_crit, sampsize_approach, design, H0) %>% 
-  filter(H0 == 2) %>% 
-  summarize(positives = n())
+# condition_positive <-
+#   dat %>%
+#   group_by(decision_crit, sampsize_approach, design) %>%
+#   filter(ES_true > .3) %>%
+#   summarize(events = n())
+# 
+# condition_negative <-
+#   dat %>%
+#   group_by(decision_crit, sampsize_approach, design) %>%
+#   filter(ES_true < .3) %>%
+#   summarize(events = n())
 
 true_positives <-
-  dat %>% 
-  group_by(decision_crit, sampsize_approach, design, H0) %>% 
-  filter(H0 == 2 & ES_true > .3) %>% 
+  dat %>%
+  group_by(decision_crit, sampsize_approach, design, H0) %>%
+  filter(H0 == 2 & ES_true > .3) %>%
   summarize(true_pos = n())
 
 false_positives <-
-  dat %>% 
-  group_by(decision_crit, sampsize_approach, design, H0) %>% 
-  filter(H0 == 2 & ES_true < .3) %>% 
+  dat %>%
+  group_by(decision_crit, sampsize_approach, design, H0) %>%
+  filter(H0 == 2 & ES_true < .3) %>%
   summarize(false_pos = n())
 
-true_positives$all_pos <- all_positives$positives
+false_negatives <-
+  dat %>%
+  group_by(decision_crit, sampsize_approach, design, H0) %>%
+  filter(H0 == 1 & ES_true > .3) %>%
+  summarize(false_neg = n())
+
+true_negatives <-
+  dat %>%
+  group_by(decision_crit, sampsize_approach, design, H0) %>%
+  filter(H0 == 1 & ES_true < .3) %>%
+  summarize(true_neg = n())
+
 true_positives$false_pos <- false_positives$false_pos
-true_positives$all_neg <- false_negatives$all_neg
 true_positives$false_neg <- false_negatives$false_neg
+true_positives$true_neg <- true_negatives$true_neg
 
 outcomes <-
   true_positives %>% 
-  select(- H0) %>% 
-  group_by(decision_crit, sampsize_approach, design) %>% 
-  mutate(PPV = true_pos/all_pos,
-         FPR = false_pos/all_pos,
-         TPR = true_pos/(true_pos + false_neg),
-         FNR = false_neg/(true_pos + false_neg))
+  select(-H0) %>% 
+  mutate(Sensitivity = true_pos/(true_pos + false_neg),
+         Specificity = true_neg/(true_neg + false_pos),
+         Prevalence = .17,
+         Sample_prev = (true_pos + false_neg) / 
+                       (true_pos + false_neg + false_pos + true_neg))
+
+
+outcomes <- 
+  outcomes %>% 
+  mutate(PPV_pop_prev = (Sensitivity * Prevalence) / 
+                        (Sensitivity * Prevalence + (1 - Specificity) * (1 - Prevalence)))
+
+
+outcomes <- 
+  outcomes %>% 
+  mutate(PPV_sample_prev = (Sensitivity * Sample_prev) / 
+                           (Sensitivity * Sample_prev + (1 - Specificity) * (1 - Sample_prev)))
+
+#PPV_sample_prev = true_pos/(true_pos + false_pos)
 
 animal_numbers <-
   dat %>% 
   group_by(decision_crit, sampsize_approach, design) %>% 
   summarize(mean_N = mean(nstage))
 
+median_d_emp <-
+  dat %>% 
+  group_by(decision_crit, sampsize_approach, design) %>% 
+  summarize(median_d_emp = median(d_emp))
+
+median_ES_true <-
+  dat %>% 
+  group_by(decision_crit, sampsize_approach, design) %>% 
+  summarize(median_ES_true = median(ES_true))
 
 outcomes$mean_N <- animal_numbers$mean_N
+outcomes$median_d_emp <- median_d_emp$median_d_emp
+outcomes$median_ES_true <- median_ES_true$median_ES_true
 
-write.csv(outcomes, file = "./final_outcomes")
+write.csv(outcomes, file = "./final_outcomes_d_0.3")
 
 outcomes$design <- as.factor(outcomes$design)
 levels(outcomes$design)
@@ -165,4 +181,5 @@ levels(outcomes$design) <- c("Fixed-N \ndesign", "Group sequential \ndesign")
 outcomes$decision_crit <- as.factor(outcomes$decision_crit)
 levels(outcomes$decision_crit)
 levels(outcomes$decision_crit) <- c("Equivalence", "Significance")
+
 
