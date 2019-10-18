@@ -25,17 +25,17 @@ library(coda)
 
 #source additional functions
 source("./scripts/safeguard_function.R")
-source("./scripts/functions_for_sim.R")
+source("./scripts/functions_for_simulation_twosided.R")
 
 
 # Step  1 Generate an effect size distribution
-#ES_true <- c(rbeta(100000,6,5),rbeta(100000,1,5))
-ES_true <- c(rbeta(100000, 1, 5))
+#ES_true <- c(rbeta(1000000, 5, 5),rbeta(1000000, 1, 5))
+ES_true <- c(rbeta(1000000, 1, 5))
 hist(ES_true)
 
 #how many hypothesis over .3 threshold
-sum(ES_true > 0.3)
-n_exp <- 100
+prev_pop <- round(sum(ES_true > 0.3)/1000000, 2)
+n_exp <- 500
 current_ES <- sample(ES_true, n_exp)
 hist(current_ES)
 
@@ -94,15 +94,18 @@ select_experiments <- which(((apply(cbind(bb[seq(1, length(bb)-1, 2)],
 length(select_experiments)
 df$effect[select_experiments]
 
+### remove experiments that have ES < 0
 select_experiments <- select_experiments[df$effect[select_experiments] > 0]
 
-length(select_experiments)
+rep_attempts <- length(select_experiments)
 
-sum(current_ES[-select_experiments] > .3)/
+false_omission_rate <-
+  sum(current_ES[-select_experiments] > .3)/
   length(current_ES[-select_experiments])
 hist(current_ES[-select_experiments])
 
-sum(current_ES[select_experiments] > .3)/
+true_selection_rate <-
+  sum(current_ES[select_experiments] > .3)/
   length(current_ES[select_experiments])
 hist(current_ES[select_experiments])
 
@@ -327,4 +330,4 @@ final <-
   final %>% 
   filter(totalN != "NA")
 
-write.csv(final, file = "./data/testBF")
+write.csv(final, file = "./data/testBF_twosided_BF3")

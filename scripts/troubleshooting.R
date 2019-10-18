@@ -23,11 +23,13 @@ es_measured <- min(abs(aa$CI))
 es_measured <-abs(aa$mean_effect[2]-aa$mean_effect[1])
 es_measured <-.3
 
-power.t.test(n = 13.78630, delta=0.2801463,sd=1,sig.level=.05,power=NULL,
+power.t.test(n = NULL, delta=0.89,sd=1,sig.level=.05,power=.8,
              type = "two.sample", 
              alternative = "one.sided")
 
 
-test <- safeguard.d(d = -0.358221828	 ,
+test <- safeguard.d(d = 0.89	 ,
             n.1 = 10, n.2 = 10,
             sig.level = .05, power = .8, conf = 0.8)
+
+as.numeric(test[2])/2 > 200

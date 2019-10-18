@@ -8,56 +8,14 @@ library(ggridges)
 
 
 ### read in data sets from the different trajectories 
-### using sequential design with futility criterion in confirmatory study
-final_1_ft <- read.csv(file = "equiv_method1_seq_onesided_futility")
-final_2_ft <- read.csv(file = "equiv_method2_seq_onesided_futility")
-final_3_ft <- read.csv(file = "equiv_method3_seq_onesided_futility")
+### using sequential design in confirmatory study
+final_1 <- read.csv(file = "equiv_method1_seq_onesided_high_prestudy_odds")
+final_2 <- read.csv(file = "equiv_method2_seq_onesided_high_prestudy_odds")
+final_3 <- read.csv(file = "equiv_method3_seq_onesided_high_prestudy_odds")
 
-
-final_4_ft <- read.csv(file = "sig_method1_seq_onesided_futility")
-final_5_ft <- read.csv(file = "sig_method2_seq_onesided_futility")
-final_6_ft <- read.csv(file = "sig_method3_seq_onesided_futility")
-
-
-### create one data frame containing all data
-final <- rbind(final_1_ft, final_2_ft, final_3_ft, final_4_ft, final_5_ft, final_6_ft)
-
-### add column that codes decision criterion from exploratory stage to confirmatory stage
-final$decision_crit <- c(rep("equivalence", nrow(final_1_ft) + nrow(final_2_ft) + nrow(final_3_ft)),
-                         rep("significance", nrow(final_4_ft) + nrow(final_5_ft) + nrow(final_6_ft)))
-
-### add column that codes approach to determine sample size for confirmatory study
-final$sampsize_approach <- c(rep(1, nrow(final_1_ft)), rep(2, nrow(final_2_ft)), rep(3, nrow(final_3_ft)),
-                             rep(1, nrow(final_4_ft)), rep(2, nrow(final_5_ft)), rep(3, nrow(final_6_ft)))
-
-### add column that codes design applied in confirmatory study
-final$design <- rep("sequential_futility")
-
-#write.csv(final, file = "sequential_onesided")
-
-### exclude all cases that do not have either a significant or futile outcome
-### select columns relevant for plotting
-datseq_futility <-
-  final %>% 
-  filter(H0 != 0) %>% 
-  select(rep_no, decision_crit, sampsize_approach, 
-         design, totalN, nstage, ES_true, d_emp, H0,
-         prev_pop, rep_attempts, 
-         false_omission_rate, true_selection_rate)
-
-
-################################################################################################################
-
-### read in data sets from the different trajectories 
-### using sequential design with futility criterion in confirmatory study
-final_1 <- read.csv(file = "equiv_method1_seq_onesided")
-final_2 <- read.csv(file = "equiv_method2_seq_onesided")
-final_3 <- read.csv(file = "equiv_method3_seq_onesided")
-
-
-final_4 <- read.csv(file = "sig_method1_seq_onesided")
-final_5 <- read.csv(file = "sig_method2_seq_onesided")
-final_6 <- read.csv(file = "sig_method3_seq_onesided")
+final_4 <- read.csv(file = "sig_method1_seq_onesided_high_prestudy_odds")
+final_5 <- read.csv(file = "sig_method2_seq_onesided_high_prestudy_odds")
+final_6 <- read.csv(file = "sig_method3_seq_onesided_high_prestudy_odds")
 
 
 ### create one data frame containing all data
@@ -72,7 +30,7 @@ final$sampsize_approach <- c(rep(1, nrow(final_1)), rep(2, nrow(final_2)), rep(3
                              rep(1, nrow(final_4)), rep(2, nrow(final_5)), rep(3, nrow(final_6)))
 
 ### add column that codes design applied in confirmatory study
-final$design <- rep("sequential")
+final$design <- rep("group_sequential")
 
 ### exclude all cases that do not have either a significant or futile outcome
 ### select columns relevant for plotting
@@ -84,17 +42,18 @@ datseq <-
          prev_pop, rep_attempts, 
          false_omission_rate, true_selection_rate)
 
+
 ################################################################################################################
 
 ### read in data sets from the different trajectories 
 ### using fixed-N design in confirmatory study
-final_fix1 <- read.csv(file = "equiv_method1_fixN_onesided")
-final_fix2 <- read.csv(file = "equiv_method2_fixN_onesided")
-final_fix3 <- read.csv(file = "equiv_method3_fixN_onesided")
+final_fix1 <- read.csv(file = "equiv_method1_fixN_onesided_high_prestudy_odds")
+final_fix2 <- read.csv(file = "equiv_method2_fixN_onesided_high_prestudy_odds")
+final_fix3 <- read.csv(file = "equiv_method3_fixN_onesided_high_prestudy_odds")
 
-final_fix4 <- read.csv(file = "sig_method1_fixN_onesided")
-final_fix5 <- read.csv(file = "sig_method2_fixN_onesided")
-final_fix6 <- read.csv(file = "sig_method3_fixN_onesided")
+final_fix4 <- read.csv(file = "sig_method1_fixN_onesided_high_prestudy_odds")
+final_fix5 <- read.csv(file = "sig_method2_fixN_onesided_high_prestudy_odds")
+final_fix6 <- read.csv(file = "sig_method3_fixN_onesided_high_prestudy_odds")
 
 ### create one data frame containing all data
 finalfix <- rbind(final_fix1, final_fix2, final_fix3, final_fix4, final_fix5, final_fix6)
@@ -128,7 +87,7 @@ datfix <-
 ################################################################################################################
 
 ### combine data sets containing sequential and fixed-N experiments
-dat <- rbind(datseq, datseq_futility, datfix)
+dat <- rbind(datseq, datfix)
 
 
 # condition_positive <-
@@ -176,21 +135,21 @@ outcomes <-
   select(-H0) %>% 
   mutate(Sensitivity = true_pos/(true_pos + false_neg),
          Specificity = true_neg/(true_neg + false_pos),
-         Prevalence = .17,
+         Prevalence = .53,
          Sample_prev = (true_pos + false_neg) / 
-                       (true_pos + false_neg + false_pos + true_neg))
+           (true_pos + false_neg + false_pos + true_neg))
 
 
 outcomes <- 
   outcomes %>% 
   mutate(PPV_pop_prev = (Sensitivity * Prevalence) / 
-                        (Sensitivity * Prevalence + (1 - Specificity) * (1 - Prevalence)))
+           (Sensitivity * Prevalence + (1 - Specificity) * (1 - Prevalence)))
 
 
 outcomes <- 
   outcomes %>% 
   mutate(PPV_sample_prev = (Sensitivity * Sample_prev) / 
-                           (Sensitivity * Sample_prev + (1 - Specificity) * (1 - Sample_prev)))
+           (Sensitivity * Sample_prev + (1 - Specificity) * (1 - Sample_prev)))
 
 #PPV_sample_prev = true_pos/(true_pos + false_pos)
 
@@ -217,8 +176,7 @@ outcomes$median_ES_true <- median_ES_true$median_ES_true
 
 outcomes$design <- as.factor(outcomes$design)
 levels(outcomes$design)
-levels(outcomes$design) <- c("Fixed-N \ndesign", "Group sequential \ndesign", 
-                             "Group sequential \ndesign with futility bound")
+levels(outcomes$design) <- c("Fixed-N \ndesign", "Group sequential \ndesign")
 
 outcomes$decision_crit <- as.factor(outcomes$decision_crit)
 levels(outcomes$decision_crit)

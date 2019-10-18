@@ -40,9 +40,9 @@ rep_no		# number of the experiment that was selected for replication (between 1 
 
 ES_true		# true effect size drawn from the population of effect sizes
 
-totalN		# maximum number of subjects available for testing
+totalN		# maximum number of subjects available for testing (in *each* group)
 
-nstage		# total number of subjects (both groups) used for interim analysis at a certain stage
+nstage		# number of subjects (in *each* group) used for interim analysis at a certain stage
 
 beta		# type II error used for calculation of bounds in gsDesign (.2 for now)
 
@@ -111,6 +111,8 @@ functions_for_simulation_twosided.R	# contains functions to simulate preclinical
 
 safeguard_function.R			# contains function to determine sample size for a replication study using an adjusted effect size
 					# CI around effect size from exploratory study is .8
+					# safeguard.d() always computes required overall N for both groups (see Perugini et al., 2014 Supplemental materials)
+					# safeguard.d() always computes required overall N for one-sided testing (see Perugini et al., 2014 Supplemental materials)
 
 
 simulation_two_stages_sequential_onesided.R	# contains simulation of a 3-stage sequential design 
@@ -137,7 +139,7 @@ prepare_data_for_plotting_onesided.R		# contains code to prepare data from all t
 						# creates data frame containing main outcome variables
 
 
-plot_outcomes.R					# contains code to plot main outcomes (mean_N, false negative rate, PPV) for each trajectory and design
+plot_outcomes.R					# contains code to plot main outcomes (mean_N (in *each* group), false negative rate, PPV) for each trajectory and design
 						# in progress
 
 						

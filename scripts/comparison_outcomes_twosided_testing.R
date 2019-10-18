@@ -1,0 +1,220 @@
+setwd("~/Documents/QUEST/PhD/R/SimulateTranslation/data")
+
+rm(list = ls())
+
+library(tidyverse)
+
+
+final_1 <- read.csv(file = "equiv_method1_seq_twosided")
+final_2 <- read.csv(file = "equiv_method2_seq_twosided")
+final_3 <- read.csv(file = "equiv_method3_seq_twosided")
+
+final_4 <- read.csv(file = "sig_method1_seq_twosided")
+final_5 <- read.csv(file = "sig_method2_seq_twosided")
+final_6 <- read.csv(file = "sig_method3_seq_twosided")
+
+final <- rbind(final_1, final_2, final_3, final_4, final_5, final_6)
+
+final$decision_crit <- c(rep("equivalence", nrow(final_1) + nrow(final_2) + nrow(final_3)),
+                      rep("significance", nrow(final_4) + nrow(final_5) + nrow(final_6)))
+
+
+final$sampsize_approach <- c(rep(1, nrow(final_1)), rep(2, nrow(final_2)), rep(3, nrow(final_3)),
+                             rep(1, nrow(final_4)), rep(2, nrow(final_5)), rep(3, nrow(final_6)))
+
+final$design <- rep("group_sequential")
+
+dat <-
+  final %>% 
+  filter(H0 != 0) %>% 
+  select(rep_no, decision_crit, sampsize_approach, 
+         design, totalN, nstage, ES_true, d_emp, H0)
+
+################################################################################################################
+
+final_fix1 <- read.csv(file = "equiv_method1_fixN_twosided")
+final_fix2 <- read.csv(file = "equiv_method2_fixN_twosided")
+final_fix3 <- read.csv(file = "equiv_method3_fixN_twosided")
+
+final_fix4 <- read.csv(file = "sig_method1_fixN_twosided")
+final_fix5 <- read.csv(file = "sig_method2_fixN_twosided")
+final_fix6 <- read.csv(file = "sig_method3_fixN_twosided")
+
+finalfix <- rbind(final_fix1, final_fix2, final_fix3, final_fix4, final_fix5, final_fix6)
+
+finalfix$decision_crit <- c(rep("equivalence", nrow(final_fix1) + nrow(final_fix2) + nrow(final_fix3)),
+                         rep("significance", nrow(final_fix4) + nrow(final_fix5) + nrow(final_fix6)))
+
+
+finalfix$sampsize_approach <- c(rep(1, nrow(final_fix1)), rep(2, nrow(final_fix2)), rep(3, nrow(final_fix3)),
+                             rep(1, nrow(final_fix4)), rep(2, nrow(final_fix5)), rep(3, nrow(final_fix6)))
+
+finalfix$design <- rep("fixN")
+
+finalfix$H0 <- ifelse(finalfix$p_value <= .05, 2, 1)
+finalfix$nstage <- finalfix$totalN
+
+datfix <-
+  finalfix %>% 
+  select(rep_no, decision_crit, sampsize_approach, 
+         design, totalN, nstage, ES_true, d_emp, H0)
+
+################################################################################################################
+
+dat <- rbind(dat, datfix)
+
+dat$design <- as.factor(dat$design)
+levels(dat$design)
+levels(dat$design) <- c("Fixed-N \ndesign", "Group sequential \ndesign")
+
+dat$decision_crit <- as.factor(dat$decision_crit)
+levels(dat$decision_crit)
+levels(dat$decision_crit) <- c("Equivalence", "Significance")
+
+ggplot(data = dat, aes(x = ES_true, y = d_emp, color = factor(H0))) +
+  geom_point(alpha = .5, size = .7) +
+  facet_grid(design ~ decision_crit) +
+  geom_vline(xintercept = .3, color = "red", lty = 2, size = 0.7) +
+  geom_hline(yintercept = .3, color = "red", lty = 2, size = 0.7) +
+  labs(x = "True effect size", y = "Empirical effect size",
+       color = "Significance") +
+  scale_color_manual(breaks = c(1, 2), 
+                     values = c("darkblue", "darkgoldenrod1"),
+                     labels = c("false", "true")) +
+  theme_bw() +
+  theme(strip.text.x = element_text(size = 12, colour = "black", face = "bold")) +
+  theme(strip.text.y = element_text(size = 12, colour = "black", face = "bold")) +
+  theme(strip.background = element_rect(fill = "white", color = "black")) +
+  theme(axis.title.x = element_text(size = 13)) +
+  theme(axis.title.y = element_text(size = 13)) +
+  theme(axis.text = element_text(size = 12, colour = "black")) +
+  theme(legend.title = element_text(size = 13)) +
+  theme(legend.text = element_text(size = 12))
+
+
+dat_large_ES <-
+  dat %>% 
+  filter(ES_true > .3)
+
+dat_ES <-
+  dat_large_ES %>% 
+  select(d_emp, ES_true, H0, design, decision_crit)
+
+
+dat_ES_long <-
+  dat_ES %>% 
+  gather(ES, value = value, -H0, -design, -decision_crit)
+
+ggplot(data = dat_ES_long, aes(x = ES, y = value, color = factor(H0))) +
+  geom_hline(yintercept = .3, color = "red", lty = 2, size = 0.7) +
+  geom_boxplot(outlier.alpha = .5, outlier.size = .7) +
+  facet_grid(design ~ decision_crit) +
+  labs(x = "", y = "Effect size",
+       color = "Significance") +
+  scale_color_manual(breaks = c(1, 2), 
+                     values = c("darkblue", "darkgoldenrod1"),
+                     labels = c("false", "true")) +
+  scale_x_discrete(labels = c("Empirical \neffect size",
+                              "True \neffect size")) +
+  theme_bw() +
+  theme(strip.text.x = element_text(size = 12, 
+                                    colour = "black", face = "bold")) +
+  theme(strip.text.y = element_text(size = 12, 
+                                    colour = "black", face = "bold")) +
+  theme(strip.background = element_rect(fill = "white", color = "black")) +
+  theme(axis.title.x = element_text(size = 13)) +
+  theme(axis.title.y = element_text(size = 13)) +
+  theme(axis.text = element_text(size = 12, colour = "black")) +
+  theme(legend.title = element_text(size = 13)) +
+  theme(legend.text = element_text(size = 12))
+
+ggplot(data = dat) +
+  geom_density(aes(x = d_emp, fill = factor(H0)), 
+               position = "dodge", alpha = .4) +
+  geom_density(aes(x = ES_true, color = factor(H0)),
+                   position = "dodge", size = 0.7) +
+  facet_grid(design ~ decision_crit) +
+  geom_vline(xintercept = .3, color = "red", lty = 2, size = 0.7) +
+  labs(x = "Effect size", y = "Density",
+       fill = "Significance") +
+  scale_fill_manual(aes(x = d_emp),
+                    breaks = c(1, 2),
+                    values = c("darkblue", "darkgoldenrod1"),
+                    labels = c("false", "true")) +
+  scale_color_manual(aes(x = ES_true),
+                     breaks = c(1, 2),
+                     values = c("darkblue", "darkgoldenrod1"),
+                     labels = c("false", "true")) +
+  xlim(-.5, 1.5) +
+  theme_bw() +
+  theme(strip.text.x = element_text(size = 12, colour = "black", face = "bold")) +
+  theme(strip.text.y = element_text(size = 12, colour = "black", face = "bold")) +
+  theme(strip.background = element_rect(fill = "white", color = "black")) +
+  theme(axis.title.x = element_text(size = 13)) +
+  theme(axis.title.y = element_text(size = 13)) +
+  theme(axis.text = element_text(size = 12, colour = "black")) +
+  theme(legend.title = element_text(size = 13)) +
+  theme(legend.text = element_text(size = 12))
+
+
+ggplot(data = dat, aes(x = d_emp, fill = factor(H0))) +
+  geom_density(position = "dodge", alpha = .7) +
+  facet_grid(design ~ decision_crit) +
+  geom_vline(xintercept = .3, color = "red", lty = 2) +
+  labs(x = "Empirical effect size", y = "Density",
+       fill = "Significance") +
+  scale_fill_manual(breaks = c(1, 2),
+                    values = c("darkblue", "darkgoldenrod1"),
+                    labels = c("false", "true")) +
+  theme_bw() +
+  theme(strip.text.x = element_text(size = 12, colour = "black", face = "bold")) +
+  theme(strip.text.y = element_text(size = 12, colour = "black", face = "bold")) +
+  theme(strip.background = element_rect(fill = "white", color = "black")) +
+  theme(axis.title.x = element_text(size = 13)) +
+  theme(axis.title.y = element_text(size = 13)) +
+  theme(axis.text = element_text(size = 12, colour = "black")) +
+  theme(legend.title = element_text(size = 13)) +
+  theme(legend.text = element_text(size = 12))
+
+
+plot_data <-
+  dat %>% 
+  group_by(decision_crit, sampsize_approach, design) %>% 
+  summarize(mean_N = mean(nstage))
+
+false_neg <-
+  dat %>% 
+  group_by(decision_crit, sampsize_approach, design, H0) %>% 
+  filter(H0 == 1 & ES_true > .3) %>% 
+  summarize(N = n(),
+            percent = N/10000*100)
+
+true_pos <-
+  dat %>% 
+  group_by(decision_crit, sampsize_approach, design, H0) %>% 
+  filter(H0 == 2 & ES_true > .3) %>% 
+  summarize(N = n(),
+            percent = N/10000*100)
+
+plot_data$true_pos <- true_pos$percent
+plot_data$false_neg <- false_neg$percent
+
+
+ggplot(plot_data , aes(x = factor(design), y = factor(sampsize_approach))) +
+  geom_raster(aes(fill = mean_N), interpolate = F) +
+  scale_fill_gradient(low = "navy", high ="orange") +
+  facet_wrap(~ decision_crit) +
+  theme_classic()
+
+ggplot(plot_data , aes(x = factor(design), y = factor(sampsize_approach))) +
+  geom_raster(aes(fill = true_pos), interpolate = T) +
+  scale_fill_gradient(low="navy", high="orange") +
+  facet_wrap(~ decision_crit) +
+  theme_classic()
+
+ggplot(plot_data , aes(x = factor(design), y = factor(sampsize_approach))) +
+  geom_raster(aes(fill = false_neg), interpolate = FALSE) +
+  scale_fill_gradient(low="navy", high="orange") +
+  facet_wrap(~ decision_crit) +
+  theme_classic()
+

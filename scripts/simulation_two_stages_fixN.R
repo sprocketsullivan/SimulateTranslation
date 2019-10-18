@@ -19,12 +19,12 @@ library(gsDesign)
 
 #source additional functions
 source("./scripts/safeguard_function.R")
-#source("./scripts/functions_for_simulation_onesided.R")
-source("./scripts/functions_for_simulation_twosided.R")
+#source("./scripts/functions_for_simulation_twosided.R")
+source("./scripts/functions_for_simulation_onesided.R")
 
 
 # Step  1 Generate an effect size distribution
-#ES_true <- c(rbeta(100000,6,5),rbeta(100000,1,5))
+#ES_true <- c(rbeta(1000000, 5, 5),rbeta(1000000, 1, 5))
 ES_true <- c(rbeta(1000000, 1, 5))
 hist(ES_true)
 
@@ -76,17 +76,17 @@ df$rep_sample_size <- rep_sample_size
 #Decision to go on
 #this decision depends on an equivalence test with a bound of .3
 #only experiments replicated that include .3 in the CI around the ES measured
-# aa <- (unlist(map(exp_data_summary, "CI")))
-# select_experiments <- which(((apply(cbind(aa[seq(1, length(aa)-1, 2)],
-#                                           aa[seq(2, length(aa), 2)]),
-#                                     1, function(x) {min((x))} ) < -.3)))
+aa <- (unlist(map(exp_data_summary, "CI")))
+select_experiments <- which(((apply(cbind(aa[seq(1, length(aa)-1, 2)],
+                                          aa[seq(2, length(aa), 2)]),
+                                    1, function(x) {min((x))} ) < -.3)))
 
 
 #alternative: this decision depends on whether exploratory result is significant (p <= .05) or not
-bb <- (unlist(map(exp_data_summary, "p_value")))
-select_experiments <- which(((apply(cbind(bb[seq(1, length(bb)-1, 2)],
-                                              bb[seq(2, length(bb), 2)]),
-                                        1, function(x){min((x))}) < .05)))
+# bb <- (unlist(map(exp_data_summary, "p_value")))
+# select_experiments <- which(((apply(cbind(bb[seq(1, length(bb)-1, 2)],
+#                                               bb[seq(2, length(bb), 2)]),
+#                                         1, function(x){min((x))}) < .05)))
 
 length(select_experiments)
 df$effect[select_experiments]
@@ -128,7 +128,7 @@ rep_exp_no <- 0
 
 for(i in select_experiments) {
   
-  rep_exp_no <- rep_exp_no+1
+  rep_exp_no <- rep_exp_no + 1
   replication_data[[rep_exp_no]] <-
     generate_study(ES_true = current_ES[i],
                    sample_size = rep_sample_size[i])
@@ -164,7 +164,7 @@ ggplot(aes(y = d_emp, x = ES_true, col = p_value < .05),
   geom_point(alpha = 0.4)
 
 
-write.csv(res_summary_rep, file = "./data/sig_method1_fixN_twosided")
+write.csv(res_summary_rep, file = "./data/equiv_method1_fixN_onesided")
 
 
 

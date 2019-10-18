@@ -53,7 +53,7 @@ for(i in 1:n_exp)
 #C. Set a minimum detectable effect size. With this all experiments will have the same number of EU (3 as function parameter)
 rep_sample_size <- NULL
 for(i in 1:n_exp)
-  rep_sample_size[i] <-
+  rep_sample_size[i] <- 
   ceiling(calc_sample_size(study_summary = exp_data_summary[[i]],
                            study_data = exploratory_data[[i]],
                            method = 1))
@@ -177,6 +177,20 @@ for(exp_no in select_experiments) {
     
     next;
     
+  } else if (hit_upper1 == FALSE & t1$statistic < 0) {
+    
+    print(paste("stage 1 trial stopped for futility"))
+    
+    final_res[final_res_counter, ] <- c(rep_no = exp_no, ES_true = current_ES[exp_no], 
+                                        totalN = n, nstage = N1, beta,
+                                        d_emp = delta_emp, t_value = t1$statistic, p_value = t1$p.value, 
+                                        df = t1$parameter, stage, H0 = 1,
+                                        prev_pop, rep_attempts, false_omission_rate, true_selection_rate)
+    
+    final_res_counter <- final_res_counter + 1
+    
+    next;
+    
   } else {
     
     print(paste("continue to stage 2"))
@@ -208,6 +222,20 @@ for(exp_no in select_experiments) {
                                           totalN = n, nstage = N2, beta,
                                           d_emp = delta_emp, t_value = t2$statistic, p_value = t2$p.value,
                                           df = t2$parameter, stage, H0 = 2,
+                                          prev_pop, rep_attempts, false_omission_rate, true_selection_rate)
+      
+      final_res_counter <- final_res_counter + 1
+      
+      next;
+      
+    } else if (hit_upper2 == FALSE & t2$statistic < 0) {
+      
+      print(paste("stage 2 trial stopped for futility"))
+      
+      final_res[final_res_counter, ] <- c(rep_no = exp_no, ES_true = current_ES[exp_no], 
+                                          totalN = n, nstage = N2, beta,
+                                          d_emp = delta_emp, t_value = t2$statistic, p_value = t2$p.value, 
+                                          df = t2$parameter, stage, H0 = 1,
                                           prev_pop, rep_attempts, false_omission_rate, true_selection_rate)
       
       final_res_counter <- final_res_counter + 1
@@ -253,6 +281,20 @@ for(exp_no in select_experiments) {
         
         next;
         
+      } else if (hit_upper3 == FALSE & t3$statistic < 0) {
+        
+        print(paste("stage 3 trial stopped for futility"))
+        
+        final_res[final_res_counter, ] <- c(rep_no = exp_no, ES_true = current_ES[exp_no], 
+                                            totalN = n, nstage = N3, beta,
+                                            d_emp = delta_emp, t_value = t3$statistic, p_value = t3$p.value, 
+                                            df = t3$parameter, stage, H0 = 1,
+                                            prev_pop, rep_attempts, false_omission_rate, true_selection_rate)
+        
+        final_res_counter <- final_res_counter + 1
+        
+        next;
+        
       } else {
         
         print(paste("trial terminated without success"))
@@ -260,7 +302,7 @@ for(exp_no in select_experiments) {
         final_res[final_res_counter, ] <- c(rep_no = exp_no, ES_true = current_ES[exp_no],
                                             totalN = n, nstage = N3, beta,
                                             d_emp = delta_emp, t_value = t3$statistic, p_value = t3$p.value,
-                                            df = t3$parameter, stage, H0 = 1,
+                                            df = t3$parameter, stage, H0 = 0,
                                             prev_pop, rep_attempts, false_omission_rate, true_selection_rate)
         
         final_res_counter <- final_res_counter + 1
@@ -280,4 +322,4 @@ final <-
   final %>% 
   filter(totalN != "NA")
 
-write.csv(final, file = "./data/sig_method1_seq_onesided")
+write.csv(final, file = "./data/sig_method1_seq_onesided_futility")
