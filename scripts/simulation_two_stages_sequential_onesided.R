@@ -32,6 +32,8 @@ prev_pop <- round(sum(ES_true > 0.3)/1000000, 2)
 n_exp <- 10000
 current_ES <- sample(ES_true, n_exp)
 hist(current_ES)
+all_positives <- sum(current_ES > .3)
+all_negatives <- n_exp - all_positives
 
 #conduct intial study
 exploratory_data <- list()
@@ -73,18 +75,19 @@ df$rep_sample_size <- rep_sample_size
 ### decision to go on
 ### this decision depends on an equivalence test with a bound of .3
 ### only experiments replicated that include .3 in the CI around the ES measured
-# aa <- (unlist(map(exp_data_summary, "CI")))
-# select_experiments <- which(((apply(cbind(aa[seq(1, length(aa)-1, 2)],
-#                                           aa[seq(2, length(aa), 2)]),
-#                                     1, function(x){min((x))}) < -.3)))
+aa <- (unlist(map(exp_data_summary, "CI")))
+select_experiments <- which(((apply(cbind(aa[seq(1, length(aa)-1, 2)],
+                                          aa[seq(2, length(aa), 2)]),
+                                    1, function(x){min((x))}) < -.3)))
 
 
 ### alternative: 
 ### this decision depends on whether exploratory result is significant (p <= .05) or not
-bb <- (unlist(map(exp_data_summary, "p_value")))
-select_experiments <- which(((apply(cbind(bb[seq(1, length(bb)-1, 2)],
-                                              bb[seq(2, length(bb), 2)]),
-                                        1, function(x){min((x))}) < .05)))
+# bb <- (unlist(map(exp_data_summary, "p_value")))
+# select_experiments <- which(((apply(cbind(bb[seq(1, length(bb)-1, 2)],
+#                                               bb[seq(2, length(bb), 2)]),
+#                                         1, function(x){min((x))}) < .05)))
+
 
 length(select_experiments)
 df$effect[select_experiments]
@@ -94,23 +97,27 @@ select_experiments <- select_experiments[df$effect[select_experiments] > 0]
 
 rep_attempts <- length(select_experiments)
 
-false_omission_rate <-
-  sum(current_ES[-select_experiments] > .3)/
-  length(current_ES[-select_experiments])
-hist(current_ES[-select_experiments])
+SESOI_selected <- sum(current_ES[select_experiments] > .3)
 
-true_selection_rate <-
-  sum(current_ES[select_experiments] > .3)/
-  length(current_ES[select_experiments])
-hist(current_ES[select_experiments])
+SESOI_not_selected <- sum(current_ES[-select_experiments] > .3)
 
-sum(df$effect[select_experiments] > .3)/
-  length(df$effect[select_experiments])
-hist(df$effect[select_experiments])
+# false_omission_rate <-
+#   sum(current_ES[-select_experiments] > .3)/
+#   length(current_ES[-select_experiments])
+# hist(current_ES[-select_experiments])
 
-sum(df$effect[-select_experiments] > .3)/
-  length(df$effect[-select_experiments])
-hist(df$effect[-select_experiments])
+# true_selection_rate <-
+#   sum(current_ES[select_experiments] > .3)/
+#   length(current_ES[select_experiments])
+# hist(current_ES[select_experiments])
+
+# sum(df$effect[select_experiments] > .3)/
+#   length(df$effect[select_experiments])
+# hist(df$effect[select_experiments])
+
+# sum(df$effect[-select_experiments] > .3)/
+#   length(df$effect[-select_experiments])
+# hist(df$effect[-select_experiments])
 
 hist(rep_sample_size[select_experiments], breaks = 50)
 
@@ -126,7 +133,7 @@ final_res <- matrix(NA, nrow = 100000,
                     ncol = 15,
                     dimnames = list(NULL, c("rep_no", "ES_true", "totalN", "nstage", "beta", "d_emp", 
                                             "t_value", "p_value", "df", "stage", "H0", "prev_pop",
-                                            "rep_attempts", "false_omission_rate", "true_selection_rate")))
+                                            "rep_attempts", "all_positives", "all_negatives")))
 
 
 final_res_counter <- 1
@@ -171,7 +178,7 @@ for(exp_no in select_experiments) {
                                         totalN = n, nstage = N1, beta,
                                         d_emp = delta_emp, t_value = t1$statistic, p_value = t1$p.value, 
                                         df = t1$parameter, stage, H0 = 2,
-                                        prev_pop, rep_attempts, false_omission_rate, true_selection_rate)
+                                        prev_pop, rep_attempts, all_positives, all_negatives)
     
     final_res_counter <- final_res_counter + 1 
     
@@ -185,7 +192,7 @@ for(exp_no in select_experiments) {
                                         totalN = n, nstage = N1, beta,
                                         d_emp = delta_emp, t_value = t1$statistic, p_value = t1$p.value,
                                         df = t1$parameter, stage, H0 = 0,
-                                        prev_pop, rep_attempts, false_omission_rate, true_selection_rate)
+                                        prev_pop, rep_attempts, all_positives, all_negatives)
     
     final_res_counter <- final_res_counter + 1
     
@@ -208,7 +215,7 @@ for(exp_no in select_experiments) {
                                           totalN = n, nstage = N2, beta,
                                           d_emp = delta_emp, t_value = t2$statistic, p_value = t2$p.value,
                                           df = t2$parameter, stage, H0 = 2,
-                                          prev_pop, rep_attempts, false_omission_rate, true_selection_rate)
+                                          prev_pop, rep_attempts, all_positives, all_negatives)
       
       final_res_counter <- final_res_counter + 1
       
@@ -222,7 +229,7 @@ for(exp_no in select_experiments) {
                                           totalN = n, nstage = N2, beta,
                                           d_emp = delta_emp, t_value = t2$statistic, p_value = t2$p.value,
                                           df = t2$parameter, stage, H0 = 0,
-                                          prev_pop, rep_attempts, false_omission_rate, true_selection_rate)
+                                          prev_pop, rep_attempts, all_positives, all_negatives)
       
       final_res_counter <- final_res_counter + 1
       
@@ -247,7 +254,7 @@ for(exp_no in select_experiments) {
                                             totalN = n, nstage = N3, beta,
                                             d_emp = delta_emp, t_value = t3$statistic, p_value = t3$p.value,
                                             df = t3$parameter, stage, H0 = 2,
-                                            prev_pop, rep_attempts, false_omission_rate, true_selection_rate)
+                                            prev_pop, rep_attempts, all_positives, all_negatives)
         
         final_res_counter <- final_res_counter + 1
         
@@ -261,7 +268,7 @@ for(exp_no in select_experiments) {
                                             totalN = n, nstage = N3, beta,
                                             d_emp = delta_emp, t_value = t3$statistic, p_value = t3$p.value,
                                             df = t3$parameter, stage, H0 = 1,
-                                            prev_pop, rep_attempts, false_omission_rate, true_selection_rate)
+                                            prev_pop, rep_attempts, all_positives, all_negatives)
         
         final_res_counter <- final_res_counter + 1
         
@@ -280,4 +287,4 @@ final <-
   final %>% 
   filter(totalN != "NA")
 
-write.csv(final, file = "./data/sig_method1_seq_onesided")
+write.csv(final, file = "./data/equiv_method1_seq_onesided")

@@ -33,7 +33,8 @@ prev_pop <- round(sum(ES_true > 0.3)/1000000, 2)
 n_exp <- 10000
 current_ES <- sample(ES_true, n_exp)
 hist(current_ES)
-sum(current_ES > 0.3)
+all_positives <- sum(current_ES > .3)
+all_negatives <- n_exp - all_positives
 
 #conduct intial study
 exploratory_data <- list()
@@ -59,7 +60,7 @@ for(i in 1:n_exp)
   rep_sample_size[i] <- 
   ceiling(calc_sample_size(study_summary = exp_data_summary[[i]],
                            study_data = exploratory_data[[i]],
-                           method = 1))
+                           method = 3))
 rep_sample_size
 mean(rep_sample_size)
 
@@ -76,17 +77,17 @@ df$rep_sample_size <- rep_sample_size
 #Decision to go on
 #this decision depends on an equivalence test with a bound of .3
 #only experiments replicated that include .3 in the CI around the ES measured
-aa <- (unlist(map(exp_data_summary, "CI")))
-select_experiments <- which(((apply(cbind(aa[seq(1, length(aa)-1, 2)],
-                                          aa[seq(2, length(aa), 2)]),
-                                    1, function(x) {min((x))} ) < -.3)))
+# aa <- (unlist(map(exp_data_summary, "CI")))
+# select_experiments <- which(((apply(cbind(aa[seq(1, length(aa)-1, 2)],
+#                                           aa[seq(2, length(aa), 2)]),
+#                                     1, function(x) {min((x))} ) < -.3)))
 
 
 #alternative: this decision depends on whether exploratory result is significant (p <= .05) or not
-# bb <- (unlist(map(exp_data_summary, "p_value")))
-# select_experiments <- which(((apply(cbind(bb[seq(1, length(bb)-1, 2)],
-#                                               bb[seq(2, length(bb), 2)]),
-#                                         1, function(x){min((x))}) < .05)))
+bb <- (unlist(map(exp_data_summary, "p_value")))
+select_experiments <- which(((apply(cbind(bb[seq(1, length(bb)-1, 2)],
+                                              bb[seq(2, length(bb), 2)]),
+                                        1, function(x){min((x))}) < .05)))
 
 length(select_experiments)
 df$effect[select_experiments]
@@ -96,23 +97,27 @@ select_experiments <- select_experiments[df$effect[select_experiments] > 0]
 
 rep_attempts <- length(select_experiments)
 
-false_omission_rate <-
-sum(current_ES[-select_experiments] > .3)/
-  length(current_ES[-select_experiments])
-hist(current_ES[-select_experiments])
+SESOI_selected <- sum(current_ES[select_experiments] > .3)
 
-true_selection_rate <-
-sum(current_ES[select_experiments] > .3)/
-  length(current_ES[select_experiments])
-hist(current_ES[select_experiments])
+SESOI_not_selected <- sum(current_ES[-select_experiments] > .3)
 
-sum(df$effect[select_experiments] > .3)/
-  length(df$effect[select_experiments])
-hist(df$effect[select_experiments])
-
-sum(df$effect[-select_experiments] > .3)/
-  length(df$effect[-select_experiments])
-hist(df$effect[-select_experiments])
+# false_omission_rate <-
+# sum(current_ES[-select_experiments] > .3)/
+#   length(current_ES[-select_experiments])
+# hist(current_ES[-select_experiments])
+# 
+# true_selection_rate <-
+# sum(current_ES[select_experiments] > .3)/
+#   length(current_ES[select_experiments])
+# hist(current_ES[select_experiments])
+# 
+# sum(df$effect[select_experiments] > .3)/
+#   length(df$effect[select_experiments])
+# hist(df$effect[select_experiments])
+# 
+# sum(df$effect[-select_experiments] > .3)/
+#   length(df$effect[-select_experiments])
+# hist(df$effect[-select_experiments])
 
 hist(rep_sample_size[select_experiments])
 
@@ -157,32 +162,12 @@ res_summary_rep <-
   res_summary_rep %>% 
   mutate(d_emp = mean_treatment - mean_control,
          prev_pop, rep_attempts, 
-         false_omission_rate, true_selection_rate)
+         all_positives, all_negatives)
 
 ggplot(aes(y = d_emp, x = ES_true, col = p_value < .05),
        data = res_summary_rep) +
   geom_point(alpha = 0.4)
 
 
-write.csv(res_summary_rep, file = "./data/equiv_method1_fixN_onesided")
-
-
-
-success <-
-  res_summary_rep %>% 
-  filter(p_value < .05)
-
-nrow(success)/nrow(res_summary_rep)
-sum(success$d_emp > .3)/nrow(success)
-hist(success$d_emp, breaks = 50)
-
-no_sig <-
-  res_summary_rep %>% 
-  filter(p_value > .05)
-
-nrow(no_sig)/nrow(res_summary_rep)
-sum(no_sig$d_emp > .3)/nrow(no_sig)
-hist(no_sig$d_emp, breaks = 50)
-
-
+write.csv(res_summary_rep, file = "./data/sig_method3_fixN_onesided")
 

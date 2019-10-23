@@ -1,7 +1,7 @@
 setwd("~/Documents/QUEST/PhD/R/SimulateTranslation")
 
 
-source("./scripts/calculating_outcomes_onesided.R")
+source("./scripts/calculate_outcomes_onesided_across_trajectory.R")
 
 plot1 <- 
   ggplot(outcomes, aes(x = factor(design), y = factor(sampsize_approach))) +
@@ -10,8 +10,6 @@ plot1 <-
   #                      mid = "white", midpoint = 100) +
   labs(x = "Design", y = "Sample size calculation",
        fill = "Mean # of \nanimals needed") +
-  scale_x_discrete(labels = c("Fixed-N \ndesign",
-                              "Sequential \ndesign")) +
   scale_y_discrete(labels = c("Safeguard", "Standard", "SESOI")) +
   facet_wrap(~ decision_crit) +
   theme_classic() +
@@ -34,8 +32,6 @@ plot2 <-
   #                      mid = "white", midpoint = 40) +
   labs(x = "Design", y = "Approach to determine \nsample size",
        fill = "False negative \nrate") +
-  scale_x_discrete(labels = c("Fixed-N \ndesign",
-                              "Sequential \ndesign")) +
   scale_y_discrete(labels = c("Safeguard", "Standard", "SESOI")) +
   facet_wrap(~ decision_crit) +
   theme_classic() +
@@ -54,13 +50,14 @@ plot2 <-
 
 plot3 <- 
   ggplot(outcomes, aes(x = factor(design), y = factor(sampsize_approach))) +
-  geom_raster(aes(fill = PPV_sample_prev), interpolate = F) +
+  geom_raster(aes(fill = PPV_pop_prev), interpolate = F) +
   # scale_fill_gradient2(low = "navy", high = "darkgoldenrod1", 
   #                      mid = "white", midpoint = 45) +
   labs(x = "Design", y = "Sample size calculation",
        fill = "Positive predictive \nvalue") +
-  scale_x_discrete(labels = c("Fixed-N \ndesign",
-                              "Sequential \ndesign")) +
+  scale_x_discrete(labels = c("Fixed-N",
+                              "Sequential",
+                              "Sequential \nw/ futility")) +
   scale_y_discrete(labels = c("Safeguard", "Standard", "SESOI")) +
   facet_wrap(~ decision_crit) +
   theme_classic() +
@@ -85,11 +82,11 @@ final_plot <-
             heights = c(1, .9, 1.05),
             legend = "right")
 
-ggsave("./plots/final_plot.png")
+ggsave("./plots/final_plot_across_trajectory.png")
 
 
 
-source("./scripts/calculating_outcomes_onesided_high_prestudy_odds.R")
+source("./scripts/calculate_outcomes_onesided_second_stage.R")
 
 plot1 <- 
   ggplot(outcomes, aes(x = factor(design), y = factor(sampsize_approach))) +
@@ -98,8 +95,6 @@ plot1 <-
   #                      mid = "white", midpoint = 100) +
   labs(x = "Design", y = "Sample size calculation",
        fill = "Mean # of \nanimals needed") +
-  scale_x_discrete(labels = c("Fixed-N \ndesign",
-                              "Sequential \ndesign")) +
   scale_y_discrete(labels = c("Safeguard", "Standard", "SESOI")) +
   facet_wrap(~ decision_crit) +
   theme_classic() +
@@ -122,8 +117,6 @@ plot2 <-
   #                      mid = "white", midpoint = 40) +
   labs(x = "Design", y = "Approach to determine \nsample size",
        fill = "False negative \nrate") +
-  scale_x_discrete(labels = c("Fixed-N \ndesign",
-                              "Sequential \ndesign")) +
   scale_y_discrete(labels = c("Safeguard", "Standard", "SESOI")) +
   facet_wrap(~ decision_crit) +
   theme_classic() +
@@ -142,13 +135,14 @@ plot2 <-
 
 plot3 <- 
   ggplot(outcomes, aes(x = factor(design), y = factor(sampsize_approach))) +
-  geom_raster(aes(fill = PPV_sample_prev), interpolate = F) +
+  geom_raster(aes(fill = PPV_pop_prev), interpolate = F) +
   # scale_fill_gradient2(low = "navy", high = "darkgoldenrod1", 
   #                      mid = "white", midpoint = 45) +
   labs(x = "Design", y = "Sample size calculation",
        fill = "Positive predictive \nvalue") +
-  scale_x_discrete(labels = c("Fixed-N \ndesign",
-                              "Sequential \ndesign")) +
+  scale_x_discrete(labels = c("Fixed-N",
+                              "Sequential",
+                              "Sequential \nw/ futility")) +
   scale_y_discrete(labels = c("Safeguard", "Standard", "SESOI")) +
   facet_wrap(~ decision_crit) +
   theme_classic() +
@@ -173,6 +167,6 @@ final_plot <-
             heights = c(1, .9, 1.05),
             legend = "right")
 
-ggsave("./plots/final_plot_high_prestudy_odds.png")
+ggsave("./plots/final_plot_second_stage.png")
 
 
