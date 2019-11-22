@@ -15,6 +15,8 @@ rm(list = ls())
 
 library(pwr)
 library(gsDesign)
+library(future)
+library(furrr)
 
 
 #source additional functions
@@ -29,6 +31,7 @@ ES_true <- c(rbeta(1000000, 1, 5))
 hist(ES_true)
 
 #how many hypothesis over .3 threshold
+es_tresh<-
 prev_pop <- round(sum(ES_true > 0.3)/1000000, 2)
 n_exp <- 10000
 current_ES <- sample(ES_true, n_exp)
@@ -42,14 +45,12 @@ for(i in 1:n_exp)
   exploratory_data[[i]] <- 
   generate_study(current_ES[i])
 
-
 #the confidence interval generated here is used in the equivalence test
+# exp_data_summary<-lapply(exploratory_data,get_summary_study,confidence=.8)
+#this speeds it up from 45 to 22 seconds depending on number of cores
 exp_data_summary <- list()
-for(i in 1:n_exp)
-  exp_data_summary[[i]] <- 
-  get_summary_study(study_data = exploratory_data[[i]], 
-                    confidence = .8)
-
+plan(multiprocess)
+exp_data_summary<-future_map(exploratory_data,get_summary_study,confidence=.8)
 
 #now estimate sample size
 #A. Safeguard (1 in function)
@@ -60,7 +61,7 @@ for(i in 1:n_exp)
   rep_sample_size[i] <- 
   ceiling(calc_sample_size(study_summary = exp_data_summary[[i]],
                            study_data = exploratory_data[[i]],
-                           method = 3))
+                           method = 2))
 rep_sample_size
 mean(rep_sample_size)
 

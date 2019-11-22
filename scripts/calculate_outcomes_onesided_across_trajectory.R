@@ -1,4 +1,4 @@
-setwd("~/Documents/QUEST/PhD/R/SimulateTranslation/data")
+#setwd("~/Documents/QUEST/PhD/R/SimulateTranslation/data")
 
 rm(list = ls())
 
@@ -9,13 +9,13 @@ library(ggridges)
 
 ### read in data sets from the different trajectories 
 ### using sequential design with futility criterion in confirmatory study
-final_1_ft <- read.csv(file = "equiv_method1_seq_onesided_futility")
-final_2_ft <- read.csv(file = "equiv_method2_seq_onesided_futility")
-final_3_ft <- read.csv(file = "equiv_method3_seq_onesided_futility")
+final_1_ft <- read.csv(file = "./data/equiv_method1_seq_onesided_futility")
+final_2_ft <- read.csv(file = "./data/equiv_method2_seq_onesided_futility")
+final_3_ft <- read.csv(file = "./data/equiv_method3_seq_onesided_futility")
 
-final_4_ft <- read.csv(file = "sig_method1_seq_onesided_futility")
-final_5_ft <- read.csv(file = "sig_method2_seq_onesided_futility")
-final_6_ft <- read.csv(file = "sig_method3_seq_onesided_futility")
+final_4_ft <- read.csv(file = "./data/sig_method1_seq_onesided_futility")
+final_5_ft <- read.csv(file = "./data/sig_method2_seq_onesided_futility")
+final_6_ft <- read.csv(file = "./data/sig_method3_seq_onesided_futility")
 
 
 ### create one data frame containing all data
@@ -49,13 +49,13 @@ datseq_futility <-
 
 ### read in data sets from the different trajectories 
 ### using sequential design with futility criterion in confirmatory study
-final_1 <- read.csv(file = "equiv_method1_seq_onesided")
-final_2 <- read.csv(file = "equiv_method2_seq_onesided")
-final_3 <- read.csv(file = "equiv_method3_seq_onesided")
+final_1 <- read.csv(file = "./data/equiv_method1_seq_onesided")
+final_2 <- read.csv(file = "./data/equiv_method2_seq_onesided")
+final_3 <- read.csv(file = "./data/equiv_method3_seq_onesided")
 
-final_4 <- read.csv(file = "sig_method1_seq_onesided")
-final_5 <- read.csv(file = "sig_method2_seq_onesided")
-final_6 <- read.csv(file = "sig_method3_seq_onesided")
+final_4 <- read.csv(file = "./data/sig_method1_seq_onesided")
+final_5 <- read.csv(file = "./data/sig_method2_seq_onesided")
+final_6 <- read.csv(file = "./data/sig_method3_seq_onesided")
 
 
 ### create one data frame containing all data
@@ -89,13 +89,13 @@ datseq <-
 
 ### read in data sets from the different trajectories 
 ### using fixed-N design in confirmatory study
-final_fix1 <- read.csv(file = "equiv_method1_fixN_onesided")
-final_fix2 <- read.csv(file = "equiv_method2_fixN_onesided")
-final_fix3 <- read.csv(file = "equiv_method3_fixN_onesided")
+final_fix1 <- read.csv(file = "./data/equiv_method1_fixN_onesided")
+final_fix2 <- read.csv(file = "./data/equiv_method2_fixN_onesided")
+final_fix3 <- read.csv(file = "./data/equiv_method3_fixN_onesided")
 
-final_fix4 <- read.csv(file = "sig_method1_fixN_onesided")
-final_fix5 <- read.csv(file = "sig_method2_fixN_onesided")
-final_fix6 <- read.csv(file = "sig_method3_fixN_onesided")
+final_fix4 <- read.csv(file = "./data/sig_method1_fixN_onesided")
+final_fix5 <- read.csv(file = "./data/sig_method2_fixN_onesided")
+final_fix6 <- read.csv(file = "./data/sig_method3_fixN_onesided")
 
 
 ### create one data frame containing all data
@@ -224,7 +224,7 @@ outcomes$median_d_emp <- median_d_emp$median_d_emp
 outcomes$median_d_emp_success <- median_d_emp_success$median_d_emp
 outcomes$median_ES_true <- median_ES_true$median_ES_true
 
-write.csv(outcomes, file = "./final_outcomes_SESOI_0.3_across_trajectory")
+write.csv(outcomes, file = "./data/final_outcomes_SESOI_0.3_across_trajectory")
 
 outcomes$design <- as.factor(outcomes$design)
 levels(outcomes$design)
@@ -235,4 +235,4 @@ outcomes$decision_crit <- as.factor(outcomes$decision_crit)
 levels(outcomes$decision_crit)
 levels(outcomes$decision_crit) <- c("Equivalence", "Significance")
 
-setwd("~/Documents/QUEST/PhD/R/SimulateTranslation")
+#setwd("~/Documents/QUEST/PhD/R/SimulateTranslation")

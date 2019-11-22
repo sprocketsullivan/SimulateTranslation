@@ -81,7 +81,7 @@ final_plot <-
             align = "v",
             heights = c(1, .9, 1.05),
             legend = "right")
-
+final_plot
 ggsave("./plots/final_plot_across_trajectory.png")
 
 

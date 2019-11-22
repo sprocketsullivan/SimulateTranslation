@@ -64,14 +64,14 @@ calc_sample_size <- function(study_summary, study_data, max_sample_size = 200,
                              alpha = .05, power = .8, method = 2) {
   aa<-study_summary
   
-  sg_sample <- safeguard.d(d = (aa$mean_effect[2] - aa$mean_effect[1]),
-                       n.1 = 10, n.2 = 10,
-                       sig.level = .05, power = .8, conf = 0.8) #safeguard
-  if (method == 1) {
-    if (as.numeric(sg_sample[2])/2 > max_sample_size | as.numeric(sg_sample[1] < 0)) 
-      return(max_sample_size) 
-    else return(as.numeric(sg_sample[2])/2)
-  }
+  # sg_sample <- safeguard.d(d = (aa$mean_effect[2] - aa$mean_effect[1]),
+  #                      n.1 = 10, n.2 = 10,
+  #                      sig.level = .05, power = .8, conf = 0.8) #safeguard
+  # if (method == 1) {
+  #   if (as.numeric(sg_sample[2])/2 > max_sample_size | as.numeric(sg_sample[1] < 0)) 
+  #     return(max_sample_size) 
+  #   else return(as.numeric(sg_sample[2])/2)
+  # }
   if (method == 2) es_measured <- abs(aa$mean_effect[2] - aa$mean_effect[1]) #take initial study main effect
   if (method == 3) es_measured <- .3 #fixed effect size for all experiments
   sample_size <- nrow(study_data)/2
