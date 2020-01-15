@@ -6,7 +6,6 @@ library(tidyverse)
 library(ggpubr)
 library(ggridges)
 
-
 ### read in data sets from the different trajectories 
 ### using sequential design with futility criterion in confirmatory study
 final_1_ft <- read.csv(file = "equiv_method1_seq_onesided_futility")
@@ -31,8 +30,6 @@ final$sampsize_approach <- c(rep(1, nrow(final_1_ft)), rep(2, nrow(final_2_ft)),
 
 ### add column that codes design applied in confirmatory study
 final$design <- rep("sequential_futility")
-
-#write.csv(final, file = "sequential_onesided_futility")
 
 ### exclude all cases that do not have either a significant or futile outcome
 ### select columns relevant for plotting
@@ -144,25 +141,29 @@ small_ES_true <-
 
 true_positives <-
   dat %>%
-  group_by(decision_crit, sampsize_approach, design, H0, all_positives, all_negatives) %>%
+  group_by(decision_crit, sampsize_approach, design, H0, 
+           all_positives, all_negatives, rep_attempts) %>%
   filter(H0 == 2 & ES_true > .3) %>%
   summarize(true_pos = n())
 
 false_negatives <-
   dat %>%
-  group_by(decision_crit, sampsize_approach, design, H0, all_positives, all_negatives) %>%
+  group_by(decision_crit, sampsize_approach, design, H0,
+           all_positives, all_negatives, rep_attempts) %>%
   filter(H0 == 1 & ES_true > .3) %>%
   summarize(false_neg = n())
 
 true_negatives <-
   dat %>%
-  group_by(decision_crit, sampsize_approach, design, H0, all_positives, all_negatives) %>%
+  group_by(decision_crit, sampsize_approach, design, H0,
+           all_positives, all_negatives, rep_attempts) %>%
   filter(H0 == 1 & ES_true < .3) %>%
   summarize(true_neg = n())
 
 false_positives <-
   dat %>%
-  group_by(decision_crit, sampsize_approach, design, H0, all_positives, all_negatives) %>%
+  group_by(decision_crit, sampsize_approach, design, H0,
+           all_positives, all_negatives, rep_attempts) %>%
   filter(H0 == 2 & ES_true < .3) %>%
   summarize(false_pos = n())
 
@@ -208,11 +209,11 @@ median_d_emp <-
   group_by(decision_crit, sampsize_approach, design) %>% 
   summarize(median_d_emp = median(d_emp))
 
-median_d_emp_success <-
-  dat %>% 
-  group_by(decision_crit, sampsize_approach, design) %>% 
-  filter(H0 == 2) %>% 
-  summarize(median_d_emp = median(d_emp))
+# median_d_emp_success <-
+#   dat %>% 
+#   group_by(decision_crit, sampsize_approach, design) %>% 
+#   filter(H0 == 2) %>% 
+#   summarize(median_d_emp = median(d_emp))
 
 median_ES_true <-
   dat %>% 
@@ -221,15 +222,15 @@ median_ES_true <-
 
 outcomes$mean_N <- animal_numbers$mean_N
 outcomes$median_d_emp <- median_d_emp$median_d_emp
-outcomes$median_d_emp_success <- median_d_emp_success$median_d_emp
+#outcomes$median_d_emp_success <- median_d_emp_success$median_d_emp
 outcomes$median_ES_true <- median_ES_true$median_ES_true
 
-write.csv(outcomes, file = "./final_outcomes_SESOI_0.3_across_trajectory")
+#write.csv(outcomes, file = "./final_outcomes_SESOI_0.3_across_trajectory")
 
-outcomes$design <- as.factor(outcomes$design)
-levels(outcomes$design)
-levels(outcomes$design) <- c("Fixed-N \ndesign", "Group sequential \ndesign", 
-                             "Group sequential \ndesign with futility bound")
+# outcomes$design <- as.factor(outcomes$design)
+# levels(outcomes$design)
+# levels(outcomes$design) <- c("Fixed-N \ndesign", "Group sequential \ndesign", 
+#                              "Group sequential \ndesign with futility bound")
 
 outcomes$decision_crit <- as.factor(outcomes$decision_crit)
 levels(outcomes$decision_crit)

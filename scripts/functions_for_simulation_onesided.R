@@ -72,6 +72,7 @@ calc_sample_size <- function(study_summary, study_data, max_sample_size = 200,
       return(max_sample_size) 
     else return(as.numeric(sg_sample[2])/2)
   }
+  
   if (method == 2) es_measured <- abs(aa$mean_effect[2] - aa$mean_effect[1]) #take initial study main effect
   if (method == 3) es_measured <- .3 #fixed effect size for all experiments
   sample_size <- nrow(study_data)/2

@@ -25,7 +25,7 @@ library(coda)
 
 #source additional functions
 source("./scripts/safeguard_function.R")
-source("./scripts/functions_for_simulation_twosided.R")
+source("./scripts/functions_for_simulation_onesided.R")
 
 
 # Step  1 Generate an effect size distribution
@@ -35,9 +35,11 @@ hist(ES_true)
 
 #how many hypothesis over .3 threshold
 prev_pop <- round(sum(ES_true > 0.3)/1000000, 2)
-n_exp <- 500
+n_exp <- 1000
 current_ES <- sample(ES_true, n_exp)
 hist(current_ES)
+all_positives <- sum(current_ES > .3)
+all_negatives <- n_exp - all_positives
 
 #conduct intial study
 exploratory_data <- list()
@@ -76,73 +78,85 @@ df <- data.frame(control = ff[ , 1], treatment = ff[ , 2])
 df$effect <- (df$treatment - df$control)
 df$rep_sample_size <- rep_sample_size
 
-#Decision to go on
-#this decision depends on an equivalence test with a bound of .3
-#only experiments replicated that include .3 in the CI around the ES measured
-# aa <- (unlist(map(exp_data_summary, "CI")))
-# select_experiments <- which(((apply(cbind(aa[seq(1, length(aa)-1, 2)],
-#                                           aa[seq(2, length(aa), 2)]),
-#                                     1, function(x){min((x))}) < -.3)))
+### decision to go on
+### this decision depends on an equivalence test with a bound of .3
+### only experiments replicated that include .3 in the CI around the ES measured
+aa <- (unlist(map(exp_data_summary, "CI")))
+select_experiments <- which(((apply(cbind(aa[seq(1, length(aa)-1, 2)],
+                                          aa[seq(2, length(aa), 2)]),
+                                    1, function(x){min((x))}) < -.3)))
 
 
-#alternative: this decision depends on whether exploratory result is significant (p <= .05) or not
-bb <- (unlist(map(exp_data_summary, "p_value")))
-select_experiments <- which(((apply(cbind(bb[seq(1, length(bb)-1, 2)],
-                                          bb[seq(2, length(bb), 2)]),
-                                    1, function(x){min((x))}) < .05)))
+### alternative: 
+### this decision depends on whether exploratory result is significant (p <= .05) or not
+# bb <- (unlist(map(exp_data_summary, "p_value")))
+# select_experiments <- which(((apply(cbind(bb[seq(1, length(bb)-1, 2)],
+#                                               bb[seq(2, length(bb), 2)]),
+#                                         1, function(x){min((x))}) < .05)))
 
 length(select_experiments)
 df$effect[select_experiments]
+
 
 ### remove experiments that have ES < 0
 select_experiments <- select_experiments[df$effect[select_experiments] > 0]
 
 rep_attempts <- length(select_experiments)
 
-false_omission_rate <-
-  sum(current_ES[-select_experiments] > .3)/
-  length(current_ES[-select_experiments])
-hist(current_ES[-select_experiments])
+SESOI_selected <- sum(current_ES[select_experiments] > .3)
 
-true_selection_rate <-
-  sum(current_ES[select_experiments] > .3)/
-  length(current_ES[select_experiments])
-hist(current_ES[select_experiments])
+SESOI_not_selected <- sum(current_ES[-select_experiments] > .3)
 
-sum(df$effect[select_experiments] > .3)/
-  length(df$effect[select_experiments])
-hist(df$effect[select_experiments])
+# false_omission_rate <-
+#   sum(current_ES[-select_experiments] > .3)/
+#   length(current_ES[-select_experiments])
+# hist(current_ES[-select_experiments])
+# 
+# true_selection_rate <-
+#   sum(current_ES[select_experiments] > .3)/
+#   length(current_ES[select_experiments])
+# hist(current_ES[select_experiments])
+# 
+# sum(df$effect[select_experiments] > .3)/
+#   length(df$effect[select_experiments])
+# hist(df$effect[select_experiments])
+# 
+# sum(df$effect[-select_experiments] > .3)/
+#   length(df$effect[-select_experiments])
+# hist(df$effect[-select_experiments])
 
-sum(df$effect[-select_experiments] > .3)/
-  length(df$effect[-select_experiments])
-hist(df$effect[-select_experiments])
+hist(rep_sample_size[select_experiments], breaks = 50)
 
-hist(rep_sample_size[select_experiments])
-
-#conduct replication experiments
-#A. fixed sample size >> separate script
-#B. Sequential with interim analysis
-#C. Sequential with BF >> separate script
+### conduct replication experiments
+### A. fixed sample size >> separate script
+### B. Sequential with interim analysis
+### C. Sequential with BF >> separate script
 
 
-### B GROUP SEQUENTIAL DESIGN WITH 3 INTERIM ANALYSES 
+### C GROUP SEQUENTIAL DESIGN WITH 3 INTERIM ANALYSES BAYES FACTOR
+
 
 final_res <- matrix(NA, nrow = 100000,
-                    ncol = 9,
-                    dimnames = list(NULL, c("rep_no", "ES_true", "totalN", "nstage", "beta", 
-                                            "d_emp", "BF", "stage", "H0")))
+                    ncol = 15,
+                    dimnames = list(NULL, c("rep_no", "ES_true", "totalN", "nstage", "beta", "d_emp",
+                                            "t_value", "p_value", "BF", "stage", "H0", "prev_pop",
+                                            "rep_attempts", "all_positives", "all_negatives")))
+
 
 final_res_counter <- 1
 
 
-### determine bounds and critical values of the sequential design >> asymmetric upper and lower bounds
-# gs_design <- gsDesign::gsDesign(k = 3, test.type = 5, alpha = 0.025, beta = .2,
-#                                 delta = .5, n.fix = 1, timing = 1,
-#                                 sfu = sfHSD, sfupar = -4,
-#                                 sfl = sfHSD, sflpar = -6)
-# 
-# plot(gs_design)
-# plot(gs_design, plottype = 5)
+### determine bounds and critical values of the sequential design
+### one-sided test
+### stop for futility if empirical ES < 0
+gs_design <- gsDesign::gsDesign(k = 3, test.type = 1, alpha = 0.05, beta = .2,
+                                delta = .1, n.fix = 1, timing = 1,
+                                sfu = sfHSD, sfupar = -4)
+
+gs_design
+
+plot(gs_design)
+plot(gs_design, plottype = 5)
 
 
 for(exp_no in select_experiments) {
@@ -164,10 +178,12 @@ for(exp_no in select_experiments) {
                         rscale = "medium",
                         posterior = FALSE,
                         paired = FALSE)
-  
-  BF1        <- extractBF(stage_1_BF, onlybf = TRUE)
-  hit_upper1 <- BF1 >= 3
-  hit_lower1 <- BF1 < round(1/3, 2)
+  t1 <- t.test(samp1[ , 2], samp1[ , 1], 
+               alternative = "greater")
+  BF1 <- ttest.tstat(t1$statistic, N1, N1, rscale = "medium",
+                     complement = T, simple = T)
+  # BF1        <- extractBF(stage_1_BF, onlybf = T)
+  hit_upper1 <- t1$p.value <= 0.0026
   samples    <- posterior(stage_1_BF, iterations = 1000)
   output     <- summary(samples) # check for delta
   delta_emp  <- output$statistics[4]
@@ -179,21 +195,25 @@ for(exp_no in select_experiments) {
     
     final_res[final_res_counter, ] <- c(rep_no = exp_no, ES_true = current_ES[exp_no], 
                                         totalN = n, nstage = N1, beta,
-                                        d_emp = delta_emp, BF = BF1, stage, H0 = 2)
+                                        d_emp = delta_emp, t_value = t1$statistic, p_value = t1$p.value, 
+                                        BF = BF1, stage, H0 = 2,
+                                        prev_pop, rep_attempts, all_positives, all_negatives)
     
     final_res_counter <- final_res_counter + 1 
     
     next;
     
-  } else if (hit_lower1 == TRUE) {
+  } else if (hit_upper1 == FALSE & t1$statistic < 0) {
     
     print(paste("stage 1 trial stopped for futility"))
     
     final_res[final_res_counter, ] <- c(rep_no = exp_no, ES_true = current_ES[exp_no], 
                                         totalN = n, nstage = N1, beta,
-                                        d_emp = delta_emp, BF = BF1, stage, H0 = 2)
+                                        d_emp = delta_emp, t_value = t1$statistic, p_value = t1$p.value, 
+                                        BF = BF1, stage, H0 = 1,
+                                        prev_pop, rep_attempts, all_positives, all_negatives)
     
-    final_res_counter <- final_res_counter + 1
+    final_res_counter <- final_res_counter + 1 
     
     next;
     
@@ -203,7 +223,9 @@ for(exp_no in select_experiments) {
     
     final_res[final_res_counter, ] <- c(rep_no = exp_no, ES_true = current_ES[exp_no], 
                                         totalN = n, nstage = N1, beta,
-                                        d_emp = delta_emp, BF = BF1, stage, H0 = 0)
+                                        d_emp = delta_emp, t_value = t1$statistic, p_value = t1$p.value, 
+                                        BF = BF1, stage, H0 = 0,
+                                        prev_pop, rep_attempts, all_positives, all_negatives)
     
     final_res_counter <- final_res_counter + 1
     
@@ -217,14 +239,16 @@ for(exp_no in select_experiments) {
                           rscale = "medium",
                           posterior = FALSE,
                           paired = FALSE)
-    
-    BF2        <- extractBF(stage_2_BF, onlybf = TRUE)
-    hit_upper2 <- BF2 >= 3
-    hit_lower2 <- BF2 < round(1/3, 2)
+    t2         <- t.test(samp2[ , 2], samp2[ , 1],
+                         alternative = "greater")
+    BF2 <- ttest.tstat(t2$statistic, N2, N2, rscale = "medium",
+                       complement = T, simple = T)
+    # BF2        <- extractBF(stage_2_BF, onlybf = TRUE)
+    hit_upper2 <- t2$p.value <= 0.0110
     samples    <- posterior(stage_2_BF, iterations = 1000)
     output     <- summary(samples) # check for delta
     delta_emp  <- output$statistics[4]
-    stage      <- 2- (mean(samp2[ , 2]) - mean(samp2[ , 1]))
+    stage      <- 2
     
     
     if (hit_upper2 == TRUE) {
@@ -232,19 +256,23 @@ for(exp_no in select_experiments) {
       
       final_res[final_res_counter, ] <- c(rep_no = exp_no, ES_true = current_ES[exp_no], 
                                           totalN = n, nstage = N2, beta,
-                                          d_emp = delta_emp, BF = BF2, stage, H0 = 2)
+                                          d_emp = delta_emp, t_value = t2$statistic, p_value = t2$p.value, 
+                                          BF = BF2, stage, H0 = 2,
+                                          prev_pop, rep_attempts, all_positives, all_negatives)
       
       final_res_counter <- final_res_counter + 1
       
       next;
       
-    } else if (hit_lower2 == TRUE) {
+    } else if (hit_upper2 == FALSE & t2$statistic < 0) {
       
       print(paste("stage 2 trial stopped for futility"))
       
       final_res[final_res_counter, ] <- c(rep_no = exp_no, ES_true = current_ES[exp_no], 
                                           totalN = n, nstage = N2, beta,
-                                          d_emp = delta_emp, BF = BF2, stage, H0 = 1)
+                                          d_emp = delta_emp, t_value = t2$statistic, p_value = t2$p.value, 
+                                          BF = BF2, stage, H0 = 1,
+                                          prev_pop, rep_attempts, all_positives, all_negatives)
       
       final_res_counter <- final_res_counter + 1
       
@@ -256,7 +284,9 @@ for(exp_no in select_experiments) {
       
       final_res[final_res_counter, ] <- c(rep_no = exp_no, ES_true = current_ES[exp_no], 
                                           totalN = n, nstage = N2, beta,
-                                          d_emp = delta_emp, BF = BF2, stage, H0 = 0)
+                                          d_emp = delta_emp, t_value = t2$statistic, p_value = t2$p.value, 
+                                          BF = BF2, stage, H0 = 0,
+                                          prev_pop, rep_attempts, all_positives, all_negatives)
       
       final_res_counter <- final_res_counter + 1
       
@@ -272,10 +302,13 @@ for(exp_no in select_experiments) {
                             rscale = "medium",
                             posterior = FALSE,
                             paired = FALSE)
+      t3         <- t.test(samp3[, 2], samp3[, 1],
+                           alternative = "greater")
+      BF3 <- ttest.tstat(t3$statistic, N3, N3, rscale = "medium",
+                         complement = T, simple = T)
       
-      BF3        <- extractBF(stage_3_BF, onlybf = TRUE)
-      hit_upper3 <- BF3 >= 3
-      hit_lower3 <- BF3 < round(1/3, 2)
+      # BF3        <- extractBF(stage_3_BF, onlybf = TRUE)
+      hit_upper3 <- t3$p.value <= 0.0465
       samples    <- posterior(stage_3_BF, iterations = 1000)
       output     <- summary(samples) # check for delta
       delta_emp  <- output$statistics[4]
@@ -287,19 +320,23 @@ for(exp_no in select_experiments) {
         
         final_res[final_res_counter, ] <- c(rep_no = exp_no, ES_true = current_ES[exp_no], 
                                             totalN = n, nstage = N3, beta,
-                                            d_emp = delta_emp, BF = BF3, stage, H0 = 2)
+                                            d_emp = delta_emp, t_value = t3$statistic, p_value = t3$p.value, 
+                                            BF = BF3, stage, H0 = 2,
+                                            prev_pop, rep_attempts, all_positives, all_negatives)
         
         final_res_counter <- final_res_counter + 1
         
         next;
         
-      } else if (hit_lower3 == TRUE) {
+      } else if (hit_upper3 == FALSE & t3$statistic < 0) {
         
         print(paste("stage 3 trial stopped for futility"))
         
         final_res[final_res_counter, ] <- c(rep_no = exp_no, ES_true = current_ES[exp_no], 
                                             totalN = n, nstage = N3, beta,
-                                            d_emp = delta_emp, BF = BF3, stage, H0 = 1)
+                                            d_emp = delta_emp, t_value = t3$statistic, p_value = t3$p.value, 
+                                            BF = BF3, stage, H0 = 1,
+                                            prev_pop, rep_attempts, all_positives, all_negatives)
         
         final_res_counter <- final_res_counter + 1
         
@@ -311,7 +348,9 @@ for(exp_no in select_experiments) {
         
         final_res[final_res_counter, ] <- c(rep_no = exp_no, ES_true = current_ES[exp_no], 
                                             totalN = n, nstage = N3, beta,
-                                            d_emp = delta_emp, BF = BF3, stage, H0 = 0)
+                                            d_emp = delta_emp, t_value = t3$statistic, p_value = t3$p.value, 
+                                            BF = BF3, stage, H0 = 0,
+                                            prev_pop, rep_attempts, all_positives, all_negatives)
         
         final_res_counter <- final_res_counter + 1
         
@@ -330,4 +369,46 @@ final <-
   final %>% 
   filter(totalN != "NA")
 
-write.csv(final, file = "./data/testBF_twosided_BF3")
+write.csv(final, file = "./data/testBF_onesided_futility_equiv_method1")
+
+max(final$BF)  
+
+final <-
+  final %>% 
+  filter(BF < 100)
+
+ggplot(data = final, aes(x = factor(stage), y = BF)) +
+  geom_point(alpha = .3) +
+  facet_wrap( ~ H0) +
+  theme_bw()
+
+
+ggplot(data = final, aes(x = BF)) +
+  geom_density(fill = "darkgoldenrod1", alpha = .5) 
+
+ggplot(data = final, aes(x = BF)) +
+  geom_histogram(alpha = .5, binwidth = 1) +
+  theme_bw()
+
+ggplot(data = final, aes(x = t_value)) +
+  geom_density(fill = "darkgoldenrod1", alpha = .5) 
+
+### boxplot of effect size estimates
+ggplot(aes(x = factor(nstage), y = d_emp), data = final) +
+  geom_boxplot(outlier.alpha = .3) +
+  #geom_hline(aes(yintercept = d), color = "red", lty = 2) +
+  #facet_wrap(~ d, nrow = 2, ncol = 4) +
+  labs(x = "Total sample size", y = "Empirical effect size estimate") +
+  theme_bw() +
+  theme(strip.text.x = element_text(size = 12, colour = "black")) +
+  theme(strip.background = element_rect(fill = "white", color = "black")) +
+  theme(axis.title.x = element_text(size = 12)) +
+  theme(axis.title.y = element_text(size = 12)) +
+  theme(axis.text = element_text(size = 12, colour = "black"))
+
+
+
+
+
+
+

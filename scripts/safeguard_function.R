@@ -30,3 +30,14 @@ safeguard.d <- function(d, n.1, n.2, sig.level = .05, power = .8, conf = .80)
   SSR = N_required/(n.1+n.2)
   c("Lower_d" = d.sg, "N_required" = N_required, "SSR" = SSR)
 }
+
+
+
+
+
+safeguard.d(.3, 10, 10)
+
+
+
+
+

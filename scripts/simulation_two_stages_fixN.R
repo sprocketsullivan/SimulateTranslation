@@ -13,42 +13,76 @@ rm(list = ls())
 # 3. the true effect size
 
 
-library(pwr)
-library(gsDesign)
-
-
 #source additional functions
+source("./scripts/load_packages.R")
+source("./scripts/load_data_Carneiro.R")
+source("./scripts/load_data_Szucs.R")
 source("./scripts/safeguard_function.R")
-#source("./scripts/functions_for_simulation_twosided.R")
-source("./scripts/functions_for_simulation_onesided.R")
+#source("./scripts/functions_for_simulation_onesided.R")
+source("./functions_for_sim_corr.R")
+
 
 
 # Step  1 Generate an effect size distribution
-#ES_true <- c(rbeta(1000000, 5, 5),rbeta(1000000, 1, 5))
-ES_true <- c(rbeta(1000000, 1, 5))
-hist(ES_true)
+ES_true <- ES_data_Szucs$D # empirical effect size distribution taken from Szucs & Ioannidis, 2017
+hist(ES_true, breaks = 300)
+sum(ES_true > 16)
 
+plot(ES_true)
+median(ES_true)
+mean(ES_true)
+
+length(ES_true)
+
+SESOI       <- c(.3, .5, .7, 1)
+sample_size <- c(7, 10, 15)
+
+  
 #how many hypothesis over .3 threshold
-prev_pop <- round(sum(ES_true > 0.3)/1000000, 2)
-n_exp <- 10000
+prev_pop <- round(sum(ES_true > SESOI)/length(ES_true), 2)
+n_exp <- 1000
 current_ES <- sample(ES_true, n_exp)
-hist(current_ES)
-all_positives <- sum(current_ES > .3)
+hist(current_ES, breaks = 100)
+all_positives <- sum(current_ES > SESOI)
 all_negatives <- n_exp - all_positives
-
+  
+  
 #conduct intial study
 exploratory_data <- list()
 for(i in 1:n_exp)
   exploratory_data[[i]] <- 
   generate_study(current_ES[i])
-
-
+    
+  
 #the confidence interval generated here is used in the equivalence test
-exp_data_summary <- list()
-for(i in 1:n_exp)
-  exp_data_summary[[i]] <- 
-  get_summary_study(study_data = exploratory_data[[i]], 
-                    confidence = .8)
+plan(multiprocess)
+exp_data_summary <- 
+  future_map(exploratory_data, get_summary_study, confidence = .8)
+
+
+# exp_data_summary <- list()
+# for(i in 1:n_exp)
+#   exp_data_summary[[i]] <- 
+#   get_summary_study(study_data = exploratory_data[[i]], 
+#                     confidence = .8)
+  
+
+### combine effect from exploratory study with calculated sample sizes  
+ff <- (unlist(map(exp_data_summary, "mean_effect")))
+ff <- cbind(ff[control = seq(1, length(ff)-1, 2)],
+            ff[treatment = seq(2, length(ff), 2)])
+
+df <- data.frame(control = ff[ , 1], treatment = ff[ , 2])
+df$effect <- round(df$treatment - df$control, 4)
+
+sum(df$effect > 16)
+
+min(df$effect)
+max(df$effect)
+mean(df$effect)
+median(df$effect)
+plot(df$effect)
+hist(df$effect, breaks = 50)
 
 
 #now estimate sample size
@@ -60,27 +94,21 @@ for(i in 1:n_exp)
   rep_sample_size[i] <- 
   ceiling(calc_sample_size(study_summary = exp_data_summary[[i]],
                            study_data = exploratory_data[[i]],
-                           method = 3))
+                           method = 2))
 rep_sample_size
 mean(rep_sample_size)
 
-### combine effect from exploratory study with calculated sample sizes  
-ff <- (unlist(map(exp_data_summary, "mean_effect")))
-ff <- cbind(ff[control = seq(1, length(ff)-1, 2)],
-            ff[treatment = seq(2, length(ff), 2)])
-
-df <- data.frame(control = ff[ , 1], treatment = ff[ , 2])
-df$effect <- (df$treatment - df$control)
-df$rep_sample_size <- rep_sample_size
-
+# sum(rep_sample_size == 1)
+# rep_sample_size <- ifelse(rep_sample_size == 1, 2, rep_sample_size)
+# sum(rep_sample_size == 1)
 
 #Decision to go on
 #this decision depends on an equivalence test with a bound of .3
 #only experiments replicated that include .3 in the CI around the ES measured
-# aa <- (unlist(map(exp_data_summary, "CI")))
-# select_experiments <- which(((apply(cbind(aa[seq(1, length(aa)-1, 2)],
-#                                           aa[seq(2, length(aa), 2)]),
-#                                     1, function(x) {min((x))} ) < -.3)))
+aa <- (unlist(map(exp_data_summary, "CI")))
+select_experiments <- which(((apply(cbind(aa[seq(1, length(aa)-1, 2)],
+                                          aa[seq(2, length(aa), 2)]),
+                                    1, function(x) {min((x))} ) < -.3)))
 
 
 #alternative: this decision depends on whether exploratory result is significant (p <= .05) or not
@@ -91,15 +119,16 @@ select_experiments <- which(((apply(cbind(bb[seq(1, length(bb)-1, 2)],
 
 length(select_experiments)
 df$effect[select_experiments]
+hist(df$effect[select_experiments], breaks = 30)
 
 ### remove experiments that have ES < 0
-select_experiments <- select_experiments[df$effect[select_experiments] > 0]
+select_experiments <- select_experiments[df$effect[select_experiments] > 0 ]
 
 rep_attempts <- length(select_experiments)
 
-SESOI_selected <- sum(current_ES[select_experiments] > .3)
-
-SESOI_not_selected <- sum(current_ES[-select_experiments] > .3)
+# SESOI_selected <- sum(current_ES[select_experiments] < .3)
+# 
+# SESOI_not_selected <- sum(current_ES[-select_experiments] > .3)
 
 # false_omission_rate <-
 # sum(current_ES[-select_experiments] > .3)/
@@ -166,8 +195,11 @@ res_summary_rep <-
 
 ggplot(aes(y = d_emp, x = ES_true, col = p_value < .05),
        data = res_summary_rep) +
-  geom_point(alpha = 0.4)
+  geom_point(alpha = 0.4) +
+  theme_bw()
 
 
-write.csv(res_summary_rep, file = "./data/sig_method3_fixN_onesided")
+#write.csv(res_summary_rep, file = "./data/data_Szucs_distribution/sig_method1_fixN_0.5")
+
+
 

@@ -1,5 +1,30 @@
+
+power.t.test(n = 7, delta = 1.14, sd = 1, sig.level = .05, power = NULL,
+             type = "two.sample",
+             alternative = "two.sided")
+
+ceiling(power.t.test(n = NULL, delta = .3	, sd = 1, sig.level = .05, power = .5,
+             type = "two.sample",
+             alternative = "one.sided")$n)
+
+
+round(power.t.test(n = 61, delta = NULL	, sd = 1, sig.level = .05, power = .8,
+             type = "two.sample",
+             alternative = "one.sided")$delta, 2)
+
+
+# For example, if an original study used 20 participants per group, 
+# the smallest effect size of interest would be d = 0.49
+# (which is the effect size they had 33% power to detect with n = 20). 
+
+
+abs(aa$mean_effect[2] - aa$mean_effect[1]) > 16
+
+
+
+
 ES_true=1
-sample_size=10
+sample_size=1
 l_bias=0
 pop_sd=1
 ES_mod<-ES_true+l_bias
@@ -23,9 +48,9 @@ es_measured <- min(abs(aa$CI))
 es_measured <-abs(aa$mean_effect[2]-aa$mean_effect[1])
 es_measured <-.3
 
-power.t.test(n = NULL, delta=0.89,sd=1,sig.level=.05,power=.8,
+power.t.test(n = NULL, delta = 2, sd=1,sig.level=.05,power=.8,
              type = "two.sample", 
-             alternative = "one.sided")
+             alternative = "two.sided")
 
 
 test <- safeguard.d(d = 0.89	 ,

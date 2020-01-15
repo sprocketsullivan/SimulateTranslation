@@ -140,7 +140,7 @@ final_res_counter <- 1
 
 ### determine bounds and critical values of the sequential design
 ### one-sided test
-### no futility bound
+### stop for futility if empirical ES < 0
 gs_design <- gsDesign::gsDesign(k = 3, test.type = 1, alpha = 0.05, beta = .2,
                                 delta = .1, n.fix = 1, timing = 1,
                                 sfu = sfHSD, sfupar = -4)
@@ -202,9 +202,9 @@ for(exp_no in select_experiments) {
     
     print(paste("continue to stage 2"))
     
-    final_res[final_res_counter, ] <- c(rep_no = exp_no, ES_true = current_ES[exp_no],
+    final_res[final_res_counter, ] <- c(rep_no = exp_no, ES_true = current_ES[exp_no], 
                                         totalN = n, nstage = N1, beta,
-                                        d_emp = delta_emp, t_value = t1$statistic, p_value = t1$p.value,
+                                        d_emp = delta_emp, t_value = t1$statistic, p_value = t1$p.value, 
                                         df = t1$parameter, stage, H0 = 0,
                                         prev_pop, rep_attempts, all_positives, all_negatives)
     
@@ -329,4 +329,5 @@ final <-
   final %>% 
   filter(totalN != "NA")
 
-write.csv(final, file = "./data/equiv_method1_seq_onesided_futility")
+#write.csv(final, file = "./data/equiv_method1_seq_onesided_futility")
+
