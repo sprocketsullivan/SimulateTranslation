@@ -1,11 +1,18 @@
-setwd("~/Documents/QUEST/PhD/R/SimulateTranslation/data")
+setwd("~/Documents/QUEST/PhD/R/SimulateTranslation/")
 
 rm(list = ls())
 library(tidyverse)
 
+# source("./scripts/analysis/prior_odds_for_analysis_Szucs.R")
+
+source("./scripts/analysis/prior_odds_for_analysis_Carneiro.R")
+
 ### read in data sets from the different trajectories 
-### using fixed-N design in confirmatory study
-final <- read.csv(file = "Carneiro_distribution_sig_method1")
+### using fixed-N design in replication study
+
+final <- read.csv(file = "./data/Carneiro_distribution/Frequentist_analysis/Carneiro_distribution_equiv_method2_1.0")
+
+# final <- read.csv(file = "./data/Szucs_distribution/Frequentist_analysis/Szucs_distribution_sig_method1")
 
 
 hist(final$effect, breaks = 100)
@@ -14,10 +21,10 @@ hist(final$ES_true, breaks = 100)
 
 
 ### add column that codes decision criterion from exploratory stage to confirmatory stage
-final$decision_crit <- "significance"
+final$decision_crit <- "equivalence"
 
 ### add column that codes approach to determine sample size for confirmatory study
-final$sampsize_approach <- "standard"
+final$sampsize_approach <- "SESOI"
 
 ### add column for outcome significant / not significant to match outcome column
 ### of sequential design data set
@@ -39,15 +46,18 @@ dat <-
          rep_sample_size, ES_true, effect, H0,
          prev_pop, all_positives, all_negatives, rep_attempts)
 
-# write.csv(dat, file = "./Carneiro_replication_equiv_method2_0.5")
+# write.csv(dat, file = "./data/Carneiro_distribution/Frequentist_analysis/Carneiro_replication_sig_method1")
 
-data_false_positives <-
-  dat %>%
-  filter(H0 == 2 & ES_true < .5)
+# write.csv(dat, file = "./data/Szucs_distribution/Frequentist_analysis/Szucs_replication_equiv_method2_0.5")
 
-hist(data_false_positives$effect)
 
-hist(data_false_positives$ES_true)
+# data_false_positives <-
+#   dat %>%
+#   filter(H0 == 2 & ES_true < .5)
+# 
+# hist(data_false_positives$effect)
+# 
+# hist(data_false_positives$ES_true)
 
 ################################################################################################################
 
@@ -58,7 +68,7 @@ true_positives <-
            decision_crit, sampsize_approach, H0, 
            all_positives, all_negatives, 
            prev_pop, rep_attempts) %>%
-  filter(H0 == 2 & ES_true > .5) %>%
+  filter(H0 == 2 & ES_true > 1) %>%
   summarize(true_pos = n())
 
 false_negatives <-
@@ -67,7 +77,7 @@ false_negatives <-
            decision_crit, sampsize_approach, H0, 
            all_positives, all_negatives, 
            prev_pop, rep_attempts) %>%
-  filter(H0 == 1 & ES_true > .5) %>%
+  filter(H0 == 1 & ES_true > 1) %>%
   summarize(false_neg = n())
 
 true_negatives <-
@@ -76,7 +86,7 @@ true_negatives <-
            decision_crit, sampsize_approach, H0, 
            all_positives, all_negatives, 
            prev_pop, rep_attempts) %>%
-  filter(H0 == 1 & ES_true < .5) %>%
+  filter(H0 == 1 & ES_true < 1) %>%
   summarize(true_neg = n())
 
 false_positives <-
@@ -85,7 +95,7 @@ false_positives <-
            decision_crit, sampsize_approach, H0, 
            all_positives, all_negatives, 
            prev_pop, rep_attempts) %>%
-  filter(H0 == 2 & ES_true < .5) %>%
+  filter(H0 == 2 & ES_true < 1) %>%
   summarize(false_pos = n())
 
 true_positives$false_neg <- false_negatives$false_neg
@@ -104,19 +114,6 @@ outcomes <-
          Sample_prev = (true_pos + false_neg) /
            (all_positives + all_negatives))
 
-
-# outcomes <-
-#   true_positives %>% 
-#   select(-H0) %>% 
-#   mutate(Sensitivity = true_pos/(true_pos + false_neg),
-#          Specificity = true_neg/(true_neg + false_pos),
-#          FNR = false_neg/(true_pos + false_neg),
-#          FPR = false_pos/(true_neg + false_pos),
-#          FDR = false_pos/(false_pos + true_pos),
-#          Prevalence = prev_pop,
-#          Sample_prev = (true_pos + false_neg) /
-#            (true_pos + false_neg + false_pos + true_neg))
-
 # False Discovery Rate (FDR) = B / (A + B)
 # The false discovery rate is the proportion of the individuals with a 
 # positive test result for which the true condition is negative
@@ -125,7 +122,6 @@ outcomes <-
 # The false positive rate is the proportion of the individuals with a known 
 # negative condition for which the test result is positive. 
 # rate is sometimes called the fall-out.  
-
 
 # False Omission Rate (FOR) = C / (C + D)
 # The false omission rate is the proportion of the individuals with a 
@@ -137,41 +133,28 @@ outcomes <-
   mutate(PPV_pop_prev = (Sensitivity * Prevalence) / 
            (Sensitivity * Prevalence + (1 - Specificity) * (1 - Prevalence)))
 
-
 outcomes <- 
   outcomes %>% 
   mutate(PPV_sample_prev = (Sensitivity * Sample_prev) / 
            (Sensitivity * Sample_prev + (1 - Specificity) * (1 - Sample_prev)))
 
-
-outcomes <- 
-  outcomes %>% 
-  mutate(NPV_pop_prev = (Specificity * (1 - Prevalence)) / 
-           ((1 -  Sensitivity) * Prevalence + (Specificity) * (1 - Prevalence)))
-
-outcomes <- 
-  outcomes %>% 
-  mutate(NPV_sample_prev = (Specificity * (1 - Sample_prev)) / 
-           ((1 -  Sensitivity) * Sample_prev + (Specificity) * (1 - Sample_prev)))
-
-
-outcomes <- 
-  outcomes %>% 
-  mutate(NPV_sample_prev_altern = true_neg / (true_neg + false_neg))
-
-# PPV_sample_prev = true_pos/(true_pos + false_pos)
-
 # outcomes <- 
 #   outcomes %>% 
-#   mutate(PPV_pop_prev = (Sensitivity * Prevalence) / 
-#            (Sensitivity * Prevalence + (1 - Specificity) * (1 - Prevalence)),
-#          PPV_alternative = true_pos / (true_pos + false_pos))
-
+#   mutate(NPV_pop_prev = (Specificity * (1 - Prevalence)) / 
+#            ((1 -  Sensitivity) * Prevalence + (Specificity) * (1 - Prevalence)))
+# 
+# outcomes <- 
+#   outcomes %>% 
+#   mutate(NPV_sample_prev = (Specificity * (1 - Sample_prev)) / 
+#            ((1 -  Sensitivity) * Sample_prev + (Specificity) * (1 - Sample_prev)))
 
 animal_numbers <-
   dat %>% 
   group_by(init_sample_size, decision_crit, sampsize_approach) %>% 
-  summarize(mean_N = mean(rep_sample_size))
+  summarize(mean_N = mean(rep_sample_size),
+            sd_N = sd(rep_sample_size),
+            ymin = mean_N - sd_N,
+            ymax = mean_N + sd_N)
 
 median_effect <-
   dat %>% 
@@ -190,21 +173,15 @@ median_ES_true <-
   summarize(median_ES_true = median(ES_true))
 
 outcomes$mean_N <- animal_numbers$mean_N
+outcomes$mean_N_min <- animal_numbers$ymin
+outcomes$mean_N_max <- animal_numbers$ymax
 outcomes$median_effect <- median_effect$median_effect
 outcomes$median_effect_success <- median_effect_success$median_effect
 outcomes$median_ES_true <- median_ES_true$median_ES_true
 
-# write.csv(outcomes, file = "./Szucs_outcomes_equiv_method1_1.0")
-write.csv(outcomes, file = "./Carneiro_outcomes_sig_method1_0.5")
+# write.csv(outcomes, file = "./data/Szucs_distribution/Frequentist_analysis/Szucs_outcomes_sig_method1_0.5")
 
-# outcomes$design <- as.factor(outcomes$design)
-# levels(outcomes$design)
-# levels(outcomes$design) <- c("Fixed-N \ndesign", "Group sequential \ndesign", 
-#                              "Group sequential \ndesign with futility bound")
-
-# outcomes$decision_crit <- as.factor(outcomes$decision_crit)
-# levels(outcomes$decision_crit)
-# levels(outcomes$decision_crit) <- c("Equivalence", "Significance")
+write.csv(outcomes, file = "./data/Carneiro_distribution/Frequentist_analysis//Carneiro_outcomes_equiv_method2_1.0")
 
 
 final <-

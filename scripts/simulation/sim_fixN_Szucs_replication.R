@@ -5,42 +5,71 @@ rm(list = ls())
 
 # source additional scripts
 
-# source("./scripts/sim_fixN_Szucs_decision_equivalence_with_SESOI.R")
+source("./scripts/simulation/sim_fixN_Szucs_decision_equivalence_with_SESOI.R")
 
-source("./scripts/simulation/sim_fixN_Szucs_decision_significance.R")
+# source("./scripts/simulation/sim_fixN_Szucs_decision_significance.R")
 
 dat
+
+sum(dat$effect < 0) # empirical effect sizes are negative because t.test function takes control - treat
+sum(dat$effect > 0) 
+sum(dat$ES_true < 0)
+
+# data <-
+#   dat %>% 
+#   group_by(init_sample_size, study_id) %>% 
+#   filter(selection_sig == 1)
 
 data <-
   dat %>% 
   group_by(init_sample_size, study_id) %>% 
-  filter(selection_sig == 1)
+  filter(selection_equiv == 1)
+
+sum(data$effect < 0)
+sum(data$effect > 0)
+sum(data$effect == 0)
+
+
+# selected <-
+#   data %>% 
+#   group_by(init_sample_size) %>% 
+#   summarize(selected = sum(selection_sig == 1))
 
 selected <-
   data %>% 
   group_by(init_sample_size) %>% 
-  summarize(selected = sum(selection_sig == 1))
+  summarize(selected = sum(selection_equiv == 1))
 
 
 # now estimate sample size for replication study
 # A. Initial effect size (probably the worst solution but good as a floor benchmark, 1 in function)
 # B. Set a SESOI. With this all experiments will have the same number of EU (2 as function parameter)
 
-# rep_sample_size_std <- NULL
-# 
-# for (i in 1:nrow(data)) {
-# 
-#   rep_sample_size_std[i] <-
-#     ceiling(calc_sample_size(data = data[i, ], sample_size = data[i, ]$init_sample_size,
-#                              method = 1))
-# }
-# 
-# 
-# data$rep_samp_size_std <- rep_sample_size_std
-# 
-# max(data$rep_samp_size_std)
+rep_sample_size_std <- NULL
+
+for (i in 1:nrow(data)) {
+  
+  rep_sample_size_std[i] <-
+    ceiling(calc_sample_size(data = data[i, ], sample_size = data[i, ]$init_sample_size,
+                             method = 2, SESOI = 1.0, power = 0.5))
+}
+
+data$rep_samp_size_std <- rep_sample_size_std
+
+max(data$rep_samp_size_std)
+
+hist(data$effect, breaks = 100)
+
+# hist(data$rep_samp_size_std, breaks = 100)
 
 data$effect <- ifelse(data$effect < 0, -data$effect, -data$effect)
+
+hist(data$effect, breaks = 200)
+hist(data$ES_true, breaks = 200)
+
+sum(data$effect > 0)
+sum(data$effect < 0)
+sum(data$effect == 0)
 
 negative_ES <-
   data %>% 
@@ -65,15 +94,13 @@ rep_attempts <-
 replication_data <- list()
 rep_exp_no <- 0
 
-select_experiments <- which(data$selection_sig == 1)
+# select_experiments <- which(data$selection_sig == 1)
 
-#select_experiments <- which(data$selection_equiv == 1)
+select_experiments <- which(data$selection_equiv == 1)
 
 select_experiments <- select_experiments[data$effect[select_experiments] >= 0 ]
 
 current_ES_rep <- data$ES_true
-
-rep_sample_size_std <- rep(25, length(select_experiments))
 
 for(i in select_experiments) {
   
@@ -81,7 +108,7 @@ for(i in select_experiments) {
   
   replication_data[[rep_exp_no]] <-
     generate_study(ES_true = current_ES_rep[i],
-                   sample_size = 25)
+                   sample_size = rep_sample_size_std[i])
   
   replication_data[[rep_exp_no]] <-
     replication_data[[rep_exp_no]] %>% 
@@ -94,24 +121,29 @@ plan(multiprocess)
 rep_data_summary <- 
   future_map(replication_data, get_summary_study_rep)
 
-rep_data_summary[[1]]
-
-data$ES_true[select_experiments]
+# rep_data_summary[[1]]
+# data$ES_true[select_experiments]
 
 res_summary_rep <-
   data.frame(init_sample_size = data$init_sample_size[select_experiments],
              rep_no = c(1:rep_exp_no),
-             #rep_sample_size = rep_sample_size_std[select_experiments],
-             rep_sample_size = rep_sample_size_std,
+             rep_sample_size = rep_sample_size_std[select_experiments],
+             #rep_sample_size = rep_sample_size_std,
+             t_value = unlist(map(rep_data_summary, "t_value")),
              p_value = unlist(map(rep_data_summary, "p_value")), #[seq(1, 2*rep_exp_no, 2)],
              effect = unlist(map(rep_data_summary, "effect")),
              ES_true = data$ES_true[select_experiments],
              rep_attempts = rep_attempts)
 
-res_summary_rep$effect <- ifelse(res_summary_rep$effect < 0, 
+hist(res_summary_rep$effect, breaks = 200)
+
+res_summary_rep$effect <- ifelse(res_summary_rep$effect < 0,
                                  -res_summary_rep$effect, -res_summary_rep$effect)
 
-#write.csv(res_summary_rep, file = "./data/Szucs_distribution_sig_method1_25EU_per_group")
+# write.csv(res_summary_rep, file = "./data/Szucs_distribution/Frequentist_analysis/Szucs_distribution_sig_method1")
+
+write.csv(res_summary_rep, file = "./data/Szucs_distribution/Frequentist_analysis/Szucs_distribution_equiv_method2_1.0")
+
 
 res_summary_rep <-
   res_summary_rep %>%

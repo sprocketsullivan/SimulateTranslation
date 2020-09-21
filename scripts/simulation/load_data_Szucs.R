@@ -19,7 +19,7 @@ ES_data <- as.data.frame(cbind(t_value, df))
 
 ES_data <-
   ES_data %>% 
-  mutate(Dt1= t_value / (sqrt(df + 1)),
+  mutate(Dt1 = t_value / (sqrt(df + 1)),
          Dt2 = 2 * t_value / (sqrt(df + 2)))
 
 ES_data <-
@@ -45,20 +45,28 @@ names(ES_large_sample)[3] <- "D"
 ES_data_Szucs <-
   bind_rows(ES_small_sample, ES_large_sample)
 
+# save(ES_data_Szucs, file = "ES_data_Szucs.RData")
+
+min(ES_data_Szucs$D)
 max(ES_data_Szucs$D)
 
-sum(ES_data_Szucs$D > 16)
+sum(ES_data_Szucs$D > 20)
 
 median(ES_data_Szucs$D)
 mean(ES_data_Szucs$D)
+
+ES_small <-
+  ES_data_Szucs %>%
+  filter(D <= 20)
+
 
 
 # ggplot(data = ES_data_Szucs, aes(x = df, y = D)) +
 #   geom_jitter(alpha = .5) +
 #   theme_bw()
 # 
-# ggplot(data = ES_data_Szucs, aes(x = D)) +
-#   geom_histogram(binwidth = .09, color = "black", fill = "white") +
+# ggplot(data = ES_small, aes(x = D)) +
+#   geom_histogram(binwidth = .3, color = "black", fill = "white", size = 0.3) +
 #   theme_bw()
 # 
 # ggplot(data = ES_data_Szucs, aes(y = D)) +

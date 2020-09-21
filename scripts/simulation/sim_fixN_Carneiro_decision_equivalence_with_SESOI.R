@@ -134,7 +134,7 @@ selection_equiv <- list()
 for (i in 1:length(samp_size_vector)) {
   
   selection_equiv[[i]] <- future_map(exploratory_data_summary[[i]], get_decision_equiv,
-                                     SESOI = 0.5)
+                                     SESOI = 1.0)
   
 }
 

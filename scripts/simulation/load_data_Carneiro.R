@@ -11,6 +11,8 @@ ES_data_Carneiro <-
   select(ES_d) %>% 
   drop_na()
 
+# save(ES_data_Carneiro, file = "ES_data_Carneiro.RData")
+
 # zeros <- which(ES_data_Carneiro$ES_d == 0)
 # sum(ES_data_Carneiro$ES_d == 0)
 # mean(ES_data_Carneiro$ES_d)

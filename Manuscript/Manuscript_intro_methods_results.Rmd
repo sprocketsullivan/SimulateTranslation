@@ -1,0 +1,383 @@
+---
+title: 'Identifying optimized decision criteria and experimental designs by simulating preclinical experiments in silico'
+csl: biomed-central.csl
+indent: yes
+output: bookdown::pdf_document2
+toc: false
+linestretch: 1.5
+fontsize: 12pt
+header-includes:
+       - \usepackage{subfig}
+bibliography: refs_repro.bib
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r libraries, echo = FALSE, message = FALSE, warning = FALSE}
+library(bookdown)
+library(knitr)
+library(tidyverse)
+```
+
+```{r data, include = FALSE, cache = FALSE}
+load("all_outcomes_init_samp_size_10.RData")
+```
+
+
+# Theoretical Background
+
+\ \ \ \ Preclinical research stands at the beginning of the drug development process. Its purpose is to detect promising candidate drugs out of hundreds of potential interventions on the one hand, and to generate robust evidence to support translation to humans on the other hand. It has been argued that it is crucial to acknowledge the two operating modes of preclinical research in order for it to be conducted rigorously and interpreted appropriately [@kimmelman2014distinguishing]. Early-stage preclinical experiments are exploratory. Their aim is to generate hypotheses that can at a later stage be tested under more strict conditions [@landis2012call]. At early stages in drug devlopment, preclinical research also plays the role of a gatekeeper -- straining out promising interventions and denying access to further investigation to non-effective ones. It is vital, however, that decision criteria are lenient enough to allow a range of effect sizes to pass, as by that time it is unclear which effect sizes to expect. If the filters applied at this stage are too strict, chances are that potentially effective candidates are falsely eliminated.  
+
+If animal models of diseases provide the necessary criteria for proceeding drug development to a Phase I clinical trial, one would expect that they predict efficacy and safety in humans, at least to a certain extent. However, decades of failed clinical trials prove otherwise. A report of clinical development success rates from 2006 through to 2015 documents low success rates for Phase II trials, with only 30.7 % of candidate drugs progressing to Phase III [@thomas2016clinical]. A look at specific medical conditions shows an even bleaker picture. Neurological diseases like amyotrophic lateral sclerosis (ALS), Alzheimer's disease (AD), and stroke, as well as cancer have kept researchers busy for decades with few to no advances with regard to effective treatments [@dirnagl2016thomas; @moreno2013can; @mullane2019preclinical; @perrin2014preclinical; @petrov2017clinical; @van2019revised].
+
+Preclinical research has increasingly come under scrutiny with many reports pointing out low study quality, lack of scientific rigor and high levels of irreproducibility [@freedman2014increasing]. Among the issues raised are selective reporting of results [@sena2010publication], insufficient reporting on measures to reduce bias [@vogt2016authorization], low sample sizes [@macleod2008evidence; @howells2014bringing] and concomitant increased false positive and false negative rates [@button2013power]. These shortcomings threaten the replicability of preclinical results and hamper translation of promising findings to humans [@begley2012drug; @prinz2011believe]. Additionally, effect size estimates from low power studies carry a lot of uncertainty and are prone to type M errors. That is, effect magnitudes are larger than the true unknown effect [@colquhoun2014investigation; @gelman2014beyond].
+
+Given the importance of preclinical research on the one hand, and its shortcomings on the other hand, it is necessary to devise strategies to design preclinical experiments that yield robust evidence to guide decision making towards translation. We consider how to do this by simulating a preclinical research trajectory. We understand such a trajectory as a series of experiments, successive in time, generating evidence to support the decision to carry an intervention forward to clinical testing. While these experiments may include different types of studies, we focus on studies examining the efficacy of a given intervention. The trajectory, for the purpose of this study, comprises exploratory studies as the first stage and within-lab replications as the second stage. When moving closer towards a decision regarding translation to humans, more stages are needed (for example, between-lab replications, multicenter studies, inclusion of positive and negative controls), however, in this study, we consider the state and quality of evidence generated throughout the first two stages only. Specifically, we examine the effect of different decision criteria and design choices on transition rates from the exploratory to the replication stage, as well as success rates after within-lab replication.
+
+For the purpose of this project, we understand replications as studies whose outcome is taken as "diagnostic evidence about a claim from prior research" [@nosek2020replication]. In the framework of preclinical research trajectories, replications are considered part of a confirmation process. Given that a series of experiments is needed to confirm a hypothesis about a directional relationship (compound X causes reaction Y), replications incrementally solidify evidence supporting (or refuting) an initial claim.  
+
+When planning a replication study, the sample size has to be determined *a priori*. This is usually done using an effect size estimate from prior research. This can be taken from the literature or a pilot study. In both cases, the effect size estimate used is most likely inflated due to reasons outlined above. Employing an overestimated effect size for sample size calculation given a desired power level (for example, 0.8) and significance threshold (for example, .05), will yield a sample size that is too low to reliably detect effects. This is especially true if effects are small. When statistical power is low, non-replications will often denote a false negative under the assumption that an underlying effect exists. An insufficiently powered replication is not suited to support or refute a previously made claim, as success and failure might be accounted for simply by inference errors.
+
+Above and beyond the concerns mentioned, preclinical animal research raises challenging ethical concerns. Therefore, the practice oriented 3R principles [@russell1959principles] seek to reduce harm and constrain the use of animals for scientific purposes to a minimum. Current animal welfare regulations undermine the scientific value of animal research, as they fail to integrate principles that ensure high quality of conducted studies [@strech20193rs]. From an ethical point of view, this is problematic in two ways: animals are sacrificed for inconclusive research and translation to patients is impeded. Preclinical animal research needs to balance animal welfare considerations and scientific benefit. Efforts to promote and implement the 3R’s must not come at the cost of scientific value.
+
+Ethical, time, and budget constraints prevent preclinical researchers from increasing their sample size and thus complicate the detection and precise estimation of effects. This study investigates how to design and conduct preclinical animal experiments that balance the number of animals tested against the likelihood of false negative and false positive outcomes. Our approach strives to provide a systemic perspective that does not evaluate outcomes of single experiments but evidence that is generated throughout a preclinical research trajectory. Further, we explore conditions under which replication in preclinical settings is most sensible and feasible given prior evidence and practical constraints.
+
+<!-- Throughout the trajectory decisions have to be made based on pre-specified criteria. We simulated different scenarios with varying decision criteria and experimental design choices and evaluate outcomes as indicators of studies' conclusiveness. -->
+
+
+# Methods
+
+<!-- \ \ \ \ This simulation-based investigation explores different approaches to design and conduct experiments in preclinical settings. We explore preclinical research trajectories and determine efficiency and feasibility qua positive predictive value (PPV) and number of animals tested. These criteria ensure that while the number of animals is kept at a minimum, low sample sizes do not compromise the conclusiveness of the study. -->
+
+## Simulation
+
+\ \ \ \ We explored different approaches to perform preclinical animal experiments via simulations. To this end, we modeled a simplified preclinical research trajectory from the exploratory stage to the results of a within-lab replication study (Figure \@ref(fig:trajectory)). Along the trajectory, there are different ways to increase the probability of not missing potentially meaningful effects. After an initial exploratory study, a first decision identifies experiments for replication. In our simulation, we employed two different decision criteria that indicate when one should move from the exploratory stage to the replication stage. If a decision has been made to replicate an initial study, we applied two approaches to determine the sample size for a replication study (smallest effect size of interest (SESOI) and standard power analysis), as outlined in detail below.
+
+```{r, echo = FALSE, results = FALSE}
+library(png)
+library(knitr)
+img1_path <- "trajectory_proposal.png"
+img1 <- readPNG(img1_path, native = TRUE, info = TRUE)
+attr(img1, "info")
+```
+
+
+```{r trajectory, echo = FALSE, message = FALSE, out.width = "80%", fig.cap = "A preclinical research trajectory from the exploratory stage to a within-lab replication. The four panels along the arrow display four possible combinations of decision criteria and approaches to calculate the sample size for replication that can be employed throughout the trajectory.", fig.align = 'center'}
+include_graphics(img1_path)
+```
+
+### Empirical effect size distributions
+
+```{r ES data, include = FALSE, cache = FALSE}
+load("ES_data_Szucs.RData")
+load("ES_data_Carneiro.RData")
+```
+
+```{r ES distribution, echo = FALSE, results = "hide"}
+min(ES_data_Szucs$D)
+max(ES_data_Szucs$D)
+
+sum(ES_data_Szucs$D > 20)
+
+median(ES_data_Szucs$D)
+mean(ES_data_Szucs$D)
+
+names(ES_data_Carneiro)[1] <- "D"
+
+ES_data_Carneiro$D <- ifelse(ES_data_Carneiro$D < 0, -ES_data_Carneiro$D, -ES_data_Carneiro$D)
+
+min(ES_data_Carneiro$D)
+max(ES_data_Carneiro$D)
+median(ES_data_Carneiro$D)
+mean(ES_data_Carneiro$D)
+
+ES_data_Carneiro <-
+  ES_data_Carneiro %>% 
+  mutate(distribution = "Pessimistic")
+
+ES_Szucs <-
+  ES_data_Szucs %>% 
+  select(D) %>% 
+  filter(D <= 20) %>% 
+  mutate(distribution = "Optimistic")
+
+ES_data <- bind_rows(ES_Szucs, ES_data_Carneiro)
+```
+
+
+\ \ \ \ Simulations were based on empirical effect size distributions from the recently published literature  [@szucs2017empirical; @carneiro2018effect]. This enabled us to determine the prior probability (pre-study odds) of a certain alternative hypothesis ($H_{1}$) which we defined as an effect of a given size (e.g. a Cohen's *d* of 0.5). The two distributions reflect different research fields and cover vastly different amounts of data. 
+
+The distribution of effect sizes extracted from Szucs & Ioannidis (2017) [@szucs2017empirical] contains 26841 effect sizes from the cognitive neuroscience and psychology literature published between January 2011 and August 2014. All effect sizes are calculated as the standardized difference in means (Cohen's *d*). Effect size estimates range from `r round(min(ES_data_Szucs$D), 2)` to `r round(max(ES_data_Szucs$D), 2)`, and have a median of `r round(median(ES_data_Szucs$D), 2)` (Figure \@ref(fig:histograms)a). As the pre-study odds of a medium effect of 0.5 are rather large (`r round(outcomes_all_distributions_init_samp_size_10$prev_pop[6], 2)`), we will refer to this distribution as "optimistic". We acknowledge that the effect sizes were mainly extracted from human studies. However, in large parts the distribution is in agreement with effect sizes reported to be typical of (some areas of) preclinical research (find good ref here). Moreover, this collection of empirical effect sizes is unique in its size and we reasoned that it constitutes a good refrence (# or something similar to motivate this choice; or maybe mention this only later in discussion as limitation). 
+
+As our study is concerned specifically with preclinical research, we chose a second distribution of empirical effect sizes to represent one field of the preclinical realm. Carneiro et al.'s (2018) [@carneiro2018effect] study sytematically examined effect sizes in the rodent fear conditioning literature. Effect sizes were extracted from 410 experiments published in PubMed in 2013. The publication included a data file containing all extracted effect sizes. After removing NA's, the data set consisted of 336 effect sizes, again, calculated as Cohen's *d*. The effect sizes range from `r round(min(ES_data_Carneiro$D), 2)` to `r round(max(ES_data_Carneiro$D), 2)`, and have a median of `r round(median(ES_data_Carneiro$D), 2)` (Figure \@ref(fig:histograms)b). The prior probability of observing an effect of 0.5 is `r round(outcomes_all_distributions_init_samp_size_10$prev_pop[2], 2)`. We will therefore refer to this distribution as "pessimistic". 
+
+Drawing from empirical effect size distributions, enables the direct comparison between pre-study odds and the positive predictive value across the trajectory. If, as outlined in the introduction, throughout the preclinical research trajectory evidence for an initial claim is strengthened, we would observe an increased positive predictive value compared to pre-study odds.
+
+
+```{r histograms, echo = FALSE, fig.cap = 'Empirical effect size distributions. Note that in (a) 13 values $>$ 20 were removed in order to display the distribution.', fig.subcap = c('Optimistic distribution', 'Pessimistic distribution'), out.width = "50%"}
+ES_histrogram_Szucs <-
+  ggplot(data = ES_Szucs, aes(x = D)) +
+  geom_histogram(binwidth = .3, color = "black", fill = "white", size = 0.3) +
+  theme_bw() +
+  labs(x = expression(paste("Empirical effect sizes (Cohen's ", italic("d"), ") ")), 
+       y = "Frequency") + 
+  theme(axis.title.x = element_text(size = 16)) +
+  theme(axis.title.y = element_text(size = 16)) +
+  theme(axis.text.x = element_text(size = 15, colour = "black")) +
+  theme(axis.text.y = element_text(size = 15, colour = "black"))
+
+ES_histrogram_Szucs
+
+ES_histrogram_Carneiro <-
+  ggplot(data = ES_data_Carneiro, aes(x = D)) +
+  geom_histogram(binwidth = .3, color = "black", fill = "white", size = 0.3) +
+  theme_bw() +
+  labs(x = expression(paste("Empirical effect sizes (Cohen's ", italic("d"), ") ")), 
+       y = "Frequency") + 
+  theme(axis.title.x = element_text(size = 16)) +
+  theme(axis.title.y = element_text(size = 16)) +
+  theme(axis.text.x = element_text(size = 15, colour = "black")) +
+  theme(axis.text.y = element_text(size = 15, colour = "black"))
+
+ES_histrogram_Carneiro
+```
+
+### Exploratory stage
+
+\ \ \ \ From each of the two distributions, we drew 10000 samples of effect sizes from which we created 10000 study data sets using R's `rnorm` function (ref or better list of all packages used for simulation with credits). Each data set comprised data of two groups consisting of ten experimental units each. An experimental unit (EU) is the entity that is randomly and independently assigned to one of the experimental groups [@lazic2018exactly]. We chose a number of ten EUs based on reported sample sizes in preclinical studies [@howells2014bringing]. Our simulated design mimics a comparison between two groups where one receives an intervention and the other functions as a control group. The study data sets are compared using a two-sided two-sample *t*-test. This procedure constituted the exploratory study in our preclinical research trajectory. From the exploratory study results, we extracted the *p*-values and 95 percent confidence intervals (CI). We then employed two different criteria based on the *p*-value or 95 percent CI, respectively, to decide whether to continue to a replication.  
+
+### Decision criteria to proceed to replication
+\ \ \ \ The first decision criterion employs the conventional significance threshold  ($\alpha$ = .05) to decide whether to replicate an exploratory study. If a *p*-value extracted from a two-sided two-sample *t*-test is $\leq$ .05, this study will proceed to the replication stage. If not, the trajectory is terminated after the exploratory study. We chose this decision criterion as our reference, as this is what we consider to be current practice. 
+
+As an alternative to this approach, we propose to set a smallest effect size of interest (SESOI) and examine whether the 95 percent CI around the exploratory effect size estimate covers this SESOI. A SESOI is the effect size that the researcher based their knowledge of the literature in their respective field (domain knowledge) and given practical constraints considers biologically and clinically meaningful [@lakens2018equivalence]. In our simulation, we used 0.5 and 1.0 as SESOI. This approach emphasizes the importance of effect sizes rather than statistical significance to evaluate an intervention's effect. Further, we expected this approach to be more lenient than statistical significance (at least if the significance threshold was set at $\alpha$ = .05) and to allow a broader range of effect sizes to pass on to be further investigated.
+
+### Approaches to determine sample size for replication
+
+\ \ \ \ Once the decision to continue to replication has been made, we employed two different approaches to determine the sample size for the replication study. After having conducted an exploratory study, we have an estimate of the direction of the effect. Only effect sizes that showed an effect that favors the treatment over the control group were considered for further investigation. Thus, for the replication study, a one-sided two-sample *t*-test was performed. The desired power level for replication was set to .80, $\alpha$ was set to .05. In order to calculate the sample size for replication given power and $\alpha$, an effect size estimate is required. In one approach, we used the exploratory effect size estimate to compute the replication sample size. In an alternative approach, we employed the same SESOI used as decision criterion earlier. In statistical terms, our SESOI was set such that the replication study would have a power of .50 to detect an effect of this size (# explain in more detail and find good ref to motivate this: Lakens). Consequently, in the first approach, the replication sample size was dependent on the outcome of the exploratory study, whereas using a SESOI always yielded the same sample size regardless of the exploratory effect size (e.g. 23 EUs in each group for a SESOI of 0.5).
+
+## Trajectories and outcome variables
+
+\ \ \ \ We tested a set of four possible combinations of decision criteria and approaches to calculate the sample size for a replication study that can be employed along the trajectory (Figure \@ref(fig:trajectory)).
+
+In the results section, we compare only the two trajectories that are the extremes of the spectrum of trajectories we have modeled: First, conventional significance threshold -- standard sample size calculation using initial
+effect size estimate, second, SESOI within CI around initial effect size estimate -- standard sample size calculation using SESOI. In the following, we refer to the first trajectory as T1 and to the second as T2. We have stored data, results, and figures of all four trajectories in an online repository (insert URL here).
+
+T1 constitutes our reference, as we consider it to be closest to current practice. T1 and T2 are compared regarding the number of experiments proceeding to the replication stage, number of animals needed in the replication, and positive predictive value across the trajectory. Secondary outcomes are the false positive rate, false negative rate, and effect size precision.
+
+### Percentage of experiments proceeding to replication stage
+
+\ \ \ \ Given the pre-study odds of finding an effect of a certain size (in our case 0.5 and 1.0 as SESOI), this outcome is an indication of how strict or lenient the filters are we use to select effects sizes that we deem relevant for further examination (i.e. to confirm them in a within-lab replication study). We employed two different decision criteria to determine when to continue to the replication stage. 
+
+### Number of animals needed in the replication
+
+### Positive predictive value across trajectory
+
+\ \ \ \ The positive predictive value (PPV) of a study is the post-study probability that a positive finding which is based on statistical significance reflects a true effect [@ioannidis2005most]. To calculate the positive predictive value, one (ideally) needs the pre-study odds (prevalence), as well as the sensitivity and specificity of the test (measurement). 
+
+### False positive rate across trajectory
+
+\ \ \ \ The false positive rate (FPR) is the proportion of tests that detected a positive result when there was no true effect present. In our simulation, a false positive correponds to a significant finding given an underlying true effect $<$ 0.5 or 1.0, respectively. 
+
+### False negative rate across trajectory
+
+\ \ \ \ The false negative rate (FNR) is the rpoportion of tests that missed a true positive relationship. In our simulation, this correponds to non-significant results given that the underlying true effect was $\geq$ 0.5 or 1.0, respectively. 
+
+### Effect size precision
+
+\ \ \ \ text
+
+## Robustness checks
+
+\ \ \ \ As a robustness check, we ran additional simulations using seven and 15 EUs in each group of the exploratory study, repectively. We also used additional effect sizes as SESOI (0.3 and 0.7). To compare the SESOI decision criterion at the first stage to a more lenient criterion based on statistical significance, we also simulated trajectories using $\alpha$ = .1 as significance threshold. We have stored data, results, and figures of the robustness checks in an online repository (insert URL here).
+
+
+# Results
+
+## Percentage of experiments proceeding to replication stage
+
+### Conventional significance threshold
+
+\ \ \ \ For this decision criterion, we extracted the *p*-value from the two-sided two-sample *t*-test we conducted at the exploratory stage, and compared it to the significance level we chose as a cut off ($\alpha$ = .05). The decision to proceed to replication was solely based on the *p*-value. Effect size estimates were not considered in this step. In case of our "optimistic" scenario based on the empirical effect size distribution reported by Szucs & Ioannidis (2017) [@szucs2017empirical], `r outcomes_all_distributions_init_samp_size_10$rep_attempts[8] / 100` percent of experiments met the criterion *p* $\leq$ .05. In our "pessimistic" scenario based on the empirical effect size distribution reported by Carneiro et al. (2018)[ @carneiro2018effect], `r outcomes_all_distributions_init_samp_size_10$rep_attempts[4] / 100` percent of experiments had a *p*-value $\leq$ .05. We removed effect sizes that were smaller than zero, as we reasoned that only experiments showing effects in the direction treatment $>$ control would be further investigated. Thus the `r outcomes_all_distributions_init_samp_size_10$rep_attempts[8] / 100` and `r outcomes_all_distributions_init_samp_size_10$rep_attempts[4] / 100` percent, respectively, do include only effect sizes larger than zero. A closer look at the effect sizes of the experiments that proceeded to replication reveals that the conventional significance threshold is a conservative filter. There aren't many effect sizes around zero, but only larger effect sizes (in both directions before removal of negative effect sizes). #figure? This has consequences for the sample size calculation as well as the PPV. 
+
+### SESOI within the 95 percent CI of the exploratory effect size estimate
+
+\ \ \ \ In another approach, after conducting a two-sided two-sample *t*-test at the exploratory stage, we estimated the effect size and 95 percent CI around that estimate. We examined whether the CI covered our SESOI (0.5 and 1.0, respectively). If this was the case for an experiment, it advanced to the replication stage. Importantly, we did not consider the *p*-value additionally. Applying this decision criterion resulted in `r outcomes_all_distributions_init_samp_size_10$rep_attempts[6] / 100` and `r outcomes_all_distributions_init_samp_size_10$rep_attempts[5] / 100` percent of experiments moving to replication in case of the "optimistic" distribution and `r outcomes_all_distributions_init_samp_size_10$rep_attempts[2] / 100` and `r outcomes_all_distributions_init_samp_size_10$rep_attempts[1] / 100` percent for thes "pessimistic" distribution based on an SESOI of 0.5 and 1.0, respectively. Compared to the conventional significance threshold, the range of effect size estimates that proceeded to replication shifts and inlcudes less extreme values, and a lot more values closer to zero. #figure?
+
+## Number of animals needed in the replication
+
+\ \ \ \ In trajectory T1, sample sizes were calculated using the standard approach. We extracted the effect size estimate from the exploratory study and used it to calculate the sample size for the replication study. This resulted in a mean number of `r round(outcomes_all_distributions_init_samp_size_10$mean_N[7], 2)` (SD = `r round(outcomes_all_distributions_init_samp_size_10$mean_N[7] - outcomes_all_distributions_init_samp_size_10$mean_N_min[7], 2)`) animals in the "optimistic", and `r round(outcomes_all_distributions_init_samp_size_10$mean_N[3], 2) ` (SD = `r round(outcomes_all_distributions_init_samp_size_10$mean_N[3] - outcomes_all_distributions_init_samp_size_10$mean_N_min[3], 2)`) in the "pessimistic" scenario. 
+In trajectory T2, the number of animals varied with the SESOI that was chosen. For an SESOI of 1.0, `r round(outcomes_all_distributions_init_samp_size_10$mean_N[1])` animals were needed in the replication in both the "optimistic" and "pessimistic" scenario. If the SESOI was 0.5, animal numbers increased to `r round(outcomes_all_distributions_init_samp_size_10$mean_N[2])` (Figure \@ref(fig:animalnumbers)). Note that the sample sizes reported are the number of animals needed in each group (control and intervention).
+
+```{r, echo = FALSE}
+plot_data <-
+  outcomes_all_distributions_init_samp_size_10 %>% 
+  filter(init_sample_size == 10) %>% 
+  group_by(distribution, SESOI)
+```
+
+```{r animalnumbers, echo = FALSE, message = FALSE, out.width = "80%", fig.cap = "Number of animals needed in replication. Error bars represent standard deviations. Note that in case of trajectories using a SESOI to calculate sample size for replication the number of animals is fixed.", fig.align = 'center'}
+plot_mean_N <-
+  ggplot(data = plot_data,
+         aes(x = factor(trajectory), y = mean_N, fill = factor(SESOI))) +
+  geom_bar(stat = "identity", position = "dodge",
+           size = .3,
+           color = "black") +
+  geom_errorbar(aes(ymax = mean_N_max, ymin = mean_N_min), width = 0.1,
+                position = position_dodge(width = 0.9)) +
+  facet_grid(~ distribution) +
+  # ggtitle("Mean number of animals for each trajectory") +
+  labs(x = "Trajectory", y = "Mean # of animals in replication",
+       fill = "SESOI") +
+  scale_x_discrete(labels = c("T1", "T2")) +
+  scale_fill_manual(labels = c("0.5", "1.0"), values = c("grey27", "grey47")) + 
+  theme_bw() +
+  theme(axis.title.x = element_text(size = 14)) +
+  theme(axis.title.y = element_text(size = 14)) +
+  theme(axis.text.x = element_text(size = 12, colour = "black")) +
+  theme(axis.text.y = element_text(size = 12, colour = "black")) +
+  theme(strip.text.x = element_text(size = 15, colour = "black", face = "bold")) +
+  theme(strip.background = element_rect(fill = "white", color = "black")) +
+  theme(legend.title = element_text(size = 15, face = "bold")) +
+  theme(legend.text = element_text(size = 14))
+  # theme(title = element_text(size = 15))
+
+plot_mean_N
+```
+
+## Positive predictive value across trajectory
+
+\ \ \ \ In our study, the pre-study odds were determined by the empirical effect size distributions and varied with the SESOI. In the "optimistic" scenario, the pre-study odds were `r round(outcomes_all_distributions_init_samp_size_10$prev_pop[6], 2)` and `r round(outcomes_all_distributions_init_samp_size_10$prev_pop[5], 2)` for SESOI of 0.5 and 1.0, respectively. In the "pessimistic" scenario pre-study odds were `r round(outcomes_all_distributions_init_samp_size_10$prev_pop[2], 2)` and `r round(outcomes_all_distributions_init_samp_size_10$prev_pop[1], 2)`, respectively. 
+Across trajectory T1, the PPV drops below pre-study odds in both scenarios (Figure \@ref(fig:PPV)). After the within-lab replication study, the PPV is `r round(outcomes_all_distributions_init_samp_size_10$PPV_pop_prev[8], 2)` and  `r round(outcomes_all_distributions_init_samp_size_10$PPV_pop_prev[7], 2)` in the "optimitsic" scenario for SESOI of 0.5 and 1.0, respectively. In the "pessimistic" scenario, the PPV is `r round(outcomes_all_distributions_init_samp_size_10$PPV_pop_prev[4], 2)` and `r round(outcomes_all_distributions_init_samp_size_10$PPV_pop_prev[3], 2)`.
+In trajectory T2, employing a SESOI at both stages along the decision-making process elevates the PPV above pre-study odds. Given our "optimistic" emoirical distribution, the PPV is `r round(outcomes_all_distributions_init_samp_size_10$PPV_pop_prev[6], 2)` and `r round(outcomes_all_distributions_init_samp_size_10$PPV_pop_prev[5], 2)` for SESOI of 0.5 and 1.0, respectively. In the "pessimistic" scenario, the PPV is `r round(outcomes_all_distributions_init_samp_size_10$PPV_pop_prev[2], 2)` and `r round(outcomes_all_distributions_init_samp_size_10$PPV_pop_prev[1], 2)`
+
+```{r PPV, echo = FALSE, message = FALSE, out.width = "80%", fig.cap = "Positive predictive value across trajectory. Dashed lines indicate pre-study odds based on empirical effect size distributions.", fig.align = 'center'}
+facet_names <- c(
+  "0.5" = "SESOI = 0.5",
+  "1" = "SESOI = 1.0")
+
+plot_PPV <-
+  ggplot(data = plot_data, 
+         aes(x = factor(trajectory), y = PPV_pop_prev)) +
+  geom_point(size = 3, alpha = .8) +
+  facet_grid(SESOI ~ distribution, labeller = labeller(.rows = facet_names)) +
+  # ggtitle("Positive predictive value for each trajectory") +
+  labs(x = "Trajectory", y = "Positive predictive value") +
+  scale_x_discrete(labels = c("T1", "T2")) +
+  # scale_x_discrete(labels = c("Equivalence \nSESOI", "Significance \nSESOI",
+  #                             "Equivalence \nStandard", "Significance \nStandard")) +
+  # scale_fill_manual(breaks = c("0.5", "1"), 
+  #                   values = c("steelblue", "deeppink3")) +
+  theme_bw() +
+  theme(axis.title.x = element_text(size = 14)) +
+  theme(axis.title.y = element_text(size = 14)) +
+  theme(axis.text.x = element_text(size = 12, colour = "black")) +
+  theme(axis.text.y = element_text(size = 12, colour = "black")) +
+  theme(strip.text.x = element_text(size = 15, colour = "black", face = "bold")) +
+  theme(strip.text.y = element_text(size = 15, colour = "black", face = "bold")) +
+  theme(strip.background = element_rect(fill = "white", color = "black")) +
+  theme(legend.title = element_text(size = 15, face = "bold")) +
+  theme(legend.text = element_text(size = 14))
+  # theme(title = element_text(size = 15))
+
+hlines <- data.frame(pre_study_odds = c(plot_data$Prevalence[1], plot_data$Prevalence[2],
+                                        plot_data$Prevalence[5], plot_data$Prevalence[6]), 
+                     distribution   = c(rep(plot_data$distribution[1], 2), 
+                                        rep(plot_data$distribution[5], 2)),
+                     SESOI          = rep(c("1", "0.5"))) 
+
+plot_PPV <- 
+  plot_PPV + 
+  geom_hline(data = hlines, 
+             aes(yintercept = pre_study_odds),
+             color = "black", lty = 2, size = .5)
+
+plot_PPV
+```
+
+## False positive rate across trajectory
+
+\ \ \ \ Across trajectory T1, given the "optimistic" scenario, the FPR was `r round(outcomes_all_distributions_init_samp_size_10$FPR[8], 2)` and `r round(outcomes_all_distributions_init_samp_size_10$FPR[7], 2)` for SESOI of 0.5 and 1.0, respectively. In the "pessimistic" scenario, the FPR was `r round(outcomes_all_distributions_init_samp_size_10$FPR[4], 3)` and `r round(outcomes_all_distributions_init_samp_size_10$FPR[3], 2)` for SESOI of 0.5 and 1.0, respectively.
+Across trajectory T2, the FPR increased to `r round(outcomes_all_distributions_init_samp_size_10$FPR[6], 2)` and `r round(outcomes_all_distributions_init_samp_size_10$FPR[5], 2)` in the "optimistic" scenario for SESOI of 0.5 and 1.0. Given the "pessimistic" scenario, the FPR was `r round(outcomes_all_distributions_init_samp_size_10$FPR[2], 2)` and `r round(outcomes_all_distributions_init_samp_size_10$FPR[1], 2)` for SESOI set to 0.5 and 1.0. 
+
+```{r FPR, echo = FALSE, message = FALSE, out.width = "80%", fig.cap = "False positive rate across trajectory.", fig.align = 'center'}
+facet_names <- c(
+  "0.5" = "SESOI = 0.5",
+  "1" = "SESOI = 1.0")
+
+plot_FPR <-
+  ggplot(data = plot_data, 
+         aes(x = factor(trajectory), y = FPR)) +
+  geom_point(size = 3, alpha = .8) +
+  facet_grid(SESOI ~ distribution, labeller = labeller(.rows = facet_names)) +
+  # ggtitle("False positive rate for each trajectory") +
+  labs(x = "Trajectory", y = "False positive rate") +
+  scale_x_discrete(labels = c("T1", "T2")) +
+  # scale_x_discrete(labels = c("Equivalence \nSESOI", "Significance \nSESOI",
+  #                             "Equivalence \nStandard", "Significance \nStandard")) +
+  theme_bw() +
+  theme(axis.title.x = element_text(size = 14)) +
+  theme(axis.title.y = element_text(size = 14)) +
+  theme(axis.text.x = element_text(size = 12, colour = "black")) +
+  theme(axis.text.y = element_text(size = 12, colour = "black")) +
+  theme(strip.text.x = element_text(size = 15, colour = "black", face = "bold")) +
+  theme(strip.text.y = element_text(size = 15, colour = "black", face = "bold")) +
+  theme(strip.background = element_rect(fill = "white", color = "black")) +
+  theme(legend.title = element_text(size = 15, face = "bold")) +
+  theme(legend.text = element_text(size = 14))
+  # theme(title = element_text(size = 15))
+
+plot_FPR
+```
+
+## False negative rate across trajectory
+
+\ \ \ \ Across trajectory T1, given the "optimistic" scenario, the FNR was `r round(outcomes_all_distributions_init_samp_size_10$FNR[8], 2)` and `r round(outcomes_all_distributions_init_samp_size_10$FNR[7], 2)` for SESOI set to 0.5 and 1.0, respectively.  In the "pessimistic" scenario, the FNR was `r round(outcomes_all_distributions_init_samp_size_10$FNR[4], 2)` and `r round(outcomes_all_distributions_init_samp_size_10$FNR[3], 2)` for SESOI of 0.5 and 1.0, respectively.
+Across trajectory T2, the FNR decreased to `r round(outcomes_all_distributions_init_samp_size_10$FNR[6], 2)` and `r round(outcomes_all_distributions_init_samp_size_10$FNR[5], 2)` in the "optimistic" scenario for SESOI set to 0.5 and 1.0. Given the "pessimistic" scenario, the FNR was `r round(outcomes_all_distributions_init_samp_size_10$FNR[2], 2)` and `r round(outcomes_all_distributions_init_samp_size_10$FNR[1], 2)` for SESOI of 0.5 and 1.0
+
+```{r FNR, echo = FALSE, message = FALSE, out.width = "80%", fig.cap = "False negative rate across trajectory.", fig.align = 'center'}
+facet_names <- c(
+  "0.5" = "SESOI = 0.5",
+  "1" = "SESOI = 1.0")
+
+plot_FNR <-
+  ggplot(data = plot_data, 
+         aes(x = factor(trajectory), y = FNR)) +
+  geom_point(size = 3, alpha = .8) +
+  facet_grid(SESOI ~ distribution, labeller = labeller(.rows = facet_names)) +
+  # ggtitle("False positive rate for each trajectory") +
+  labs(x = "Trajectory", y = "False negative rate") +
+  scale_x_discrete(labels = c("T1", "T2")) +
+  # scale_x_discrete(labels = c("Equivalence \nSESOI", "Significance \nSESOI",
+  #                             "Equivalence \nStandard", "Significance \nStandard")) +
+  theme_bw() +
+  theme(axis.title.x = element_text(size = 14)) +
+  theme(axis.title.y = element_text(size = 14)) +
+  theme(axis.text.x = element_text(size = 12, colour = "black")) +
+  theme(axis.text.y = element_text(size = 12, colour = "black")) +
+  theme(strip.text.x = element_text(size = 15, colour = "black", face = "bold")) +
+  theme(strip.text.y = element_text(size = 15, colour = "black", face = "bold")) +
+  theme(strip.background = element_rect(fill = "white", color = "black")) +
+  theme(legend.title = element_text(size = 15, face = "bold")) +
+  theme(legend.text = element_text(size = 14))
+  # theme(title = element_text(size = 15))
+
+plot_FNR
+```
+
+## Effect size precision
+
+\ \ \ \ text
+
+
+# Discussion
+
+\ \ \ \ text
+
+\newpage
+
+# References
+\ \ \ \ 
+
+

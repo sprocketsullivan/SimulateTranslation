@@ -8,52 +8,46 @@ library(tidyverse)
 
 #source("./scripts/calculate_outcomes_onesided_across_trajectory.R")
 
-out1 <- read.csv(file = "./data/Carneiro_outcomes_equiv_method1_1.0")
-out2 <- read.csv(file = "./data/Carneiro_outcomes_equiv_method2_1.0")
-out3 <- read.csv(file = "./data/Carneiro_outcomes_sig_method1_1.0")
-out4 <- read.csv(file = "./data/Carneiro_outcomes_sig_method2_1.0")
+out1 <- read.csv(file = "./data/Carneiro_distribution/Frequentist_analysis/Carneiro_outcomes_equiv_method1_1.0")
+out2 <- read.csv(file = "./data/Carneiro_distribution/Frequentist_analysis/Carneiro_outcomes_equiv_method2_1.0")
+out3 <- read.csv(file = "./data/Carneiro_distribution/Frequentist_analysis/Carneiro_outcomes_sig_method1_1.0")
+out4 <- read.csv(file = "./data/Carneiro_distribution/Frequentist_analysis/Carneiro_outcomes_sig_method2_1.0")
 
 
 outcomes1 <- bind_rows(out1, out2, out3, out4)
 outcomes1$SESOI <- 1.0
 
-out5 <- read.csv(file = "./data/Carneiro_outcomes_equiv_method1_0.7")
-out6 <- read.csv(file = "./data/Carneiro_outcomes_equiv_method2_0.7")
-out7 <- read.csv(file = "./data/Carneiro_outcomes_sig_method1_0.7")
-out8 <- read.csv(file = "./data/Carneiro_outcomes_sig_method2_0.7")
+out5 <- read.csv(file = "./data/Carneiro_distribution/Frequentist_analysis/Carneiro_outcomes_equiv_method1_0.7")
+out6 <- read.csv(file = "./data/Carneiro_distribution/Frequentist_analysis/Carneiro_outcomes_equiv_method2_0.7")
+out7 <- read.csv(file = "./data/Carneiro_distribution/Frequentist_analysis/Carneiro_outcomes_sig_method1_0.7")
+out8 <- read.csv(file = "./data/Carneiro_distribution/Frequentist_analysis/Carneiro_outcomes_sig_method2_0.7")
 
 
 outcomes2 <- bind_rows(out5, out6, out7, out8)
 outcomes2$SESOI <- 0.7
 
-out9  <- read.csv(file = "./data/Carneiro_outcomes_equiv_method1_0.5")
-out10 <- read.csv(file = "./data/Carneiro_outcomes_equiv_method2_0.5")
-out11 <- read.csv(file = "./data/Carneiro_outcomes_sig_method1_0.5")
-out12 <- read.csv(file = "./data/Carneiro_outcomes_sig_method2_0.5")
+out9  <- read.csv(file = "./data/Carneiro_distribution/Frequentist_analysis/Carneiro_outcomes_equiv_method1_0.5")
+out10 <- read.csv(file = "./data/Carneiro_distribution/Frequentist_analysis/Carneiro_outcomes_equiv_method2_0.5")
+out11 <- read.csv(file = "./data/Carneiro_distribution/Frequentist_analysis/Carneiro_outcomes_sig_method1_0.5")
+out12 <- read.csv(file = "./data/Carneiro_distribution/Frequentist_analysis/Carneiro_outcomes_sig_method2_0.5")
 
 
 outcomes3 <- bind_rows(out9, out10, out11, out12)
 outcomes3$SESOI <- 0.5
 
-out13 <- read.csv(file = "./data/Carneiro_outcomes_equiv_method1_0.3")
-out14 <- read.csv(file = "./data/Carneiro_outcomes_equiv_method2_0.3")
-out15 <- read.csv(file = "./data/Carneiro_outcomes_sig_method1_0.3")
-out16 <- read.csv(file = "./data/Carneiro_outcomes_sig_method2_0.3")
+out13 <- read.csv(file = "./data/Carneiro_distribution/Frequentist_analysis/Carneiro_outcomes_equiv_method1_0.3")
+out14 <- read.csv(file = "./data/Carneiro_distribution/Frequentist_analysis/Carneiro_outcomes_equiv_method2_0.3")
+out15 <- read.csv(file = "./data/Carneiro_distribution/Frequentist_analysis/Carneiro_outcomes_sig_method1_0.3")
+out16 <- read.csv(file = "./data/Carneiro_distribution/Frequentist_analysis/Carneiro_outcomes_sig_method2_0.3")
 
 outcomes4 <- bind_rows(out13, out14, out15, out16)
 outcomes4$SESOI <- 0.3
 
-# out17 <- read.csv(file = "./data/Szucs_outcomes_sig_method1_25EU_per_group_0.3")
-# out18 <- read.csv(file = "./data/Szucs_outcomes_sig_method1_25EU_per_group_0.5")
-# out19 <- read.csv(file = "./data/Szucs_outcomes_sig_method1_25EU_per_group_0.7")
-# out20 <- read.csv(file = "./data/Szucs_outcomes_sig_method1_25EU_per_group_1.0")
-# 
-# outcomes5 <- bind_rows(out17, out18, out19, out20)
-# outcomes5$SESOI <- rep(c(0.3, 0.5, 0.7, 1.0), each = 3)
-
 outcomes <- bind_rows(outcomes1, outcomes2, outcomes3, outcomes4)
 
-#write.csv(outcomes, file = "./data/Carneiro_distribution_outcomes_all_SESOI_combined")
+write.csv(outcomes, 
+file = "./data/Carneiro_distribution/Frequentist_analysis/Carneiro_distribution_outcomes_all_SESOI_combined")
+
 
 outcomes <-
   outcomes %>% 

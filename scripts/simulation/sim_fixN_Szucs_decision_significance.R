@@ -25,7 +25,7 @@ library(doParallel)
 registerDoParallel()
 getDoParWorkers()
 
-n_exp <- 10000
+n_exp <- 10
 ES_true <- ES_data_Szucs$D
 
 set.seed(4321)
@@ -34,11 +34,11 @@ hist(ES_true, breaks = 200)
 hist(current_ES, breaks = 200)
 
 #how many hypothesis over SESOI threshold
-SESOI       <- c(.3, .5, .7, 1)
+SESOI       <- c(.5, 1)
 
 mat <- matrix(NA, nrow = 3, ncol = length(SESOI),
               dimnames = list(c("prev_pop", "all_positives", "all_negatives"), 
-                              c(.3, .5, .7, 1)))
+                              c(.5, 1)))
 
 prev_pop      <- vector()
 all_positives <- vector()
@@ -111,7 +111,7 @@ selection_sig <- list()
 for (i in 1:length(samp_size_vector)) {
   
   selection_sig[[i]] <- 
-    future_map(exploratory_data_summary[[i]], get_decision_sig)
+    future_map(exploratory_data_summary[[i]], get_decision_sig, pval_threshold = 0.05)
   
 }
 
@@ -138,6 +138,6 @@ dat <- bind_cols(df, df_sig)
 
 dat$ES_true <- current_ES
 
-write.csv(dat, file = "./data/Szucs_distribution_only_exploratory_stage")
+# write.csv(dat, file = "./data/Szucs_distribution_only_exploratory_stage")
 
 
