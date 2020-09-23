@@ -38,7 +38,7 @@ Given the importance of preclinical research on the one hand, and its shortcomin
 
 For the purpose of this project, we understand replications as studies whose outcome is taken as "diagnostic evidence about a claim from prior research" [@nosek2020replication]. In the framework of preclinical research trajectories, replications are considered part of a confirmation process. Given that a series of experiments is needed to confirm a hypothesis about a directional relationship (compound X causes reaction Y), replications incrementally solidify evidence supporting (or refuting) an initial claim.  
 
-When planning a replication study, the sample size has to be determined *a priori*. This is usually done using an effect size estimate from prior research. This can be taken from the literature or a pilot study. In both cases, the effect size estimate used is most likely inflated due to reasons outlined above. Employing an overestimated effect size for sample size calculation given a desired power level (for example, 0.8) and significance threshold (for example, .05), will yield a sample size that is too low to reliably detect effects. This is especially true if effects are small. When statistical power is low, non-replications will often denote a false negative under the assumption that an underlying effect exists. An insufficiently powered replication is not suited to support or refute a previously made claim, as success and failure might be accounted for simply by inference errors.
+When planning a replication study, the sample size has to be determined *a priori*. This is usually done using an effect size estimate from prior research. This can be taken from the literature or a pilot study. In both cases, the effect size estimate used is most likely inflated due to reasons outlined above. Employing an overestimated effect size for sample size calculation given a desired power level (for example, 0.8) and significance threshold (for example, .05), will yield a sample size that is too low to reliably detect effects. This is especially true if true underlying effects are small. When statistical power is low, non-replications will often denote a false negative under the assumption that an underlying effect exists. An insufficiently powered replication is not suited to support or refute a previously made claim, as success and failure might be accounted for simply by inference errors.
 
 Above and beyond the concerns mentioned, preclinical animal research raises challenging ethical concerns. Therefore, the practice oriented 3R principles [@russell1959principles] seek to reduce harm and constrain the use of animals for scientific purposes to a minimum. Current animal welfare regulations undermine the scientific value of animal research, as they fail to integrate principles that ensure high quality of conducted studies [@strech20193rs]. From an ethical point of view, this is problematic in two ways: animals are sacrificed for inconclusive research and translation to patients is impeded. Preclinical animal research needs to balance animal welfare considerations and scientific benefit. Efforts to promote and implement the 3R’s must not come at the cost of scientific value.
 
@@ -48,8 +48,6 @@ Ethical, time, and budget constraints prevent preclinical researchers from incre
 
 
 # Methods
-
-<!-- \ \ \ \ This simulation-based investigation explores different approaches to design and conduct experiments in preclinical settings. We explore preclinical research trajectories and determine efficiency and feasibility qua positive predictive value (PPV) and number of animals tested. These criteria ensure that while the number of animals is kept at a minimum, low sample sizes do not compromise the conclusiveness of the study. -->
 
 ## Simulation
 
@@ -62,7 +60,6 @@ img1_path <- "trajectory_proposal.png"
 img1 <- readPNG(img1_path, native = TRUE, info = TRUE)
 attr(img1, "info")
 ```
-
 
 ```{r trajectory, echo = FALSE, message = FALSE, out.width = "80%", fig.cap = "A preclinical research trajectory from the exploratory stage to a within-lab replication. The four panels along the arrow display four possible combinations of decision criteria and approaches to calculate the sample size for replication that can be employed throughout the trajectory.", fig.align = 'center'}
 include_graphics(img1_path)
@@ -113,9 +110,6 @@ The distribution of effect sizes extracted from Szucs & Ioannidis (2017) [@szucs
 
 As our study is concerned specifically with preclinical research, we chose a second distribution of empirical effect sizes to represent one field of the preclinical realm. Carneiro et al.'s (2018) [@carneiro2018effect] study sytematically examined effect sizes in the rodent fear conditioning literature. Effect sizes were extracted from 410 experiments published in PubMed in 2013. The publication included a data file containing all extracted effect sizes. After removing NA's, the data set consisted of 336 effect sizes, again, calculated as Cohen's *d*. The effect sizes range from `r round(min(ES_data_Carneiro$D), 2)` to `r round(max(ES_data_Carneiro$D), 2)`, and have a median of `r round(median(ES_data_Carneiro$D), 2)` (Figure \@ref(fig:histograms)b). The prior probability of observing an effect of 0.5 is `r round(outcomes_all_distributions_init_samp_size_10$prev_pop[2], 2)`. We will therefore refer to this distribution as "pessimistic". 
 
-Drawing from empirical effect size distributions, enables the direct comparison between pre-study odds and the positive predictive value across the trajectory. If, as outlined in the introduction, throughout the preclinical research trajectory evidence for an initial claim is strengthened, we would observe an increased positive predictive value compared to pre-study odds.
-
-
 ```{r histograms, echo = FALSE, fig.cap = 'Empirical effect size distributions. Note that in (a) 13 values $>$ 20 were removed in order to display the distribution.', fig.subcap = c('Optimistic distribution', 'Pessimistic distribution'), out.width = "50%"}
 ES_histrogram_Szucs <-
   ggplot(data = ES_Szucs, aes(x = D)) +
@@ -157,32 +151,37 @@ As an alternative to this approach, we propose to set a smallest effect size of 
 
 \ \ \ \ Once the decision to continue to replication has been made, we employed two different approaches to determine the sample size for the replication study. After having conducted an exploratory study, we have an estimate of the direction of the effect. Only effect sizes that showed an effect that favors the treatment over the control group were considered for further investigation. Thus, for the replication study, a one-sided two-sample *t*-test was performed. The desired power level for replication was set to .80, $\alpha$ was set to .05. In order to calculate the sample size for replication given power and $\alpha$, an effect size estimate is required. In one approach, we used the exploratory effect size estimate to compute the replication sample size. In an alternative approach, we employed the same SESOI used as decision criterion earlier. In statistical terms, our SESOI was set such that the replication study would have a power of .50 to detect an effect of this size (# explain in more detail and find good ref to motivate this: Lakens). Consequently, in the first approach, the replication sample size was dependent on the outcome of the exploratory study, whereas using a SESOI always yielded the same sample size regardless of the exploratory effect size (e.g. 23 EUs in each group for a SESOI of 0.5).
 
-## Trajectories and outcome variables
+### Replication stage
+
+\ \ \ \ For each of the studies that met the decision criterion after the exploratory study (either *p* $\leq$ .05 or SESOI within the 95 percent CI of the exploratory effect size estimate) a replication study was performed. The number of replication studies conducted varied with the decision criterion used and, in case of the criterion employing a SESOI, also with the SESOI (0.5 and 1.0). A replication study was performed as a one-sided two-sample *t*-test, where the number of animals in each group was determined by the approach to calculate the sample size. For a replication be considered "successful", the *p*-value had to be below the conventional significance threshold ($\alpha$ = .05)
+
+## Trajectories
 
 \ \ \ \ We tested a set of four possible combinations of decision criteria and approaches to calculate the sample size for a replication study that can be employed along the trajectory (Figure \@ref(fig:trajectory)).
 
-In the results section, we compare only the two trajectories that are the extremes of the spectrum of trajectories we have modeled: First, conventional significance threshold -- standard sample size calculation using initial
-effect size estimate, second, SESOI within CI around initial effect size estimate -- standard sample size calculation using SESOI. In the following, we refer to the first trajectory as T1 and to the second as T2. We have stored data, results, and figures of all four trajectories in an online repository (insert URL here).
+In the results section, we compare only the two trajectories that are the extremes of the spectrum of trajectories we have modeled: The first trajectory uses the conventional significance threshold as decision criterion and employs a standard sample size calculation using initial effect size estimate. The second trajectory applies a SESOI as decision criterion to move from the exploratory to the replication stage, and to calculate the sample size for the replication. In the following, we refer to the first trajectory as T1 and to the second as T2. We have stored data, results, and figures of all four trajectories in an online repository (insert URL here).
 
-T1 constitutes our reference, as we consider it to be closest to current practice. T1 and T2 are compared regarding the number of experiments proceeding to the replication stage, number of animals needed in the replication, and positive predictive value across the trajectory. Secondary outcomes are the false positive rate, false negative rate, and effect size precision.
+T1 constitutes our reference, as we consider it to be closest to current practice. T1 and T2 are compared regarding the number of experiments proceeding to the replication stage, number of animals needed in the replication, and positive predictive value across the trajectory. Secondary outcomes are the false positive rate, false negative rate, and effect size precision. Outcome variables are outlined in more detail in the following section.
+
+## Outcome variables
 
 ### Percentage of experiments proceeding to replication stage
 
-\ \ \ \ Given the pre-study odds of finding an effect of a certain size (in our case 0.5 and 1.0 as SESOI), this outcome is an indication of how strict or lenient the filters are we use to select effects sizes that we deem relevant for further examination (i.e. to confirm them in a within-lab replication study). We employed two different decision criteria to determine when to continue to the replication stage. 
+\ \ \ \ This outcome serves as an indication of how strict or lenient the filters are that we used to select effect sizes that we deem relevant for further examination (i.e. to confirm them in a within-lab replication study).  
 
 ### Number of animals needed in the replication
 
 ### Positive predictive value across trajectory
 
-\ \ \ \ The positive predictive value (PPV) of a study is the post-study probability that a positive finding which is based on statistical significance reflects a true effect [@ioannidis2005most]. To calculate the positive predictive value, one (ideally) needs the pre-study odds (prevalence), as well as the sensitivity and specificity of the test (measurement). 
+\ \ \ \ The positive predictive value (PPV) of a study is the post-study probability that a positive finding which is based on statistical significance reflects a true effect [@ioannidis2005most]. To calculate the positive predictive value, one (ideally) needs the pre-study odds (prevalence), as well as the sensitivity and specificity of the test (measurement). Given that we drew effect sizes from empirical effect size distributions, we know the pre-study odds of an effect of 0.5 and 1.0. Drawing from empirical effect size distributions, enables the direct comparison between pre-study odds and the positive predictive value across the trajectory. If, as outlined in the introduction, throughout the preclinical research trajectory evidence for an initial claim is strengthened, we would observe an increased positive predictive value compared to pre-study odds.
 
 ### False positive rate across trajectory
 
-\ \ \ \ The false positive rate (FPR) is the proportion of tests that detected a positive result when there was no true effect present. In our simulation, a false positive correponds to a significant finding given an underlying true effect $<$ 0.5 or 1.0, respectively. 
+\ \ \ \ The false positive rate (FPR) is the proportion of tests that detected a positive result when there was no true effect present. In our simulation, a false positive correponds to a significant finding given an underlying true effect smaller than 0.5 or 1.0, respectively. 
 
 ### False negative rate across trajectory
 
-\ \ \ \ The false negative rate (FNR) is the rpoportion of tests that missed a true positive relationship. In our simulation, this correponds to non-significant results given that the underlying true effect was $\geq$ 0.5 or 1.0, respectively. 
+\ \ \ \ The false negative rate (FNR) is the proportion of tests that missed a true positive relationship. In our simulation, this correponds to non-significant results given that the underlying true effect was greater or equal to 0.5 or 1.0, respectively. 
 
 ### Effect size precision
 

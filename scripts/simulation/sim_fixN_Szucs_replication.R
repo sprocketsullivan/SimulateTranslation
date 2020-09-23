@@ -15,30 +15,30 @@ sum(dat$effect < 0) # empirical effect sizes are negative because t.test functio
 sum(dat$effect > 0) 
 sum(dat$ES_true < 0)
 
+data <-
+  dat %>%
+  group_by(init_sample_size, study_id) %>%
+  filter(selection_sig == 1)
+
 # data <-
 #   dat %>% 
 #   group_by(init_sample_size, study_id) %>% 
-#   filter(selection_sig == 1)
-
-data <-
-  dat %>% 
-  group_by(init_sample_size, study_id) %>% 
-  filter(selection_equiv == 1)
+#   filter(selection_equiv == 1)
 
 sum(data$effect < 0)
 sum(data$effect > 0)
 sum(data$effect == 0)
 
 
+selected <-
+  data %>%
+  group_by(init_sample_size) %>%
+  summarize(selected = sum(selection_sig == 1))
+
 # selected <-
 #   data %>% 
 #   group_by(init_sample_size) %>% 
-#   summarize(selected = sum(selection_sig == 1))
-
-selected <-
-  data %>% 
-  group_by(init_sample_size) %>% 
-  summarize(selected = sum(selection_equiv == 1))
+#   summarize(selected = sum(selection_equiv == 1))
 
 
 # now estimate sample size for replication study
@@ -51,7 +51,11 @@ for (i in 1:nrow(data)) {
   
   rep_sample_size_std[i] <-
     ceiling(calc_sample_size(data = data[i, ], sample_size = data[i, ]$init_sample_size,
-                             method = 2, SESOI = 1.0, power = 0.5))
+                             method = 1))
+  
+  # rep_sample_size_std[i] <-
+  #   ceiling(calc_sample_size(data = data[i, ], sample_size = data[i, ]$init_sample_size,
+  #                            method = 2, SESOI = 0.5, power = .5))
 }
 
 data$rep_samp_size_std <- rep_sample_size_std
@@ -94,9 +98,9 @@ rep_attempts <-
 replication_data <- list()
 rep_exp_no <- 0
 
-# select_experiments <- which(data$selection_sig == 1)
+select_experiments <- which(data$selection_sig == 1)
 
-select_experiments <- which(data$selection_equiv == 1)
+# select_experiments <- which(data$selection_equiv == 1)
 
 select_experiments <- select_experiments[data$effect[select_experiments] >= 0 ]
 

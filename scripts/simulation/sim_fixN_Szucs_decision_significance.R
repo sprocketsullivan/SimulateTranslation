@@ -25,7 +25,7 @@ library(doParallel)
 registerDoParallel()
 getDoParWorkers()
 
-n_exp <- 10
+n_exp <- 3
 ES_true <- ES_data_Szucs$D
 
 set.seed(4321)

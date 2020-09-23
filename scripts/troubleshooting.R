@@ -20,7 +20,9 @@ round(power.t.test(n = 61, delta = NULL	, sd = 1, sig.level = .05, power = .8,
 
 abs(aa$mean_effect[2] - aa$mean_effect[1]) > 16
 
-
+ceiling(power.t.test(n = NULL, delta = 1.4190	, sd = 1, sig.level = .05, power = .8,
+                     type = "two.sample",
+                     alternative = "one.sided")$n)
 
 
 ES_true=1
