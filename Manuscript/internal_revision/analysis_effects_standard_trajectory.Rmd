@@ -1,0 +1,98 @@
+---
+title: "Analysis of effect sizes in standard trajectory"
+#csl: biomed-central.csl
+indent: yes
+output: bookdown::pdf_document2
+toc: false
+linestretch: 1.5
+fontsize: 12pt
+header-includes:
+       - \usepackage{subfig}
+#bibliography: refs_repro.bib
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r libraries, echo = FALSE, message = FALSE, warning = FALSE}
+library(bookdown)
+library(knitr)
+library(pwr)
+library(tidyverse)
+```
+
+```{r data_effect_sizes_after_replication, echo = FALSE, message = FALSE, results = 'hide'}
+load("effect_sizes_with_CI_after_replication.RData")
+
+# filter all effects > 5 in T1 (standard trajectory)
+T1_data <-
+  final_init_samp_size_10 %>% 
+  filter(trajectory == "T1") %>% 
+  filter(effect < 5)
+
+mean_N <- 
+  T1_data %>% 
+  group_by(distribution) %>% 
+  summarize(mean_N = mean(rep_sample_size))
+
+ceiling(mean(T1_data$rep_sample_size))
+
+powered_d_50 <-
+  pwr.t.test(n = ceiling(mean(T1_data$rep_sample_size)),
+             d = NULL, sig.level = .05, power = .5,
+             type = "two.sample",
+             alternative = "greater")$d
+
+powered_d_80 <-
+  pwr.t.test(n = ceiling(mean(T1_data$rep_sample_size)),
+             d = NULL, sig.level = .05, power = .8,
+             type = "two.sample",
+             alternative = "greater")$d
+```
+
+```{r plot_effects_powered_at_50, echo = FALSE, message = FALSE, out.width = "80%", fig.align = 'center'}
+ggplot(data = T1_data,
+       aes(x = distribution, y = effect)) +
+  # facet_wrap(~ distribution) +
+  geom_violin(position = position_dodge(width = 0.9)) +
+  geom_rect(fill = "lightgrey", alpha = .01, 
+            aes(xmin = -Inf, xmax = Inf, 
+                ymin = powered_d_50, ymax = Inf)) +
+  # geom_rect(fill = "lightgrey", alpha = .01, 
+  #           aes(xmin = -Inf, xmax = Inf, 
+  #               ymin = powered_d_50, ymax = powered_d_80)) +
+  labs(x = "Distribution",
+       y = expression(paste("Effect sizes (Cohen's ", italic("d"), ") "))) +
+  theme_bw() +
+  theme(axis.title.x = element_text(size = 14)) +
+  theme(axis.title.y = element_text(size = 14)) +
+  theme(axis.text.x = element_text(size = 12, colour = "black")) +
+  theme(axis.text.y = element_text(size = 12, colour = "black"))
+  # geom_quasirandom(dodge.width = 0.9,
+  #                  varwidth = FALSE,
+  #                  size = .5, alpha = 0.3)
+```
+
+```{r plot_effects_powered_at_80, echo = FALSE, message = FALSE, out.width = "80%", fig.align = 'center'}
+ggplot(data = T1_data,
+       aes(x = distribution, y = effect)) +
+  # facet_wrap(~ distribution) +
+  geom_violin(position = position_dodge(width = 0.9)) +
+  # geom_rect(fill = "lightgrey", alpha = .01, 
+  #           aes(xmin = -Inf, xmax = Inf, 
+  #               ymin = powered_d_50, ymax = Inf)) +
+  geom_rect(fill = "lightgrey", alpha = .01,
+            aes(xmin = -Inf, xmax = Inf,
+                ymin = powered_d_80, ymax = Inf)) +
+  labs(x = "Distribution",
+       y = expression(paste("Effect sizes (Cohen's ", italic("d"), ") "))) +
+  theme_bw() +
+  theme(axis.title.x = element_text(size = 14)) +
+  theme(axis.title.y = element_text(size = 14)) +
+  theme(axis.text.x = element_text(size = 12, colour = "black")) +
+  theme(axis.text.y = element_text(size = 12, colour = "black"))
+  # geom_quasirandom(dodge.width = 0.9,
+  #                  varwidth = FALSE,
+  #                  size = .5, alpha = 0.3)
+```

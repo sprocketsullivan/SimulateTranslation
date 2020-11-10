@@ -7,7 +7,7 @@ library(viridis)
 
 #source("./scripts/calculate_outcomes_onesided_across_trajectory.R")
 
-outcomes <- read.csv(file = "./data/Carneiro_distribution_outcomes_all_SESOI_combined")
+outcomes <- read.csv(file = "./data/Carneiro_distribution/Frequentist_analysis/Carneiro_distribution_outcomes_all_SESOI_combined")
 
 n_animals    <- 1000000
 n_exp        <- 10000

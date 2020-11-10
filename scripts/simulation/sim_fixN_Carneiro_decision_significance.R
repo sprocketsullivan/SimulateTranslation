@@ -160,13 +160,53 @@ dat <- bind_cols(df, df_sig)
 
 dat$ES_true <- current_ES
 
+dat <-
+  dat %>%
+  filter(init_sample_size == 10)
+
+# dat$effect <- ifelse(dat$effect < 0, -dat$effect, -dat$effect)
+
+dat_large_ES <-
+  dat %>% 
+  filter(ES_true > 0) 
+
+dat_selected <-
+  dat_large_ES %>% 
+  filter(selection_sig == 1)
+
+3169/6844*100
+
+ggplot(data = dat_large_ES, aes(x = dat_large_ES$ES_true, fill = factor(selection_sig))) +
+  geom_histogram(bins = 50, color = "black",
+                 size = 0.3, alpha = 0.8) +
+  labs(x = expression(paste("Sampled effect sizes (Cohen's ", italic("d"), ") ")),
+       y = "Frequency",
+       fill = "Selected for \nreplication") +
+  scale_fill_manual(breaks = c("0", "1"),
+                    labels = c("no",
+                               "yes"),
+                    values = c("lightgrey", "deeppink3")) +
+  theme_bw() +
+  theme(axis.title.x = element_blank()) +
+  theme(axis.title.y = element_text(size = 20)) +
+  theme(axis.text.x = element_text(size = 18, colour = "black")) +
+  theme(axis.text.y = element_text(size = 18, colour = "black")) +
+  # theme(strip.text.x = element_text(size = 20, colour = "black", face = "bold")) +
+  # theme(strip.text.y = element_text(size = 20, colour = "black", face = "bold")) +
+  # theme(strip.background = element_rect(fill = "white", color = "black")) +
+  theme(legend.title = element_text(size = 18, face = "bold")) +
+  theme(legend.text = element_text(size = 18)) +
+  theme(title = element_text(size = 15)) +
+  theme(legend.position = "right")
+
+
+
 # dat <-
 #   dat %>%
 #   filter(init_sample_size == 10)
 
-# 
 # dat$effect <- ifelse(dat$effect < 0, -dat$effect, -dat$effect)
-# 
+#
 # ggplot(data = dat, aes(x = dat$effect)) +
 #   geom_histogram(bins = 50, color = "black", fill = "white", size = 0.3, alpha = 0.8) +
 #   # labs(x = expression(paste("Sampled effect sizes (Cohen's ", italic("d"), ") ")),

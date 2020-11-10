@@ -1,0 +1,133 @@
+---
+title: 'Supplementary plots'
+#csl: biomed-central.csl
+indent: yes
+output: bookdown::pdf_document2
+toc: false
+linestretch: 1.5
+fontsize: 12pt
+header-includes:
+       - \usepackage{subfig}
+#bibliography: refs_repro.bib
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r libraries, echo = FALSE, message = FALSE, warning = FALSE}
+library(bookdown)
+library(knitr)
+library(pwr)
+library(tidyverse)
+```
+
+
+# PPV for all trajectories and SESOI  
+Pessimistic scenario (Carneiro distribution)
+
+```{r data_Carneiro, include = FALSE, cache = FALSE}
+outcomes <- load("outcomes_Carneiro_all_trajectories.RData")
+```
+
+```{r, PPVplot_Carneiro, echo = FALSE, fig.width = 45, fig.height = 10, out.width = "100%", fig.align = 'center'}
+facet_names <- 
+  c("0.3" = "SESOI = 0.3",
+    "0.5" = "SESOI = 0.5",
+    "0.7" = "SESOI = 0.7",
+    "1" = "SESOI = 1.0")
+
+
+plot_PPV <- 
+  ggplot(data = outcomes_10EU,
+         aes(x = trajectory, y = PPV_pop_prev)) + 
+  geom_point(size = 3) + 
+  facet_wrap(~ SESOI, nrow = 1, ncol = 4,  labeller = labeller(.rows = facet_names)) + 
+  labs(x = "Trajectory", y = "Positive predictive value") +
+  scale_x_discrete(labels = c("SESOI within CI \nSESOI",
+                              "Significance \nSESOI",
+                              "SESOI within CI \nStandard",
+                              "Significance \nStandard")) +
+  theme_bw() +
+  theme(axis.title.x = element_text(size = 35)) +
+  theme(axis.title.y = element_text(size = 35)) +
+  theme(axis.text.x = element_text(size = 28, colour = "black")) +
+  theme(axis.text.y = element_text(size = 28, colour = "black")) +
+  theme(strip.text.x = element_text(size = 25, colour = "black", face = "bold")) +
+  theme(strip.text.y = element_text(size = 25, colour = "black", face = "bold")) +
+  theme(strip.background = element_rect(fill = "white", color = "black")) +
+  theme(legend.title = element_text(size = 15, face = "bold")) +
+  theme(legend.text = element_text(size = 14))
+
+hlines <- data.frame(pre_study_odds = c(outcomes_10EU$Prevalence[1], outcomes_10EU$Prevalence[5],
+                                        outcomes_10EU$Prevalence[9], outcomes_10EU$Prevalence[13]), 
+                     # distribution   = c(rep(plot_data$distribution[1], 2), 
+                     #                    rep(plot_data$distribution[5], 2)),
+                     SESOI          = rep(c("1", "0.7", "0.5", "0.3"))) 
+
+
+plot_PPV <- 
+  plot_PPV + 
+  geom_hline(data = hlines, 
+             aes(yintercept = pre_study_odds),
+             color = "red", lty = 2, size = .5)
+
+
+plot_PPV
+```
+
+Optimistic scenario (Szucs distribution)
+
+```{r data_Szucs, include = FALSE, cache = FALSE}
+outcomes <- load("outcomes_Szucs_all_trajectories.RData")
+```
+
+```{r, PPVplot_Szucs, echo = FALSE, fig.width = 45, fig.height = 10, out.width = "100%", fig.align = 'center'}
+facet_names <- 
+  c("0.3" = "SESOI = 0.3",
+    "0.5" = "SESOI = 0.5",
+    "0.7" = "SESOI = 0.7",
+    "1" = "SESOI = 1.0")
+
+
+plot_PPV <- 
+  ggplot(data = outcomes_10EU,
+         aes(x = trajectory, y = PPV_pop_prev)) + 
+  geom_point(size = 3) + 
+  facet_wrap(~ SESOI, nrow = 1, ncol = 4,  labeller = labeller(.rows = facet_names)) + 
+  labs(x = "Trajectory", y = "Positive predictive value") +
+  scale_x_discrete(labels = c("SESOI within CI \nSESOI",
+                              "Significance \nSESOI",
+                              "SESOI within CI \nStandard",
+                              "Significance \nStandard")) +
+  theme_bw() +
+  theme(axis.title.x = element_text(size = 35)) +
+  theme(axis.title.y = element_text(size = 35)) +
+  theme(axis.text.x = element_text(size = 28, colour = "black")) +
+  theme(axis.text.y = element_text(size = 28, colour = "black")) +
+  theme(strip.text.x = element_text(size = 25, colour = "black", face = "bold")) +
+  theme(strip.text.y = element_text(size = 25, colour = "black", face = "bold")) +
+  theme(strip.background = element_rect(fill = "white", color = "black")) +
+  theme(legend.title = element_text(size = 15, face = "bold")) +
+  theme(legend.text = element_text(size = 14))
+
+hlines <- data.frame(pre_study_odds = c(outcomes_10EU$Prevalence[1], outcomes_10EU$Prevalence[5],
+                                        outcomes_10EU$Prevalence[9], outcomes_10EU$Prevalence[13]), 
+                     # distribution   = c(rep(plot_data$distribution[1], 2), 
+                     #                    rep(plot_data$distribution[5], 2)),
+                     SESOI          = rep(c("1", "0.7", "0.5", "0.3"))) 
+
+
+plot_PPV <- 
+  plot_PPV + 
+  geom_hline(data = hlines, 
+             aes(yintercept = pre_study_odds),
+             color = "red", lty = 2, size = .5)
+
+
+plot_PPV
+```
+
+
+
+

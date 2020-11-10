@@ -134,7 +134,7 @@ selection_equiv <- list()
 for (i in 1:length(samp_size_vector)) {
   
   selection_equiv[[i]] <- future_map(exploratory_data_summary[[i]], get_decision_equiv,
-                                     SESOI = 1.0)
+                                     SESOI = 0.5)
   
 }
 
@@ -164,11 +164,25 @@ dat$ES_true <- current_ES
 hist(dat$ES_true, breaks = 100)
 
 # dat <-
-#   dat %>% 
+#   dat %>%
 #   filter(init_sample_size == 10)
 # 
-# ggplot(data = dat, aes(x = dat$ES_true, fill = factor(selection_equiv))) +
+# # dat$effect <- ifelse(dat$effect < 0, -dat$effect, -dat$effect)
+# 
+# dat_large_ES <-
+#   dat %>%
+#   filter(ES_true > 0)
+# 
+# dat_selected <-
+#   dat_large_ES %>% 
+#   filter(selection_equiv == 1)
+# 
+# 6618/6844*100
+# 
+# ggplot(data = dat_large_ES, aes(x = dat_large_ES$ES_true, fill = factor(selection_equiv))) +
 #   geom_histogram(bins = 50, color = "black", size = 0.3, alpha = 0.8) +
+#   # geom_histogram(data = dat_large_ES, aes(x = ),
+#                  # bins = 50, color = "black", fill = "white")
 #   labs(x = expression(paste("Sampled effect sizes (Cohen's ", italic("d"), ") ")),
 #        y = "Frequency",
 #        fill = "Selected for \nreplication") +
