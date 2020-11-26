@@ -83,8 +83,8 @@ final_init_samp_size_10$CI_upper <- tes(t = final_init_samp_size_10$t_value,
                         n.1 = final_init_samp_size_10$rep_sample_size, 
                         n.2 = final_init_samp_size_10$rep_sample_size)$u.d
 
-save(final_init_samp_size_10,
-     file = "./Manuscript/effect_sizes_with_CI_after_replication.RData")
+# save(final_init_samp_size_10,
+#      file = "./Manuscript/effect_sizes_with_CI_after_replication.RData")
 
 # final_init_samp_size_10$median_ES_true <- median(final_init_samp_size_10$ES_true)
 # final_init_samp_size_10$median_effect <- median(final_init_samp_size_10$effect)
@@ -177,7 +177,7 @@ for(i in 1:nrow(T1_data)) {
   
   delta_powered[i] <- 
     pwr.t.test(n = T1_data$rep_sample_size[i],
-               d = NULL, sig.level = .05, power = .5,
+               d = NULL, sig.level = .05, power = .8,
                type = "two.sample",
                alternative = "greater")$d
   
@@ -190,20 +190,28 @@ T1_data_optimistic <-
   T1_data %>% 
   filter(distribution == "Optimistic")
 
-
-
 significant_effect <- data.frame(effect = T1_data_optimistic$effect)
 significant_effect$type <- "significant"
 
 powered_effect <- data.frame(effect = T1_data_optimistic$delta_powered)
 powered_effect$type <- "powered"
 
+test <- bind_rows(significant_effect, powered_effect)
+
+ggplot(data = test,
+       aes(x = type,
+           y = effect)) +
+  geom_violin()
+
+ggplot(data = test,
+       aes(x = effect, fill = type)) +
+  geom_density(alpha = 0.7) +
+  theme_bw()
+
 
 T1_data_pessimistic <-
   T1_data %>% 
   filter(distribution == "Pessimistic")
-
-
 
 significant_effect <- data.frame(effect = T1_data_pessimistic$effect)
 significant_effect$type <- "significant"
@@ -223,5 +231,23 @@ ggplot(data = test,
   geom_density(alpha = 0.7) +
   theme_bw()
 
-         
+T1_data_optimistic$sufficiently_powered <-
+  ifelse(T1_data_optimistic$effect < T1_data_optimistic$delta_powered, 1, 0)
 
+sum(T1_data_optimistic$sufficiently_powered == 1) / nrow(T1_data_optimistic)
+  
+    
+T1_data_pessimistic$sufficiently_powered <-
+  ifelse(T1_data_pessimistic$effect < T1_data_pessimistic$delta_powered, 1, 0)
+
+sum(T1_data_pessimistic$sufficiently_powered == 1) / nrow(T1_data_pessimistic)
+
+ggplot(data = T1_data_optimistic,
+       aes(x = effect, y = delta_powered, color = factor(sufficiently_powered))) +
+  geom_point(size = 1, alpha = 0.6) +
+  theme_bw()
+
+ggplot(data = T1_data_pessimistic,
+       aes(x = effect, y = delta_powered, color = factor(sufficiently_powered))) +
+  geom_point(size = 1, alpha = 0.6) +
+  theme_bw()

@@ -30,7 +30,7 @@ plot_PPV <-
   ggplot(data = outcomes_10EU,
          aes(x = trajectory, y = PPV_pop_prev)) + 
   geom_point() + 
-  facet_wrap(~ SESOI, nrow = 1, ncol = 4,  labeller = labeller(.rows = facet_names)) + 
+  facet_wrap(~ SESOI, nrow = 2, ncol = 2,  labeller = labeller(.rows = facet_names)) + 
   labs(x = "Trajectory", y = "Positive predictive value") +
   scale_x_discrete(labels = c("SESOI within CI \nSESOI",
                               "Significance \nSESOI",
