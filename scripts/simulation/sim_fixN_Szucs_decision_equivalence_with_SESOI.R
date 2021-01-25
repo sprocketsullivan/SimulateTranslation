@@ -1,4 +1,4 @@
-setwd("~/Documents/QUEST/PhD/R/SimulateTranslation")
+setwd("~/Documents/SimulateTranslation")
 
 rm(list = ls())
 
@@ -34,11 +34,11 @@ hist(ES_true, breaks = 200)
 hist(current_ES, breaks = 200)
 
 #how many hypothesis over SESOI threshold
-SESOI       <- c(.5, 1)
+SESOI <- c(.1, .3, .5, .7, 1)
 
 mat <- matrix(NA, nrow = 3, ncol = length(SESOI),
               dimnames = list(c("prev_pop", "all_positives", "all_negatives"), 
-                              c(.5, 1)))
+                              c(.1, .3, .5, .7, 1)))
 
 prev_pop      <- vector()
 all_positives <- vector()
@@ -103,7 +103,6 @@ for (i in 1:length(samp_size_vector)) {
   
 }
 
-
 # decision to go on
 # this decision depends on whether our SESOI is within the 95 % CI
 # select studies for replication if SESOI lies within the 95 % CI
@@ -115,7 +114,6 @@ for (i in 1:length(samp_size_vector)) {
                                      SESOI = 1.0)
   
 }
-
 
 row_names <- NULL
 col_names <- c("init_sample_size", "study_id", "t_value",
@@ -136,7 +134,8 @@ df_equiv <- as_tibble(matrix(unlist(selection_equiv),
 
 dat <- bind_cols(df, df_equiv)
 
-dat$ES_true <- current_ES
+dat$ES_true <- rep(current_ES, 3)
 
+write.csv(dat, file = "./data/Szucs_distribution/Frequentist_analysis/exploratory_stage_equiv_1.0")
 
 hist(dat$ES_true, breaks = 100)

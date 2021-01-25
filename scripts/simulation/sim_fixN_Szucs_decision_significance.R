@@ -1,4 +1,4 @@
-setwd("~/Documents/QUEST/PhD/R/SimulateTranslation")
+setwd("~/Documents/SimulateTranslation")
 
 rm(list = ls())
 
@@ -25,7 +25,7 @@ library(doParallel)
 registerDoParallel()
 getDoParWorkers()
 
-n_exp <- 3
+n_exp <- 10000
 ES_true <- ES_data_Szucs$D
 
 set.seed(4321)
@@ -33,12 +33,14 @@ current_ES <- sample(ES_true, n_exp)
 hist(ES_true, breaks = 200)
 hist(current_ES, breaks = 200)
 
+max(current_ES)
+
 #how many hypothesis over SESOI threshold
-SESOI       <- c(.5, 1)
+SESOI <- c(.1, .3, .5, .7, 1)
 
 mat <- matrix(NA, nrow = 3, ncol = length(SESOI),
               dimnames = list(c("prev_pop", "all_positives", "all_negatives"), 
-                              c(.5, 1)))
+                              c(.1, .3, .5, .7, 1)))
 
 prev_pop      <- vector()
 all_positives <- vector()
@@ -111,7 +113,9 @@ selection_sig <- list()
 for (i in 1:length(samp_size_vector)) {
   
   selection_sig[[i]] <- 
-    future_map(exploratory_data_summary[[i]], get_decision_sig, pval_threshold = 0.05)
+    future_map(exploratory_data_summary[[i]],
+               get_decision_sig,
+               pval_threshold = 0.1)
   
 }
 
@@ -136,8 +140,8 @@ df_sig <- as_tibble(matrix(unlist(selection_sig),
 
 dat <- bind_cols(df, df_sig)
 
-dat$ES_true <- current_ES
+dat$ES_true <- rep(current_ES, 3)
 
-# write.csv(dat, file = "./data/Szucs_distribution_only_exploratory_stage")
+# write.csv(dat, file = "./data/Szucs_distribution/Frequentist_analysis/exploratory_stage_sig_0.1")
 
 

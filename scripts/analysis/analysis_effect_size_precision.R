@@ -160,7 +160,7 @@ ggplot(data = T1_data,
   geom_violin(position = position_dodge(width = 0.9)) +
   geom_rect(fill = "lightgrey", alpha = .01, 
             aes(xmin = -Inf, xmax = Inf, 
-                ymin = powered_d_50, ymax = Inf)) +
+                ymin = powered_d_80, ymax = Inf)) +
   # geom_rect(fill = "lightpink", alpha = .01, 
   #           aes(xmin = -Inf, xmax = Inf, 
   #               ymin = powered_d_50, ymax = powered_d_80)) +
@@ -182,7 +182,6 @@ for(i in 1:nrow(T1_data)) {
                alternative = "greater")$d
   
 }
-  
 
 T1_data$delta_powered <- delta_powered
 
@@ -236,7 +235,6 @@ T1_data_optimistic$sufficiently_powered <-
 
 sum(T1_data_optimistic$sufficiently_powered == 1) / nrow(T1_data_optimistic)
   
-    
 T1_data_pessimistic$sufficiently_powered <-
   ifelse(T1_data_pessimistic$effect < T1_data_pessimistic$delta_powered, 1, 0)
 

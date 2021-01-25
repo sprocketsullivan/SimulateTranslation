@@ -3,16 +3,16 @@ setwd("~/Documents/QUEST/PhD/R/SimulateTranslation/")
 rm(list = ls())
 library(tidyverse)
 
-# source("./scripts/analysis/prior_odds_for_analysis_Szucs.R")
+source("./scripts/analysis/prior_odds_for_analysis_Szucs.R")
 
-source("./scripts/analysis/prior_odds_for_analysis_Carneiro.R")
+# source("./scripts/analysis/prior_odds_for_analysis_Carneiro.R")
 
 ### read in data sets from the different trajectories 
 ### using fixed-N design in replication study
 
-final <- read.csv(file = "./data/Carneiro_distribution/Frequentist_analysis/Carneiro_distribution_equiv_method2_1.0")
+# final <- read.csv(file = "./data/Carneiro_distribution/Frequentist_analysis/Carneiro_distribution_equiv_method2_1.0")
 
-# final <- read.csv(file = "./data/Szucs_distribution/Frequentist_analysis/Szucs_distribution_sig_method1")
+final <- read.csv(file = "./data/Szucs_distribution/Frequentist_analysis/Szucs_distribution_sig_method1")
 
 
 hist(final$effect, breaks = 100)
@@ -21,10 +21,10 @@ hist(final$ES_true, breaks = 100)
 
 
 ### add column that codes decision criterion from exploratory stage to confirmatory stage
-final$decision_crit <- "equivalence"
+final$decision_crit <- "significance"
 
 ### add column that codes approach to determine sample size for confirmatory study
-final$sampsize_approach <- "SESOI"
+final$sampsize_approach <- "standard"
 
 ### add column for outcome significant / not significant to match outcome column
 ### of sequential design data set
@@ -68,7 +68,7 @@ true_positives <-
            decision_crit, sampsize_approach, H0, 
            all_positives, all_negatives, 
            prev_pop, rep_attempts) %>%
-  filter(H0 == 2 & ES_true > 1) %>%
+  filter(H0 == 2 & ES_true > 0) %>%
   summarize(true_pos = n())
 
 false_negatives <-
@@ -77,7 +77,7 @@ false_negatives <-
            decision_crit, sampsize_approach, H0, 
            all_positives, all_negatives, 
            prev_pop, rep_attempts) %>%
-  filter(H0 == 1 & ES_true > 1) %>%
+  filter(H0 == 1 & ES_true > 0) %>%
   summarize(false_neg = n())
 
 true_negatives <-
@@ -86,7 +86,7 @@ true_negatives <-
            decision_crit, sampsize_approach, H0, 
            all_positives, all_negatives, 
            prev_pop, rep_attempts) %>%
-  filter(H0 == 1 & ES_true < 1) %>%
+  filter(H0 == 1 & ES_true < 0) %>%
   summarize(true_neg = n())
 
 false_positives <-

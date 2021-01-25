@@ -1,4 +1,4 @@
-setwd("~/Documents/QUEST/PhD/R/SimulateTranslation")
+setwd("~/Documents/SimulateTranslation")
 
 rm(list = ls())
 
@@ -53,11 +53,11 @@ sum(current_ES < 0)
 sum(current_ES == 0)
 
 #how many hypothesis over SESOI threshold
-SESOI       <- c(.5, 1)
+SESOI <- c(.1, .3, .5, .7, 1)
 
 mat <- matrix(NA, nrow = 3, ncol = length(SESOI),
               dimnames = list(c("prev_pop", "all_positives", "all_negatives"), 
-                              c(.5, 1)))
+                              c(.1, .3, .5, .7, 1)))
 
 prev_pop      <- vector()
 all_positives <- vector()
@@ -134,7 +134,7 @@ selection_equiv <- list()
 for (i in 1:length(samp_size_vector)) {
   
   selection_equiv[[i]] <- future_map(exploratory_data_summary[[i]], get_decision_equiv,
-                                     SESOI = 0.5)
+                                     SESOI = 1.0)
   
 }
 
@@ -158,10 +158,36 @@ df_equiv <- as_tibble(matrix(unlist(selection_equiv),
 
 dat <- bind_cols(df, df_equiv)
 
-dat$ES_true <- current_ES
+dat$ES_true <- rep(current_ES, 3)
 
+# write.csv(dat, file = "./data/Carneiro_distribution/Frequentist_analysis/exploratory_stage_equiv_1.0")
 
 hist(dat$ES_true, breaks = 100)
+
+dat <-
+  dat %>%
+  filter(init_sample_size == 10) %>% 
+  filter(ES_true > 0)
+
+dat_selected <-
+  dat %>%
+  filter(selection_equiv == 1)
+
+dat_not_selected <-
+  dat %>% 
+  filter(selection_equiv == 0)
+
+false_positives <-
+  dat_selected %>% 
+  filter(selection_equiv == 1 & ES_true < 0.5)
+
+false_negatives <-
+  dat_not_selected %>% 
+  filter(selection_equiv == 0 & ES_true >= 0.5)
+
+FPR <- nrow(false_positives) / nrow(dat_selected)
+
+FNR <- nrow(false_negatives) / nrow(dat_not_selected)
 
 # dat <-
 #   dat %>%
