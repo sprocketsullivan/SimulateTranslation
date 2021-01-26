@@ -1,4 +1,4 @@
-setwd("~/Documents/QUEST/PhD/R/SimulateTranslation/")
+setwd("~/Documents/SimulateTranslation/")
 
 rm(list = ls())
 library(tidyverse)
@@ -10,9 +10,9 @@ source("./scripts/analysis/prior_odds_for_analysis_Szucs.R")
 ### read in data sets from the different trajectories 
 ### using fixed-N design in replication study
 
-# final <- read.csv(file = "./data/Carneiro_distribution/Frequentist_analysis/Carneiro_distribution_equiv_method2_1.0")
+final <- read.csv(file = "./data/Carneiro_distribution/Frequentist_analysis/Carneiro_distribution_equiv_method2_0.1")
 
-final <- read.csv(file = "./data/Szucs_distribution/Frequentist_analysis/Szucs_distribution_sig_method1")
+# final <- read.csv(file = "./data/Szucs_distribution/Frequentist_analysis/Szucs_distribution_sig_method1")
 
 
 hist(final$effect, breaks = 100)

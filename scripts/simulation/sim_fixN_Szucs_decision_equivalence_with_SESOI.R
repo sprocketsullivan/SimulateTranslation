@@ -136,6 +136,6 @@ dat <- bind_cols(df, df_equiv)
 
 dat$ES_true <- rep(current_ES, 3)
 
-write.csv(dat, file = "./data/Szucs_distribution/Frequentist_analysis/exploratory_stage_equiv_1.0")
+# write.csv(dat, file = "./data/Szucs_distribution/Frequentist_analysis/exploratory_stage_equiv_1.0")
 
 hist(dat$ES_true, breaks = 100)

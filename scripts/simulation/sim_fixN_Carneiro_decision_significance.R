@@ -136,7 +136,7 @@ for (i in 1:length(samp_size_vector)) {
   selection_sig[[i]] <- 
     future_map(exploratory_data_summary[[i]],
                get_decision_sig,
-               pval_threshold = 0.05)
+               pval_threshold = 0.1)
   
 }
 
@@ -161,128 +161,7 @@ df_sig <- as_tibble(matrix(unlist(selection_sig),
 dat <- bind_cols(df, df_sig)
 
 dat$ES_true <- rep(current_ES, 3)
-# 
-# # write.csv(dat, file = "./data/Carneiro_distribution/Frequentist_analysis/exploratory_stage_sig_0.05")
-# 
-# 
-# dat <-
-#   dat %>%
-#   group_by(init_sample_size)
-#   # filter(init_sample_size == 10) %>% 
-#   # filter(ES_true > 0)
-# 
-# dat$effect <- ifelse(dat$effect < 0, -dat$effect, -dat$effect)
-# 
-# ggplot(data = dat,
-#        aes(x = ES_true, y = effect, color = factor(selection_sig))) +
-#   geom_point(alpha = 0.4, size = 0.5) +
-#   facet_wrap(~ init_sample_size) +
-#   theme_bw()
-# 
-# dat_selected <-
-#   dat %>%
-#   filter(selection_sig == 1)
-# 
-# dat_not_selected <-
-#   dat %>% 
-#   filter(selection_sig == 0)
-# 
-# false_positives <-
-#   dat_selected %>% 
-#   filter(selection_sig == 1 & ES_true < 0)
-# 
-# ggplot(data = false_positives,
-#        aes(x = ES_true, y = effect)) +
-#   geom_point(alpha = 0.4, size = 0.5) +
-#   facet_wrap(~ init_sample_size) +
-#   theme_bw()
-# 
-# false_negatives <-
-#   dat_not_selected %>% 
-#   filter(selection_sig == 0 & ES_true > 0)
-# 
-# ggplot(data = false_negatives,
-#        aes(x = ES_true, y = effect)) +
-#   geom_point(alpha = 0.4, size = 0.5) +
-#   facet_wrap(~ init_sample_size) +
-#   theme_bw()
-# 
-# FPR <- nrow(false_positives) / nrow(dat_selected)
-# 
-# FNR <- nrow(false_negatives) / nrow(dat_not_selected)
 
+# write.csv(dat, file = "./data/Carneiro_distribution/Frequentist_analysis/exploratory_stage_sig_0.05")
 
-
-
-# dat$effect <- ifelse(dat$effect < 0, -dat$effect, -dat$effect)
-
-# dat_large_ES <-
-#   dat %>% 
-#   filter(ES_true > 0) 
-# 
-# dat_selected <-
-#   dat %>% 
-#   filter(selection_sig == 1)
-# 
-# 3169/6844*100
-# 
-# ggplot(data = dat_large_ES, aes(x = dat_large_ES$ES_true, fill = factor(selection_sig))) +
-#   geom_histogram(bins = 50, color = "black",
-#                  size = 0.3, alpha = 0.8) +
-#   labs(x = expression(paste("Sampled effect sizes (Cohen's ", italic("d"), ") ")),
-#        y = "Frequency",
-#        fill = "Selected for \nreplication") +
-#   scale_fill_manual(breaks = c("0", "1"),
-#                     labels = c("no",
-#                                "yes"),
-#                     values = c("lightgrey", "deeppink3")) +
-#   theme_bw() +
-#   theme(axis.title.x = element_blank()) +
-#   theme(axis.title.y = element_text(size = 20)) +
-#   theme(axis.text.x = element_text(size = 18, colour = "black")) +
-#   theme(axis.text.y = element_text(size = 18, colour = "black")) +
-#   # theme(strip.text.x = element_text(size = 20, colour = "black", face = "bold")) +
-#   # theme(strip.text.y = element_text(size = 20, colour = "black", face = "bold")) +
-#   # theme(strip.background = element_rect(fill = "white", color = "black")) +
-#   theme(legend.title = element_text(size = 18, face = "bold")) +
-#   theme(legend.text = element_text(size = 18)) +
-#   theme(title = element_text(size = 15)) +
-#   theme(legend.position = "right")
-
-
-
-# dat <-
-#   dat %>%
-#   filter(init_sample_size == 10)
-
-# dat$effect <- ifelse(dat$effect < 0, -dat$effect, -dat$effect)
-#
-# ggplot(data = dat, aes(x = dat$effect)) +
-#   geom_histogram(bins = 50, color = "black", fill = "white", size = 0.3, alpha = 0.8) +
-#   # labs(x = expression(paste("Sampled effect sizes (Cohen's ", italic("d"), ") ")),
-#   #      y = "Frequency",
-#   #      fill = "Selected for \nreplication") +
-#   labs(x = expression(paste("Effect sizes (Cohen's ", italic("d"), ") from exploratory studies ")),
-#        y = "Frequency") +
-#   scale_fill_manual(breaks = c("0", "1"),
-#                     labels = c("no",
-#                                "yes"),
-#                     values = c("grey", "deeppink3")) +
-#   theme_bw() +
-#   theme(axis.title.x = element_text(size = 15)) +
-#   theme(axis.title.y = element_text(size = 15)) +
-#   theme(axis.text.x = element_text(size = 14, colour = "black")) +
-#   theme(axis.text.y = element_text(size = 14, colour = "black")) +
-#   # theme_bw() +
-#   # theme(axis.title.x = element_blank()) +
-#   # theme(axis.title.y = element_blank()) +
-#   # theme(axis.text.x = element_text(size = 18, colour = "black")) +
-#   # theme(axis.text.y = element_blank()) +
-#   # theme(axis.ticks.y = element_blank()) +
-#   # theme(strip.text.x = element_text(size = 20, colour = "black", face = "bold")) +
-#   # theme(strip.text.y = element_text(size = 20, colour = "black", face = "bold")) +
-#   # theme(strip.background = element_rect(fill = "white", color = "black")) +
-#   theme(legend.title = element_text(size = 18, face = "bold")) +
-#   theme(legend.text = element_text(size = 18)) +
-#   theme(title = element_text(size = 15)) +
-#   theme(legend.position = "none")
+hist(dat$ES_true, breaks = 100)

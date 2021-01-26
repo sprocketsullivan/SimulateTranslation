@@ -1,4 +1,4 @@
-setwd("~/Documents/QUEST/PhD/R/SimulateTranslation")
+setwd("~/Documents/SimulateTranslation")
 
 rm(list = ls())
 
@@ -15,30 +15,30 @@ sum(dat$effect < 0) # empirical effect sizes are negative because t.test functio
 sum(dat$effect > 0) 
 sum(dat$ES_true < 0)
 
+# data <-
+#   dat %>%
+#   group_by(init_sample_size, study_id) %>%
+#   filter(selection_sig == 1)
+
 data <-
   dat %>%
   group_by(init_sample_size, study_id) %>%
-  filter(selection_sig == 1)
-
-# data <-
-#   dat %>% 
-#   group_by(init_sample_size, study_id) %>% 
-#   filter(selection_equiv == 1)
+  filter(selection_equiv == 1)
 
 sum(data$effect < 0)
 sum(data$effect > 0)
 sum(data$effect == 0)
 
 
+# selected <-
+#   data %>%
+#   group_by(init_sample_size) %>%
+#   summarize(selected = sum(selection_sig == 1))
+
 selected <-
   data %>%
   group_by(init_sample_size) %>%
-  summarize(selected = sum(selection_sig == 1))
-
-# selected <-
-#   data %>% 
-#   group_by(init_sample_size) %>% 
-#   summarize(selected = sum(selection_equiv == 1))
+  summarize(selected = sum(selection_equiv == 1))
 
 
 # now estimate sample size for replication study
@@ -49,13 +49,13 @@ rep_sample_size_std <- NULL
 
 for (i in 1:nrow(data)) {
   
-  rep_sample_size_std[i] <-
-    ceiling(calc_sample_size(data = data[i, ], sample_size = data[i, ]$init_sample_size,
-                             method = 1))
-  
   # rep_sample_size_std[i] <-
   #   ceiling(calc_sample_size(data = data[i, ], sample_size = data[i, ]$init_sample_size,
-  #                            method = 2, SESOI = 0.5, power = .5))
+  #                            method = 1))
+  
+  rep_sample_size_std[i] <-
+    ceiling(calc_sample_size(data = data[i, ], sample_size = data[i, ]$init_sample_size,
+                             method = 2, SESOI = 1.0, power = .5))
 }
 
 data$rep_samp_size_std <- rep_sample_size_std
@@ -98,9 +98,9 @@ rep_attempts <-
 replication_data <- list()
 rep_exp_no <- 0
 
-select_experiments <- which(data$selection_sig == 1)
+# select_experiments <- which(data$selection_sig == 1)
 
-# select_experiments <- which(data$selection_equiv == 1)
+select_experiments <- which(data$selection_equiv == 1)
 
 select_experiments <- select_experiments[data$effect[select_experiments] >= 0 ]
 
@@ -144,14 +144,13 @@ hist(res_summary_rep$effect, breaks = 200)
 res_summary_rep$effect <- ifelse(res_summary_rep$effect < 0,
                                  -res_summary_rep$effect, -res_summary_rep$effect)
 
-# write.csv(res_summary_rep, file = "./data/Szucs_distribution/Frequentist_analysis/Szucs_distribution_sig_method1")
+# write.csv(res_summary_rep, file = "./data/Szucs_distribution/Frequentist_analysis/Szucs_distribution_sig_method1_p0.05")
 
 write.csv(res_summary_rep, file = "./data/Szucs_distribution/Frequentist_analysis/Szucs_distribution_equiv_method2_1.0")
 
-
 res_summary_rep <-
   res_summary_rep %>%
-  filter(effect < 5)
+  filter(init_sample_size == 10)
 
 ggplot(aes(y = effect, x = ES_true, col = p_value < .05),
        data = res_summary_rep) +

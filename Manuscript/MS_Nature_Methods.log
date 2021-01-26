@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.19 (TeX Live 2018) (preloaded format=pdflatex 2019.3.17)  25 JAN 2021 12:26
+This is pdfTeX, Version 3.14159265-2.6-1.40.19 (TeX Live 2018) (preloaded format=pdflatex 2019.3.17)  26 JAN 2021 12:03
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -805,67 +805,59 @@ LaTeX Warning: Float too large for page by 10.2497pt on input line 127.
 ethods_files/figure-latex/histograms-2.pdf> <./MS_Nature_Methods_files/figure-l
 atex/histograms-3.pdf> <./MS_Nature_Methods_files/figure-latex/histograms-4.pdf
 > <./MS_Nature_Methods_files/figure-latex/histograms-5.pdf> <./MS_Nature_Method
-s_files/figure-latex/histograms-6.pdf>]
-
-LaTeX Warning: Reference `fig:animalnumbers' on page 4 undefined on input line 
-133.
-
-
-LaTeX Warning: Reference `fig:PPV' on page 4 undefined on input line 137.
-
-<MS_Nature_Methods_files/figure-latex/results-1.pdf, id=106, 459.7175pt x 312.1
+s_files/figure-latex/histograms-6.pdf>] [4]
+<MS_Nature_Methods_files/figure-latex/results-1.pdf, id=120, 459.7175pt x 312.1
 6624pt>
 File: MS_Nature_Methods_files/figure-latex/results-1.pdf Graphic file (type pdf
 )
 <use MS_Nature_Methods_files/figure-latex/results-1.pdf>
 Package pdftex.def Info: MS_Nature_Methods_files/figure-latex/results-1.pdf  us
-ed on input line 146.
+ed on input line 155.
 (pdftex.def)             Requested size: 234.8807pt x 159.49323pt.
-<MS_Nature_Methods_files/figure-latex/results-2.pdf, id=107, 459.7175pt x 315.1
+<MS_Nature_Methods_files/figure-latex/results-2.pdf, id=121, 459.7175pt x 315.1
 775pt>
 File: MS_Nature_Methods_files/figure-latex/results-2.pdf Graphic file (type pdf
 )
 <use MS_Nature_Methods_files/figure-latex/results-2.pdf>
 Package pdftex.def Info: MS_Nature_Methods_files/figure-latex/results-2.pdf  us
-ed on input line 146.
+ed on input line 155.
 (pdftex.def)             Requested size: 234.8807pt x 161.03175pt.
-<MS_Nature_Methods_files/figure-latex/results-3.pdf, id=108, 459.7175pt x 315.1
+<MS_Nature_Methods_files/figure-latex/results-3.pdf, id=122, 459.7175pt x 315.1
 775pt>
 File: MS_Nature_Methods_files/figure-latex/results-3.pdf Graphic file (type pdf
 )
 <use MS_Nature_Methods_files/figure-latex/results-3.pdf>
 Package pdftex.def Info: MS_Nature_Methods_files/figure-latex/results-3.pdf  us
-ed on input line 146.
+ed on input line 155.
 (pdftex.def)             Requested size: 234.8807pt x 161.03175pt.
-<MS_Nature_Methods_files/figure-latex/results-4.pdf, id=109, 459.7175pt x 315.1
+<MS_Nature_Methods_files/figure-latex/results-4.pdf, id=123, 459.7175pt x 315.1
 775pt>
 File: MS_Nature_Methods_files/figure-latex/results-4.pdf Graphic file (type pdf
 )
 <use MS_Nature_Methods_files/figure-latex/results-4.pdf>
 Package pdftex.def Info: MS_Nature_Methods_files/figure-latex/results-4.pdf  us
-ed on input line 146.
+ed on input line 155.
 (pdftex.def)             Requested size: 234.8807pt x 161.03175pt.
 
-Overfull \hbox (7.30638pt too wide) in paragraph at lines 146--147
+Overfull \hbox (7.30638pt too wide) in paragraph at lines 155--156
  [][][][]  
  []
 
 
-Overfull \hbox (7.30638pt too wide) in paragraph at lines 146--147
+Overfull \hbox (7.30638pt too wide) in paragraph at lines 155--156
  [][][][] 
  []
 
-[4] [5 <./MS_Nature_Methods_files/figure-latex/results-1.pdf> <./MS_Nature_Meth
+[5] [6 <./MS_Nature_Methods_files/figure-latex/results-1.pdf> <./MS_Nature_Meth
 ods_files/figure-latex/results-2.pdf> <./MS_Nature_Methods_files/figure-latex/r
 esults-3.pdf> <./MS_Nature_Methods_files/figure-latex/results-4.pdf>]
-<trajectory_proposal.png, id=165, 941.4372pt x 357.9774pt>
-File: trajectory_proposal.png Graphic file (type png)
-<use trajectory_proposal.png>
-Package pdftex.def Info: trajectory_proposal.png  used on input line 165.
-(pdftex.def)             Requested size: 375.80685pt x 142.89891pt.
+
+LaTeX Warning: Reference `fig:trajectory' on page 7 undefined on input line 168
+.
+
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <5> on input line 172.
-[6 <./trajectory_proposal.png>] [7] [8]
+(Font)              <5> on input line 170.
+[7] [8]
 Overfull \hbox (1.88892pt too wide) in paragraph at lines 199--201
 [][] [] 
  []
@@ -937,13 +929,13 @@ LaTeX Warning: There were undefined references.
 Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 248.
  ) 
 Here is how much of TeX's memory you used:
- 14526 strings out of 492649
- 217118 string characters out of 6129622
- 331625 words of memory out of 5000000
- 18073 multiletter control sequences out of 15000+600000
- 67340 words of font info for 98 fonts, out of 8000000 for 9000
+ 14515 strings out of 492649
+ 216920 string characters out of 6129622
+ 331447 words of memory out of 5000000
+ 18067 multiletter control sequences out of 15000+600000
+ 67351 words of font info for 97 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 44i,10n,51p,1619b,456s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 44i,10n,51p,1054b,456s stack positions out of 5000i,500n,10000p,200000b,80000s
 {/usr/local/texlive/2018/texmf-dist/fonts/enc/dvips/lm/lm-mathsy.enc}{/usr/lo
 cal/texlive/2018/texmf-dist/fonts/enc/dvips/lm/lm-rm.enc}{/usr/local/texlive/20
 18/texmf-dist/fonts/enc/dvips/lm/lm-mathit.enc}{/usr/local/texlive/2018/texmf-d
@@ -959,10 +951,10 @@ lm/lmr9.pfb></usr/local/texlive/2018/texmf-dist/fonts/type1/public/lm/lmri10.pf
 b></usr/local/texlive/2018/texmf-dist/fonts/type1/public/lm/lmri8.pfb></usr/loc
 al/texlive/2018/texmf-dist/fonts/type1/public/lm/lmsy10.pfb></usr/local/texlive
 /2018/texmf-dist/fonts/type1/public/lm/lmsy8.pfb>
-Output written on MS_Nature_Methods.pdf (9 pages, 387288 bytes).
+Output written on MS_Nature_Methods.pdf (9 pages, 307729 bytes).
 PDF statistics:
- 261 PDF objects out of 1000 (max. 8388607)
- 202 compressed objects within 3 object streams
- 36 named destinations out of 1000 (max. 500000)
- 14392 words of extra memory for PDF output out of 14400 (max. 10000000)
+ 265 PDF objects out of 1000 (max. 8388607)
+ 208 compressed objects within 3 object streams
+ 35 named destinations out of 1000 (max. 500000)
+ 14387 words of extra memory for PDF output out of 14400 (max. 10000000)
 

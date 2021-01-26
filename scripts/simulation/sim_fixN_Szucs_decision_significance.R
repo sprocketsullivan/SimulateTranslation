@@ -106,8 +106,8 @@ for (i in 1:length(samp_size_vector)) {
 }
 
 # decision to go on
-# this decision depends on whether exploratory result is significant (p <= .05) or not
-# select studies for replication if p-value < .05
+# this decision depends on whether exploratory result is significant (p <= .05 / p <= .1) or not
+# select studies for replication if p-value < .05 or < .1
 selection_sig <- list()
 
 for (i in 1:length(samp_size_vector)) {
@@ -115,7 +115,7 @@ for (i in 1:length(samp_size_vector)) {
   selection_sig[[i]] <- 
     future_map(exploratory_data_summary[[i]],
                get_decision_sig,
-               pval_threshold = 0.1)
+               pval_threshold = 0.05)
   
 }
 

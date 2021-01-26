@@ -1,4 +1,4 @@
-setwd("~/Documents/QUEST/PhD/R/SimulateTranslation")
+setwd("~/Documents/SimulateTranslation")
 
 rm(list = ls())
 
@@ -7,13 +7,18 @@ rm(list = ls())
 
 # source("./scripts/simulation/sim_fixN_Carneiro_decision_equivalence_with_SESOI.R")
 
-source("./scripts/simulation/sim_fixN_Carneiro_decision_significance.R")
+# source("./scripts/simulation/sim_fixN_Carneiro_decision_significance.R")
 
 dat
 
 sum(dat$effect < 0) # empirical effect sizes are negative because t.test function takes control - treat
 sum(dat$effect > 0) 
 sum(dat$ES_true < 0)
+
+# data <-
+#   dat %>% 
+#   group_by(init_sample_size, study_id) %>% 
+#   filter(selection_equiv == 1)
 
 data <-
   dat %>% 
@@ -23,6 +28,11 @@ data <-
 sum(data$effect < 0)
 sum(data$effect > 0)
 sum(data$effect == 0)
+
+# selected <-
+#   data %>% 
+#   group_by(init_sample_size) %>% 
+#   summarize(selected = sum(selection_equiv == 1))
 
 selected <-
   data %>% 
@@ -40,6 +50,10 @@ for (i in 1:nrow(data)) {
   rep_sample_size_std[i] <-
     ceiling(calc_sample_size(data = data[i, ], sample_size = data[i, ]$init_sample_size,
                              method = 1))
+  
+  # rep_sample_size_std[i] <-
+  #   ceiling(calc_sample_size(data = data[i, ], sample_size = data[i, ]$init_sample_size,
+  #                            method = 2, SESOI = 0.5, power = .5))
 }
 
 data$rep_samp_size_std <- rep_sample_size_std
@@ -125,62 +139,19 @@ res_summary_rep <-
 hist(res_summary_rep$effect, breaks = 200)
 
 
+res_summary_rep$effect <- ifelse(res_summary_rep$effect < 0,
+                                 -res_summary_rep$effect, -res_summary_rep$effect)
 
-
-# res_summary_rep$effect <- ifelse(res_summary_rep$effect < 0,
-#                                  -res_summary_rep$effect, -res_summary_rep$effect)
-# 
 # write.csv(res_summary_rep,
-#           file = "./data/Carneiro_distribution/Frequentist_analysis/Carneiro_distribution_equiv_method2_1.0")
-# 
-# res_summary_rep <-
-#   res_summary_rep %>%
-#   filter(effect < 5)
-# 
-# ggplot(aes(y = effect, x = ES_true, col = p_value < .05),
-#        data = res_summary_rep) +
-#   facet_wrap(~ factor(init_sample_size)) +
-#   geom_point(alpha = 0.2) +
-#   geom_hline(aes(yintercept = .5), color = "red") +
-#   theme_bw()
-
-
+#           file = "./data/Carneiro_distribution/Frequentist_analysis/Carneiro_distribution_sig_method1_p0.1")
 
 res_summary_rep <-
   res_summary_rep %>%
   filter(init_sample_size == 10)
 
-# dat$effect <- ifelse(dat$effect < 0, -dat$effect, -dat$effect)
-
-dat_large_ES <-
-  res_summary_rep %>%
-  filter(ES_true > 0)
-
-dat_large_ES <-
-  dat_large_ES %>% 
-  mutate(significant = p_value <= 0.05)
-
-
-ggplot(data = dat_large_ES, aes(x = dat_large_ES$ES_true, fill = factor(significant))) +
-  geom_histogram(bins = 50, color = "black", size = 0.3, alpha = 0.8) +
-  # geom_histogram(data = dat_large_ES, aes(x = ),
-                 # bins = 50, color = "black", fill = "white")
-  labs(x = expression(paste("Sampled effect sizes (Cohen's ", italic("d"), ") ")),
-       y = "Frequency",
-       fill = "Significant outcome \nat replication") +
-  scale_fill_manual(breaks = c("FALSE", "TRUE"),
-                    labels = c("no",
-                               "yes"),
-                    values = c("grey", "steelblue")) +
-  theme_bw() +
-  theme(axis.title.x = element_blank()) +
-  theme(axis.title.y = element_text(size = 20)) +
-  theme(axis.text.x = element_text(size = 18, colour = "black")) +
-  theme(axis.text.y = element_text(size = 18, colour = "black")) +
-  # theme(strip.text.x = element_text(size = 20, colour = "black", face = "bold")) +
-  # theme(strip.text.y = element_text(size = 20, colour = "black", face = "bold")) +
-  # theme(strip.background = element_rect(fill = "white", color = "black")) +
-  theme(legend.title = element_text(size = 18, face = "bold")) +
-  theme(legend.text = element_text(size = 18)) +
-  theme(title = element_text(size = 15)) +
-  theme(legend.position = "none")
+ggplot(aes(y = effect, x = ES_true, col = p_value < .05),
+       data = res_summary_rep) +
+  facet_wrap(~ factor(init_sample_size)) +
+  geom_point(alpha = 0.2) +
+  #geom_hline(aes(yintercept = .7), color = "red") +
+  theme_bw()
