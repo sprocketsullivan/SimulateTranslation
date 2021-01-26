@@ -333,9 +333,6 @@ Across the standard trajectory, given the optimistic scenario, the FNR was `r ro
 
 Across the SESOI trajectory, the FNR decreased to `r round(outcomes_all_distributions_init_samp_size_10$FNR[6], 2)` and `r round(outcomes_all_distributions_init_samp_size_10$FNR[5], 2)` in the optimistic scenario for SESOI set to 0.5 and 1.0. Given the pessimistic scenario, the FNR was `r round(outcomes_all_distributions_init_samp_size_10$FNR[2], 2)` and `r round(outcomes_all_distributions_init_samp_size_10$FNR[1], 2)` for SESOI of 0.5 and 1.0 (Figure \@ref(fig:results)d).
 
-Overall, our simulation shows that current practice reflected by the standard trajectory does not meet the complementary goals of exploration and confirmation along the preclinical research trajectory. In the standard trajectory, the switch from exploratory to confirmatory mode is extremely costly, as it eliminates numerous potentially meaningful effects. This shortcoming is also reflected in the PPV where even in the best-case scenario only 40 out 100 significant results reflect an underlying true effect (compared to 73/100 in the SESOI trajectory). In light of our findings, we advise a rejection of the standard approach. We present here an easily applicable alternative to current practice. Optimizing decision criteria and sample size calculations by employing a SESOI increases chances to detect true effects.
-
-
 ```{r, echo = FALSE}
 
 outcomes_all_distributions_init_samp_size_10$traject_SESOI <- 
@@ -482,6 +479,10 @@ plot_FNR <-
 
 plot_FNR
 ```
+
+Overall, our simulation shows that current practice reflected by the standard trajectory does not meet the complementary goals of exploration and confirmation along the preclinical research trajectory. In the standard trajectory, the switch from exploratory to confirmatory mode is extremely costly, as it eliminates numerous potentially meaningful effects. This shortcoming is also reflected in the PPV where even in the best-case scenario only 40 out 100 significant results reflect an underlying true effect (compared to 73/100 in the SESOI trajectory). In light of our findings, we advise a rejection of the standard approach. We present here an easily applicable alternative to current practice. Optimizing decision criteria and sample size calculations by employing a SESOI increases chances to detect true effects while keeping the number of animals reasonably low.
+
+
 
 
 \newpage

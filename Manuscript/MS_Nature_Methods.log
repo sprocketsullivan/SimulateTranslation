@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.19 (TeX Live 2018) (preloaded format=pdflatex 2019.3.17)  26 JAN 2021 12:03
+This is pdfTeX, Version 3.14159265-2.6-1.40.19 (TeX Live 2018) (preloaded format=pdflatex 2019.3.17)  26 JAN 2021 12:11
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -812,7 +812,7 @@ File: MS_Nature_Methods_files/figure-latex/results-1.pdf Graphic file (type pdf
 )
 <use MS_Nature_Methods_files/figure-latex/results-1.pdf>
 Package pdftex.def Info: MS_Nature_Methods_files/figure-latex/results-1.pdf  us
-ed on input line 155.
+ed on input line 153.
 (pdftex.def)             Requested size: 234.8807pt x 159.49323pt.
 <MS_Nature_Methods_files/figure-latex/results-2.pdf, id=121, 459.7175pt x 315.1
 775pt>
@@ -820,7 +820,7 @@ File: MS_Nature_Methods_files/figure-latex/results-2.pdf Graphic file (type pdf
 )
 <use MS_Nature_Methods_files/figure-latex/results-2.pdf>
 Package pdftex.def Info: MS_Nature_Methods_files/figure-latex/results-2.pdf  us
-ed on input line 155.
+ed on input line 153.
 (pdftex.def)             Requested size: 234.8807pt x 161.03175pt.
 <MS_Nature_Methods_files/figure-latex/results-3.pdf, id=122, 459.7175pt x 315.1
 775pt>
@@ -828,7 +828,7 @@ File: MS_Nature_Methods_files/figure-latex/results-3.pdf Graphic file (type pdf
 )
 <use MS_Nature_Methods_files/figure-latex/results-3.pdf>
 Package pdftex.def Info: MS_Nature_Methods_files/figure-latex/results-3.pdf  us
-ed on input line 155.
+ed on input line 153.
 (pdftex.def)             Requested size: 234.8807pt x 161.03175pt.
 <MS_Nature_Methods_files/figure-latex/results-4.pdf, id=123, 459.7175pt x 315.1
 775pt>
@@ -836,21 +836,21 @@ File: MS_Nature_Methods_files/figure-latex/results-4.pdf Graphic file (type pdf
 )
 <use MS_Nature_Methods_files/figure-latex/results-4.pdf>
 Package pdftex.def Info: MS_Nature_Methods_files/figure-latex/results-4.pdf  us
-ed on input line 155.
+ed on input line 153.
 (pdftex.def)             Requested size: 234.8807pt x 161.03175pt.
 
-Overfull \hbox (7.30638pt too wide) in paragraph at lines 155--156
+Overfull \hbox (7.30638pt too wide) in paragraph at lines 153--154
  [][][][]  
  []
 
 
-Overfull \hbox (7.30638pt too wide) in paragraph at lines 155--156
+Overfull \hbox (7.30638pt too wide) in paragraph at lines 153--154
  [][][][] 
  []
 
-[5] [6 <./MS_Nature_Methods_files/figure-latex/results-1.pdf> <./MS_Nature_Meth
-ods_files/figure-latex/results-2.pdf> <./MS_Nature_Methods_files/figure-latex/r
-esults-3.pdf> <./MS_Nature_Methods_files/figure-latex/results-4.pdf>]
+[5 <./MS_Nature_Methods_files/figure-latex/results-1.pdf> <./MS_Nature_Methods_
+files/figure-latex/results-2.pdf> <./MS_Nature_Methods_files/figure-latex/resul
+ts-3.pdf> <./MS_Nature_Methods_files/figure-latex/results-4.pdf>] [6]
 
 LaTeX Warning: Reference `fig:trajectory' on page 7 undefined on input line 168
 .
@@ -951,7 +951,7 @@ lm/lmr9.pfb></usr/local/texlive/2018/texmf-dist/fonts/type1/public/lm/lmri10.pf
 b></usr/local/texlive/2018/texmf-dist/fonts/type1/public/lm/lmri8.pfb></usr/loc
 al/texlive/2018/texmf-dist/fonts/type1/public/lm/lmsy10.pfb></usr/local/texlive
 /2018/texmf-dist/fonts/type1/public/lm/lmsy8.pfb>
-Output written on MS_Nature_Methods.pdf (9 pages, 307729 bytes).
+Output written on MS_Nature_Methods.pdf (9 pages, 307796 bytes).
 PDF statistics:
  265 PDF objects out of 1000 (max. 8388607)
  208 compressed objects within 3 object streams
