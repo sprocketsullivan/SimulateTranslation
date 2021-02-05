@@ -1,9 +1,9 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.19 (TeX Live 2018) (preloaded format=pdflatex 2019.3.17)  26 JAN 2021 12:20
+This is pdfTeX, Version 3.14159265-2.6-1.40.19 (TeX Live 2018) (preloaded format=pdflatex 2019.3.17)  26 JAN 2021 12:21
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
-**MS_Nature_Methods.tex
-(./MS_Nature_Methods.tex
+**Supplement.tex
+(./Supplement.tex
 LaTeX2e <2018-04-01> patch level 2
 Babel <3.18> and hyphenation patterns for 84 language(s) loaded.
 (/usr/local/texlive/2018/texmf-dist/tex/latex/base/article.cls
@@ -572,39 +572,36 @@ Package: ltcaption 2013/06/09 v1.4-94 longtable captions (AR)
 \c@lotdepth=\count136
 \sf@top=\skip58
 \sf@bottom=\skip59
-)
-\cslhangindent=\skip60
-\csllabelwidth=\skip61
-(./MS_Nature_Methods.aux)
-\openout1 = `MS_Nature_Methods.aux'.
+) (./Supplement.aux)
+\openout1 = `Supplement.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 93.
-LaTeX Font Info:    ... okay on input line 93.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 93.
-LaTeX Font Info:    ... okay on input line 93.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 93.
-LaTeX Font Info:    ... okay on input line 93.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 93.
-LaTeX Font Info:    ... okay on input line 93.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 93.
-LaTeX Font Info:    ... okay on input line 93.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 93.
-LaTeX Font Info:    ... okay on input line 93.
-LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 93.
-LaTeX Font Info:    Try loading font information for TS1+cmr on input line 93.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 73.
+LaTeX Font Info:    ... okay on input line 73.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 73.
+LaTeX Font Info:    ... okay on input line 73.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 73.
+LaTeX Font Info:    ... okay on input line 73.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 73.
+LaTeX Font Info:    ... okay on input line 73.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 73.
+LaTeX Font Info:    ... okay on input line 73.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 73.
+LaTeX Font Info:    ... okay on input line 73.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 73.
+LaTeX Font Info:    Try loading font information for TS1+cmr on input line 73.
 (/usr/local/texlive/2018/texmf-dist/tex/latex/base/ts1cmr.fd
 File: ts1cmr.fd 2014/09/29 v2.5h Standard LaTeX font definitions
 )
-LaTeX Font Info:    ... okay on input line 93.
-LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 93.
-LaTeX Font Info:    ... okay on input line 93.
-LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 93.
-LaTeX Font Info:    ... okay on input line 93.
-LaTeX Font Info:    Try loading font information for T1+lmr on input line 93.
+LaTeX Font Info:    ... okay on input line 73.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 73.
+LaTeX Font Info:    ... okay on input line 73.
+LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 73.
+LaTeX Font Info:    ... okay on input line 73.
+LaTeX Font Info:    Try loading font information for T1+lmr on input line 73.
 (/usr/local/texlive/2018/texmf-dist/tex/latex/lm/t1lmr.fd
 File: t1lmr.fd 2009/10/30 v1.6 Font defs for Latin Modern
 )
-LaTeX Info: Redefining \microtypecontext on input line 93.
+LaTeX Info: Redefining \microtypecontext on input line 73.
 Package microtype Info: Generating PDF output.
 Package microtype Info: Character protrusion enabled (level 2).
 Package microtype Info: Using protrusion set `basicmath'.
@@ -646,7 +643,7 @@ File: epstopdf-sys.cfg 2010/07/13 v1.3 Configuration of (r)epstopdf for TeX Liv
 e
 ))
 \AtBeginShipoutBox=\box34
-Package hyperref Info: Link coloring OFF on input line 93.
+Package hyperref Info: Link coloring OFF on input line 73.
 (/usr/local/texlive/2018/texmf-dist/tex/latex/hyperref/nameref.sty
 Package: nameref 2016/05/21 v2.44 Cross-referencing by name of section
 (/usr/local/texlive/2018/texmf-dist/tex/generic/oberdiek/gettitlestring.sty
@@ -654,9 +651,9 @@ Package: gettitlestring 2016/05/16 v1.5 Cleanup title references (HO)
 )
 \c@section@level=\count143
 )
-LaTeX Info: Redefining \ref on input line 93.
-LaTeX Info: Redefining \pageref on input line 93.
-LaTeX Info: Redefining \nameref on input line 93.
+LaTeX Info: Redefining \ref on input line 73.
+LaTeX Info: Redefining \pageref on input line 73.
+LaTeX Info: Redefining \nameref on input line 73.
 *geometry* driver: auto-detecting
 *geometry* detected driver: pdftex
 *geometry* verbose mode - [ preamble ] result:
@@ -694,267 +691,146 @@ LaTeX Info: Redefining \nameref on input line 93.
 Package caption Info: Begin \AtBeginDocument code.
 Package caption Info: subfig package v1.3 is loaded.
 Package caption Info: End \AtBeginDocument code.
-LaTeX Font Info:    Try loading font information for OT1+lmr on input line 95.
+LaTeX Font Info:    Try loading font information for OT1+lmr on input line 75.
 (/usr/local/texlive/2018/texmf-dist/tex/latex/lm/ot1lmr.fd
 File: ot1lmr.fd 2009/10/30 v1.6 Font defs for Latin Modern
 )
-LaTeX Font Info:    Try loading font information for OML+lmm on input line 95.
+LaTeX Font Info:    Try loading font information for OML+lmm on input line 75.
 (/usr/local/texlive/2018/texmf-dist/tex/latex/lm/omllmm.fd
 File: omllmm.fd 2009/10/30 v1.6 Font defs for Latin Modern
 )
-LaTeX Font Info:    Try loading font information for OMS+lmsy on input line 95.
+LaTeX Font Info:    Try loading font information for OMS+lmsy on input line 75.
 
 (/usr/local/texlive/2018/texmf-dist/tex/latex/lm/omslmsy.fd
 File: omslmsy.fd 2009/10/30 v1.6 Font defs for Latin Modern
 )
-LaTeX Font Info:    Try loading font information for OMX+lmex on input line 95.
+LaTeX Font Info:    Try loading font information for OMX+lmex on input line 75.
 
 (/usr/local/texlive/2018/texmf-dist/tex/latex/lm/omxlmex.fd
 File: omxlmex.fd 2009/10/30 v1.6 Font defs for Latin Modern
 )
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <12> on input line 95.
+(Font)              <12> on input line 75.
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <8> on input line 95.
+(Font)              <8> on input line 75.
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <6> on input line 95.
-LaTeX Font Info:    Try loading font information for U+msa on input line 95.
+(Font)              <6> on input line 75.
+LaTeX Font Info:    Try loading font information for U+msa on input line 75.
 (/usr/local/texlive/2018/texmf-dist/tex/latex/amsfonts/umsa.fd
 File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 ) (/usr/local/texlive/2018/texmf-dist/tex/latex/microtype/mt-msa.cfg
 File: mt-msa.cfg 2006/02/04 v1.1 microtype config. file: AMS symbols (a) (RS)
 )
-LaTeX Font Info:    Try loading font information for U+msb on input line 95.
+LaTeX Font Info:    Try loading font information for U+msb on input line 75.
 (/usr/local/texlive/2018/texmf-dist/tex/latex/amsfonts/umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 ) (/usr/local/texlive/2018/texmf-dist/tex/latex/microtype/mt-msb.cfg
 File: mt-msb.cfg 2005/06/01 v1.0 microtype config. file: AMS symbols (b) (RS)
 )
+<Supplement_files/figure-latex/histograms-1.pdf, id=4, 459.7175pt x 312.16624pt
+>
+File: Supplement_files/figure-latex/histograms-1.pdf Graphic file (type pdf)
+<use Supplement_files/figure-latex/histograms-1.pdf>
+Package pdftex.def Info: Supplement_files/figure-latex/histograms-1.pdf  used o
+n input line 79.
+(pdftex.def)             Requested size: 211.38843pt x 143.54105pt.
+<Supplement_files/figure-latex/histograms-2.pdf, id=5, 459.7175pt x 312.16624pt
+>
+File: Supplement_files/figure-latex/histograms-2.pdf Graphic file (type pdf)
+<use Supplement_files/figure-latex/histograms-2.pdf>
+Package pdftex.def Info: Supplement_files/figure-latex/histograms-2.pdf  used o
+n input line 79.
+(pdftex.def)             Requested size: 211.38843pt x 143.54105pt.
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <10.95> on input line 102.
+(Font)              <10.95> on input line 83.
+<Supplement_files/figure-latex/hist-1.pdf, id=6, 459.7175pt x 312.16624pt>
+File: Supplement_files/figure-latex/hist-1.pdf Graphic file (type pdf)
+<use Supplement_files/figure-latex/hist-1.pdf>
+Package pdftex.def Info: Supplement_files/figure-latex/hist-1.pdf  used on inpu
+t line 88.
+(pdftex.def)             Requested size: 234.8807pt x 159.49323pt.
+<Supplement_files/figure-latex/hist-2.pdf, id=7, 464.73625pt x 312.16624pt>
+File: Supplement_files/figure-latex/hist-2.pdf Graphic file (type pdf)
+<use Supplement_files/figure-latex/hist-2.pdf>
+Package pdftex.def Info: Supplement_files/figure-latex/hist-2.pdf  used on inpu
+t line 88.
+(pdftex.def)             Requested size: 234.87787pt x 157.76894pt.
+<Supplement_files/figure-latex/hist-3.pdf, id=8, 459.7175pt x 312.16624pt>
+File: Supplement_files/figure-latex/hist-3.pdf Graphic file (type pdf)
+<use Supplement_files/figure-latex/hist-3.pdf>
+Package pdftex.def Info: Supplement_files/figure-latex/hist-3.pdf  used on inpu
+t line 88.
+(pdftex.def)             Requested size: 234.8807pt x 159.49323pt.
+<Supplement_files/figure-latex/hist-4.pdf, id=9, 464.73625pt x 312.16624pt>
+File: Supplement_files/figure-latex/hist-4.pdf Graphic file (type pdf)
+<use Supplement_files/figure-latex/hist-4.pdf>
+Package pdftex.def Info: Supplement_files/figure-latex/hist-4.pdf  used on inpu
+t line 88.
+(pdftex.def)             Requested size: 234.87787pt x 157.76894pt.
+<Supplement_files/figure-latex/hist-5.pdf, id=10, 459.7175pt x 312.16624pt>
+File: Supplement_files/figure-latex/hist-5.pdf Graphic file (type pdf)
+<use Supplement_files/figure-latex/hist-5.pdf>
+Package pdftex.def Info: Supplement_files/figure-latex/hist-5.pdf  used on inpu
+t line 88.
+(pdftex.def)             Requested size: 234.8807pt x 159.49323pt.
+<Supplement_files/figure-latex/hist-6.pdf, id=11, 464.73625pt x 312.16624pt>
+File: Supplement_files/figure-latex/hist-6.pdf Graphic file (type pdf)
+<use Supplement_files/figure-latex/hist-6.pdf>
+Package pdftex.def Info: Supplement_files/figure-latex/hist-6.pdf  used on inpu
+t line 88.
+(pdftex.def)             Requested size: 234.87787pt x 157.76894pt.
+
+Overfull \hbox (7.30354pt too wide) in paragraph at lines 88--89
+ [][][][]  
+ []
+
+
+Overfull \hbox (7.30354pt too wide) in paragraph at lines 88--89
+ [][][][]  
+ []
+
+
+Overfull \hbox (7.30354pt too wide) in paragraph at lines 88--89
+ [][][][] 
+ []
+
+
+LaTeX Warning: Float too large for page by 8.5254pt on input line 93.
+
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 98.
 [1
 
-{/usr/local/texlive/2018/texmf-var/fonts/map/pdftex/updmap/pdftex.map}]
-<MS_Nature_Methods_files/figure-latex/histograms-1.pdf, id=16, 459.7175pt x 312
-.16624pt>
-File: MS_Nature_Methods_files/figure-latex/histograms-1.pdf Graphic file (type 
-pdf)
-<use MS_Nature_Methods_files/figure-latex/histograms-1.pdf>
-Package pdftex.def Info: MS_Nature_Methods_files/figure-latex/histograms-1.pdf 
- used on input line 122.
-(pdftex.def)             Requested size: 234.8807pt x 159.49323pt.
-<MS_Nature_Methods_files/figure-latex/histograms-2.pdf, id=17, 459.7175pt x 312
-.16624pt>
-File: MS_Nature_Methods_files/figure-latex/histograms-2.pdf Graphic file (type 
-pdf)
-<use MS_Nature_Methods_files/figure-latex/histograms-2.pdf>
-Package pdftex.def Info: MS_Nature_Methods_files/figure-latex/histograms-2.pdf 
- used on input line 122.
-(pdftex.def)             Requested size: 234.8807pt x 159.49323pt.
-<MS_Nature_Methods_files/figure-latex/histograms-3.pdf, id=18, 459.7175pt x 312
-.16624pt>
-File: MS_Nature_Methods_files/figure-latex/histograms-3.pdf Graphic file (type 
-pdf)
-<use MS_Nature_Methods_files/figure-latex/histograms-3.pdf>
-Package pdftex.def Info: MS_Nature_Methods_files/figure-latex/histograms-3.pdf 
- used on input line 122.
-(pdftex.def)             Requested size: 234.8807pt x 159.49323pt.
-<MS_Nature_Methods_files/figure-latex/histograms-4.pdf, id=19, 459.7175pt x 312
-.16624pt>
-File: MS_Nature_Methods_files/figure-latex/histograms-4.pdf Graphic file (type 
-pdf)
-<use MS_Nature_Methods_files/figure-latex/histograms-4.pdf>
-Package pdftex.def Info: MS_Nature_Methods_files/figure-latex/histograms-4.pdf 
- used on input line 122.
-(pdftex.def)             Requested size: 234.8807pt x 159.49323pt.
-<MS_Nature_Methods_files/figure-latex/histograms-5.pdf, id=20, 459.7175pt x 312
-.16624pt>
-File: MS_Nature_Methods_files/figure-latex/histograms-5.pdf Graphic file (type 
-pdf)
-<use MS_Nature_Methods_files/figure-latex/histograms-5.pdf>
-Package pdftex.def Info: MS_Nature_Methods_files/figure-latex/histograms-5.pdf 
- used on input line 122.
-(pdftex.def)             Requested size: 234.8807pt x 159.49323pt.
-<MS_Nature_Methods_files/figure-latex/histograms-6.pdf, id=21, 459.7175pt x 312
-.16624pt>
-File: MS_Nature_Methods_files/figure-latex/histograms-6.pdf Graphic file (type 
-pdf)
-<use MS_Nature_Methods_files/figure-latex/histograms-6.pdf>
-Package pdftex.def Info: MS_Nature_Methods_files/figure-latex/histograms-6.pdf 
- used on input line 122.
-(pdftex.def)             Requested size: 234.8807pt x 159.49323pt.
-
-Overfull \hbox (7.30638pt too wide) in paragraph at lines 122--123
- [][][][]  
- []
-
-
-Overfull \hbox (7.30638pt too wide) in paragraph at lines 122--123
- [][][][]  
- []
-
-
-Overfull \hbox (7.30638pt too wide) in paragraph at lines 122--123
- [][][][] 
- []
-
-
-LaTeX Warning: Float too large for page by 10.2497pt on input line 127.
-
-[2] [3 <./MS_Nature_Methods_files/figure-latex/histograms-1.pdf> <./MS_Nature_M
-ethods_files/figure-latex/histograms-2.pdf> <./MS_Nature_Methods_files/figure-l
-atex/histograms-3.pdf> <./MS_Nature_Methods_files/figure-latex/histograms-4.pdf
-> <./MS_Nature_Methods_files/figure-latex/histograms-5.pdf> <./MS_Nature_Method
-s_files/figure-latex/histograms-6.pdf>] [4]
-<MS_Nature_Methods_files/figure-latex/results-1.pdf, id=120, 459.7175pt x 312.1
-6624pt>
-File: MS_Nature_Methods_files/figure-latex/results-1.pdf Graphic file (type pdf
-)
-<use MS_Nature_Methods_files/figure-latex/results-1.pdf>
-Package pdftex.def Info: MS_Nature_Methods_files/figure-latex/results-1.pdf  us
-ed on input line 153.
-(pdftex.def)             Requested size: 234.8807pt x 159.49323pt.
-<MS_Nature_Methods_files/figure-latex/results-2.pdf, id=121, 459.7175pt x 315.1
-775pt>
-File: MS_Nature_Methods_files/figure-latex/results-2.pdf Graphic file (type pdf
-)
-<use MS_Nature_Methods_files/figure-latex/results-2.pdf>
-Package pdftex.def Info: MS_Nature_Methods_files/figure-latex/results-2.pdf  us
-ed on input line 153.
-(pdftex.def)             Requested size: 234.8807pt x 161.03175pt.
-<MS_Nature_Methods_files/figure-latex/results-3.pdf, id=122, 459.7175pt x 315.1
-775pt>
-File: MS_Nature_Methods_files/figure-latex/results-3.pdf Graphic file (type pdf
-)
-<use MS_Nature_Methods_files/figure-latex/results-3.pdf>
-Package pdftex.def Info: MS_Nature_Methods_files/figure-latex/results-3.pdf  us
-ed on input line 153.
-(pdftex.def)             Requested size: 234.8807pt x 161.03175pt.
-<MS_Nature_Methods_files/figure-latex/results-4.pdf, id=123, 459.7175pt x 315.1
-775pt>
-File: MS_Nature_Methods_files/figure-latex/results-4.pdf Graphic file (type pdf
-)
-<use MS_Nature_Methods_files/figure-latex/results-4.pdf>
-Package pdftex.def Info: MS_Nature_Methods_files/figure-latex/results-4.pdf  us
-ed on input line 153.
-(pdftex.def)             Requested size: 234.8807pt x 161.03175pt.
-
-Overfull \hbox (7.30638pt too wide) in paragraph at lines 153--154
- [][][][]  
- []
-
-
-Overfull \hbox (7.30638pt too wide) in paragraph at lines 153--154
- [][][][] 
- []
-
-[5 <./MS_Nature_Methods_files/figure-latex/results-1.pdf> <./MS_Nature_Methods_
-files/figure-latex/results-2.pdf> <./MS_Nature_Methods_files/figure-latex/resul
-ts-3.pdf> <./MS_Nature_Methods_files/figure-latex/results-4.pdf>] [6]
-
-LaTeX Warning: Reference `fig:trajectory' on page 7 undefined on input line 168
-.
-
-LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <5> on input line 170.
-[7] [8]
-Overfull \hbox (1.88892pt too wide) in paragraph at lines 199--201
-[][] [] 
- []
-
-
-Overfull \hbox (1.88892pt too wide) in paragraph at lines 202--205
-[][][] [] 
- []
-
-
-Overfull \hbox (1.88892pt too wide) in paragraph at lines 206--209
-[][][] [] 
- []
-
-
-Overfull \hbox (1.88892pt too wide) in paragraph at lines 210--213
-[][][] [] 
- []
-
-
-Overfull \hbox (1.88892pt too wide) in paragraph at lines 214--217
-[][][] [] 
- []
-
-
-Overfull \hbox (1.88892pt too wide) in paragraph at lines 218--221
-[][][] [] 
- []
-
-
-Overfull \hbox (1.88892pt too wide) in paragraph at lines 222--225
-[][][] [] 
- []
-
-
-Overfull \hbox (1.88892pt too wide) in paragraph at lines 226--229
-[][][] [] 
- []
-
-
-Overfull \hbox (1.88892pt too wide) in paragraph at lines 230--233
-[][][] [] 
- []
-
-
-Overfull \hbox (1.88892pt too wide) in paragraph at lines 234--237
-[][][] [] 
- []
-
-
-Overfull \hbox (1.88892pt too wide) in paragraph at lines 238--241
-[][][] [] 
- []
-
-
-Overfull \hbox (1.88892pt too wide) in paragraph at lines 242--245
-[][][] [] 
- []
-
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 248.
-[9]
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 248.
-(./MS_Nature_Methods.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 248.
-Package atveryend Info: Empty hook `AtEndAfterFileList' on input line 248.
-
-LaTeX Warning: There were undefined references.
-
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 248.
+{/usr/local/texlive/2018/texmf-var/fonts/map/pdftex/updmap/pdftex.map} <./Suppl
+ement_files/figure-latex/histograms-1.pdf> <./Supplement_files/figure-latex/his
+tograms-2.pdf>] [2 <./Supplement_files/figure-latex/hist-1.pdf> <./Supplement_f
+iles/figure-latex/hist-2.pdf> <./Supplement_files/figure-latex/hist-3.pdf> <./S
+upplement_files/figure-latex/hist-4.pdf> <./Supplement_files/figure-latex/hist-
+5.pdf> <./Supplement_files/figure-latex/hist-6.pdf>]
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 98.
+(./Supplement.aux)
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 98.
+Package atveryend Info: Empty hook `AtEndAfterFileList' on input line 98.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 98.
  ) 
 Here is how much of TeX's memory you used:
- 14515 strings out of 492649
- 216920 string characters out of 6129622
- 331447 words of memory out of 5000000
- 18067 multiletter control sequences out of 15000+600000
- 67351 words of font info for 97 fonts, out of 8000000 for 9000
+ 14385 strings out of 492649
+ 214378 string characters out of 6129622
+ 328865 words of memory out of 5000000
+ 18025 multiletter control sequences out of 15000+600000
+ 40261 words of font info for 58 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 44i,10n,51p,1054b,456s stack positions out of 5000i,500n,10000p,200000b,80000s
-{/usr/local/texlive/2018/texmf-dist/fonts/enc/dvips/lm/lm-mathsy.enc}{/usr/lo
-cal/texlive/2018/texmf-dist/fonts/enc/dvips/lm/lm-rm.enc}{/usr/local/texlive/20
-18/texmf-dist/fonts/enc/dvips/lm/lm-mathit.enc}{/usr/local/texlive/2018/texmf-d
-ist/fonts/enc/dvips/lm/lm-ec.enc}</usr/local/texlive/2018/texmf-dist/fonts/type
-1/public/lm/lmbx10.pfb></usr/local/texlive/2018/texmf-dist/fonts/type1/public/l
-m/lmbx8.pfb></usr/local/texlive/2018/texmf-dist/fonts/type1/public/lm/lmmi10.pf
-b></usr/local/texlive/2018/texmf-dist/fonts/type1/public/lm/lmmi8.pfb></usr/loc
-al/texlive/2018/texmf-dist/fonts/type1/public/lm/lmr10.pfb></usr/local/texlive/
-2018/texmf-dist/fonts/type1/public/lm/lmr17.pfb></usr/local/texlive/2018/texmf-
-dist/fonts/type1/public/lm/lmr6.pfb></usr/local/texlive/2018/texmf-dist/fonts/t
-ype1/public/lm/lmr8.pfb></usr/local/texlive/2018/texmf-dist/fonts/type1/public/
-lm/lmr9.pfb></usr/local/texlive/2018/texmf-dist/fonts/type1/public/lm/lmri10.pf
-b></usr/local/texlive/2018/texmf-dist/fonts/type1/public/lm/lmri8.pfb></usr/loc
-al/texlive/2018/texmf-dist/fonts/type1/public/lm/lmsy10.pfb></usr/local/texlive
-/2018/texmf-dist/fonts/type1/public/lm/lmsy8.pfb>
-Output written on MS_Nature_Methods.pdf (9 pages, 307798 bytes).
+ 44i,10n,51p,904b,452s stack positions out of 5000i,500n,10000p,200000b,80000s
+{/usr/local/texlive/2018/texmf-dist/fonts/enc/dvips/lm/lm-ec.enc}{/usr/local/
+texlive/2018/texmf-dist/fonts/enc/dvips/lm/lm-mathit.enc}</usr/local/texlive/20
+18/texmf-dist/fonts/type1/public/lm/lmbx12.pfb></usr/local/texlive/2018/texmf-d
+ist/fonts/type1/public/lm/lmmi10.pfb></usr/local/texlive/2018/texmf-dist/fonts/
+type1/public/lm/lmr10.pfb></usr/local/texlive/2018/texmf-dist/fonts/type1/publi
+c/lm/lmr17.pfb></usr/local/texlive/2018/texmf-dist/fonts/type1/public/lm/lmr9.p
+fb>
+Output written on Supplement.pdf (2 pages, 148643 bytes).
 PDF statistics:
- 265 PDF objects out of 1000 (max. 8388607)
- 208 compressed objects within 3 object streams
- 35 named destinations out of 1000 (max. 500000)
- 14387 words of extra memory for PDF output out of 14400 (max. 10000000)
+ 146 PDF objects out of 1000 (max. 8388607)
+ 111 compressed objects within 2 object streams
+ 15 named destinations out of 1000 (max. 500000)
+ 10289 words of extra memory for PDF output out of 12000 (max. 10000000)
 

@@ -1,10 +1,14 @@
-setwd("~/Documents/QUEST/PhD/R/SimulateTranslation/data")
+setwd("~/Documents/SimulateTranslation")
 
-#rm(list = ls())
+rm(list = ls())
+
 library(tidyverse)
 
+source("./scripts/analysis/prior_odds_for_analysis_Szucs.R")
 
-final <- read.csv(file = "Szucs_distribution_equiv_method2_1.0")
+
+final <- 
+  read.csv(file = "./data/Szucs_distribution/Frequentist_analysis/Szucs_distribution_sig_method1_p0.05")
 
 
 hist(final$effect, breaks = 100)
@@ -13,13 +17,11 @@ hist(final$ES_true, breaks = 100)
 
 
 ### add column that codes decision criterion from exploratory stage to confirmatory stage
-final$decision_crit <- "equivalence"
+final$decision_crit <- "significance"
 
 ### add column that codes approach to determine sample size for confirmatory study
-final$sampsize_approach <- "SESOI"
+final$sampsize_approach <- "standard"
 
-### add column that codes design applied in confirmatory study
-#finalfix$design <- rep("fixN")
 
 ### add column for outcome significant / not significant to match outcome column
 ### of sequential design data set
@@ -27,9 +29,9 @@ final$H0 <- ifelse(final$p_value <= .05, 2, 1)
 
 ### add column for prevalence 
 
-final$prev_pop      <- mat[1, 4]
-final$all_positives <- mat[2, 4]
-final$all_negatives <- mat[3, 4]
+final$prev_pop      <- mat[1, 3]
+final$all_positives <- mat[2, 3]
+final$all_negatives <- mat[3, 3]
 
 mat
 
@@ -42,25 +44,25 @@ dat <-
 true_positives <-
   dat %>%
   group_by(init_sample_size, decision_crit, sampsize_approach, H0, rep_attempts, prev_pop) %>%
-  filter(H0 == 2 & ES_true > 1) %>%
+  filter(H0 == 2 & ES_true > .5) %>%
   summarize(true_pos = n())
 
 false_positives <-
   dat %>%
   group_by(init_sample_size, decision_crit, sampsize_approach, H0, rep_attempts, prev_pop) %>%
-  filter(H0 == 2 & ES_true < 1) %>%
+  filter(H0 == 2 & ES_true < .5) %>%
   summarize(false_pos = n())
 
 false_negatives <-
   dat %>%
   group_by(init_sample_size, decision_crit, sampsize_approach, H0, rep_attempts, prev_pop) %>%
-  filter(H0 == 1 & ES_true > 1) %>%
+  filter(H0 == 1 & ES_true > .5) %>%
   summarize(false_neg = n())
 
 true_negatives <-
   dat %>%
   group_by(init_sample_size, decision_crit, sampsize_approach, H0, rep_attempts, prev_pop) %>%
-  filter(H0 == 1 & ES_true < 1) %>%
+  filter(H0 == 1 & ES_true < .5) %>%
   summarize(true_neg = n())
 
 true_positives$false_pos <- false_positives$false_pos
@@ -94,11 +96,6 @@ outcomes <-
   outcomes %>% 
   mutate(PPV_pop_prev = (Sensitivity * Prevalence) / 
            (Sensitivity * Prevalence + (1 - Specificity) * (1 - Prevalence)),
-         PPV_alternative = true_pos / (true_pos + false_pos))
-
-
-outcomes <-
-  outcomes %>%
-  mutate(PPV_sample_prev = (Sensitivity * Sample_prev) /
+         PPV_sample_prev = (Sensitivity * Sample_prev) /
            (Sensitivity * Sample_prev + (1 - Specificity) * (1 - Sample_prev)))
 

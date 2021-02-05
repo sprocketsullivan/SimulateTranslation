@@ -1,4 +1,4 @@
-setwd("~/Documents/QUEST/PhD/R/SimulateTranslation")
+setwd("~/Documents/SimulateTranslation")
 
 
 # source additional functions
@@ -14,11 +14,11 @@ hist(ES_true, breaks = 200)
 hist(current_ES, breaks = 200)
 
 #how many hypothesis over SESOI threshold
-SESOI       <- c(.5, 1)
+SESOI <- c(.1, .3, .5, .7, 1)
 
 mat <- matrix(NA, nrow = 3, ncol = length(SESOI),
               dimnames = list(c("prev_pop", "all_positives", "all_negatives"), 
-                              c(.5, 1)))
+                              c(.1, .3, .5, .7, 1)))
 
 prev_pop      <- vector()
 all_positives <- vector()

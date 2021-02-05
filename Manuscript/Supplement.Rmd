@@ -1,0 +1,271 @@
+---
+title: 'Supplement Nature Methods'
+csl: nature-methods.csl
+indent: yes
+output: bookdown::pdf_document2
+toc: false
+linestretch: 1.5
+fontsize: 11pt
+header-includes:
+       - \usepackage{subfig}
+bibliography: refs_repro.bib
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r libraries, echo = FALSE, message = FALSE, warning = FALSE}
+library(bookdown)
+library(knitr)
+library(tidyverse)
+```
+
+
+```{r data, include = FALSE, cache = FALSE}
+load("all_outcomes_init_samp_size_10.RData")
+load("exploratory_data_SESOI_Carneiro_10.RData")
+load("exploratory_data_SESOI_Szucs_10.RData")
+load("exploratory_data_significance_Carneiro_10.RData")
+load("exploratory_data_significance_Szucs_10.RData")
+```
+
+```{r ES data, include = FALSE, cache = FALSE}
+load("ES_data_Szucs.RData")
+load("ES_data_Carneiro.RData")
+```
+
+```{r ES distribution, echo = FALSE, results = "hide"}
+min(ES_data_Szucs$D)
+max(ES_data_Szucs$D)
+
+sum(ES_data_Szucs$D > 10)
+
+median(ES_data_Szucs$D)
+mean(ES_data_Szucs$D)
+
+names(ES_data_Carneiro)[1] <- "D"
+
+ES_data_Carneiro$D <- ifelse(ES_data_Carneiro$D < 0, -ES_data_Carneiro$D, -ES_data_Carneiro$D)
+
+min(ES_data_Carneiro$D)
+max(ES_data_Carneiro$D)
+median(ES_data_Carneiro$D)
+mean(ES_data_Carneiro$D)
+
+ES_data_Carneiro <-
+  ES_data_Carneiro %>% 
+  mutate(distribution = "Pessimistic")
+
+ES_Szucs <-
+  ES_data_Szucs %>% 
+  select(D) %>% 
+  filter(D <= 10) %>% 
+  mutate(distribution = "Optimistic")
+
+ES_data <- bind_rows(ES_Szucs, ES_data_Carneiro)
+```
+
+```{r histograms, echo = FALSE, fig.cap = 'Empirical effect size distributions. Note that in (a) 45 values $>$ 10 were removed in order to display the distribution.', fig.subcap = c('Optimistic distribution', 'Pessimistic distribution'), out.width = '.45\\linewidth', fig.ncol = 2, fig.align = 'center'}
+
+ES_histrogram_Szucs <-
+  ggplot(data = ES_Szucs, aes(x = D)) +
+  geom_histogram(binwidth = .2, color = "black", fill = "white", size = 0.3) +
+  theme_bw() +
+  labs(x = expression(paste("Empirical effect sizes (Cohen's ", italic("d"), ") ")), 
+       y = "Frequency") + 
+  scale_x_continuous(breaks = seq(0, 10, 2)) +
+  theme(axis.title.x = element_text(size = 16)) +
+  theme(axis.title.y = element_text(size = 16)) +
+  theme(axis.text.x = element_text(size = 15, colour = "black")) +
+  theme(axis.text.y = element_text(size = 15, colour = "black"))
+
+ES_histrogram_Szucs
+
+ES_histrogram_Carneiro <-
+  ggplot(data = ES_data_Carneiro, aes(x = D)) +
+  geom_histogram(binwidth = .2, color = "black", fill = "white", size = 0.3) +
+  theme_bw() +
+  labs(x = expression(paste("Empirical effect sizes (Cohen's ", italic("d"), ") ")), 
+       y = "Frequency") + 
+   scale_x_continuous(breaks = seq(-4, 6, 2)) +
+  theme(axis.title.x = element_text(size = 16)) +
+  theme(axis.title.y = element_text(size = 16)) +
+  theme(axis.text.x = element_text(size = 15, colour = "black")) +
+  theme(axis.text.y = element_text(size = 15, colour = "black"))
+
+ES_histrogram_Carneiro
+```
+
+```{r, hist, echo = FALSE, fig.cap = 'Exploratory effect sizes (left: based on optimistic empirical distribution, right: based on pessimistic empirical distribution). The panels show the effect sizes that were detected using one of the two decision criteria. Orange shaded bars (panels (a) and (b)) indicate those effect sizes that were identified for replication using the conventional significance threshold (p = .05). Blue shaded bars indicate effect sizes that were selected using a SESOI of 0.5 (panels (c) and (d)) or 1.0 (panels (e) and (f)), respectively. Note that in (a), (c), and (e) 24 values $>$ 10 were removed in order to display the distribution.', fig.align = 'center', fig.subcap = c('', ''), out.width = '.50\\linewidth', fig.ncol = 2}
+
+exploratory_data_sig_Szucs_10 <-
+  exploratory_data_sig_Szucs_10 %>%
+  filter(pval_threshold == 0.05) %>%
+  mutate(reverse_effect = ifelse(effect < 0, -effect, -effect)) %>% 
+  filter(reverse_effect <= 10)
+
+ES_histrogram_Szucs <-
+  ggplot(data = exploratory_data_sig_Szucs_10,
+         aes(x = reverse_effect,
+             fill = factor(selection_sig))) +
+  geom_histogram(bins = 100, color = "black", size = 0.3) +
+  theme_bw() +
+  labs(x = expression(paste("Exploratory effect sizes (Cohen's ", italic("d"), ") ")),
+       y = "Frequency",
+       fill = "Selected for \nreplication") +
+  scale_fill_manual(breaks = c("0", "1"),
+                    labels = c("no",
+                               "yes"),
+                    values = c("white", "#E69F00")) +
+  theme(axis.title.x = element_text(size = 16)) +
+  theme(axis.title.y = element_text(size = 16)) +
+  theme(axis.text.x = element_text(size = 15, colour = "black")) +
+  theme(axis.text.y = element_text(size = 15, colour = "black")) +
+  theme(legend.position = "none")
+
+ES_histrogram_Szucs
+
+exploratory_data_sig_Carneiro_10 <-
+  exploratory_data_sig_Carneiro_10 %>% 
+  filter(pval_threshold == 0.05) %>% 
+  mutate(reverse_effect = ifelse(effect < 0, -effect, -effect))
+
+ES_histrogram_Carneiro_selected_sig <-
+  ggplot(data = exploratory_data_sig_Carneiro_10, 
+       aes(x = reverse_effect, fill = factor(selection_sig))) +
+  geom_histogram(bins = 90, color = "black",
+                 size = 0.3, alpha = 0.8) +
+  labs(#x = "",
+       x = expression(paste("Exploratory effect sizes (Cohen's ", italic("d"), ") ")),
+       y = "Frequency",
+       fill = "Selected for \nreplication") +
+  scale_fill_manual(breaks = c("0", "1"),
+                    labels = c("no",
+                               "yes"),
+                    values = c("white", "#E69F00")) +
+  theme_bw() +
+  theme(axis.title.x = element_text(size = 16)) +
+  theme(axis.title.y = element_text(size = 16)) +
+  theme(axis.text.x = element_text(size = 15, colour = "black")) +
+  theme(axis.text.y = element_text(size = 15, colour = "black")) +
+  theme(legend.position = "none")
+
+ES_histrogram_Carneiro_selected_sig
+
+exploratory_data_Szucs_10_0.5 <-
+  exploratory_data_Szucs_10 %>% 
+  filter(SESOI == 0.5) %>% 
+  mutate(reverse_effect = ifelse(effect < 0, -effect, -effect)) %>% 
+  filter(reverse_effect <= 10)
+
+ES_histrogram_Szucs_selected_SESOI_0.5 <-
+  ggplot(data = exploratory_data_Szucs_10_0.5, 
+       aes(x = reverse_effect, fill = factor(selection_equiv))) +
+  geom_histogram(bins = 90, color = "black",
+                 size = 0.3, alpha = 0.8) +
+  labs(#x = "",
+       x = expression(paste("Exploratory effect sizes (Cohen's ", italic("d"), ") ")),
+       y = "Frequency",
+       fill = "Selected for \nreplication") +
+  scale_fill_manual(breaks = c("0", "1"),
+                    labels = c("no",
+                               "yes"),
+                    values = c("white", "#0072B2")) +
+  theme_bw() +
+  theme(axis.title.x = element_text(size = 16)) +
+  theme(axis.title.y = element_text(size = 16)) +
+  theme(axis.text.x = element_text(size = 15, colour = "black")) +
+  theme(axis.text.y = element_text(size = 15, colour = "black")) +
+  theme(legend.position = "none")
+
+ES_histrogram_Szucs_selected_SESOI_0.5
+
+exploratory_data_Carneiro_10_0.5 <-
+  exploratory_data_Carneiro_10 %>% 
+  filter(SESOI == 0.5) %>% 
+  mutate(reverse_effect = ifelse(effect < 0, -effect, -effect))
+
+ES_histrogram_Carneiro_selected_SESOI_0.5 <-
+  ggplot(data = exploratory_data_Carneiro_10_0.5, 
+       aes(x = reverse_effect, fill = factor(selection_equiv))) +
+  geom_histogram(bins = 90, color = "black",
+                 size = 0.3, alpha = 0.8) +
+  labs(#x = "",
+       x = expression(paste("Exploratory effect sizes (Cohen's ", italic("d"), ") ")),
+       y = "Frequency",
+       fill = "Selected for \nreplication") +
+  scale_fill_manual(breaks = c("0", "1"),
+                    labels = c("no",
+                               "yes"),
+                    values = c("white", "#0072B2")) +
+  theme_bw() +
+  theme(axis.title.x = element_text(size = 16)) +
+  theme(axis.title.y = element_text(size = 16)) +
+  theme(axis.text.x = element_text(size = 15, colour = "black")) +
+  theme(axis.text.y = element_text(size = 15, colour = "black")) +
+  theme(legend.position = "none")
+
+ES_histrogram_Carneiro_selected_SESOI_0.5
+
+exploratory_data_Szucs_10_1.0 <-
+  exploratory_data_Szucs_10 %>% 
+  filter(SESOI == "1.0") %>% 
+  mutate(reverse_effect = ifelse(effect < 0, -effect, -effect)) %>% 
+  filter(reverse_effect <= 10)
+
+ES_histrogram_Szucs_selected_SESOI_1.0 <-
+  ggplot(data = exploratory_data_Szucs_10_1.0, 
+       aes(x = reverse_effect, fill = factor(selection_equiv))) +
+  geom_histogram(bins = 90, color = "black",
+                 size = 0.3, alpha = 0.8) +
+  labs(#x = "",
+       x = expression(paste("Exploratory effect sizes (Cohen's ", italic("d"), ") ")),
+       y = "Frequency",
+       fill = "Selected for \nreplication") +
+  scale_fill_manual(breaks = c("0", "1"),
+                    labels = c("no",
+                               "yes"),
+                    values = c("white", "#0072B2")) +
+  theme_bw() +
+  theme(axis.title.x = element_text(size = 16)) +
+  theme(axis.title.y = element_text(size = 16)) +
+  theme(axis.text.x = element_text(size = 15, colour = "black")) +
+  theme(axis.text.y = element_text(size = 15, colour = "black")) +
+  theme(legend.position = "none")
+
+ES_histrogram_Szucs_selected_SESOI_1.0
+
+exploratory_data_Carneiro_10_1.0 <-
+  exploratory_data_Carneiro_10 %>% 
+  filter(SESOI == "1.0") %>% 
+  mutate(reverse_effect = ifelse(effect < 0, -effect, -effect))
+
+ES_histrogram_Carneiro_selected_SESOI_1.0 <-
+  ggplot(data = exploratory_data_Carneiro_10_1.0, 
+       aes(x = reverse_effect, fill = factor(selection_equiv))) +
+  geom_histogram(bins = 90, color = "black",
+                 size = 0.3, alpha = 0.8) +
+  labs(#x = "",
+       x = expression(paste("Exploratory effect sizes (Cohen's ", italic("d"), ") ")),
+       y = "Frequency",
+       fill = "Selected for \nreplication") +
+  scale_fill_manual(breaks = c("0", "1"),
+                    labels = c("no",
+                               "yes"),
+                    values = c("white", "#0072B2")) +
+  theme_bw() +
+  theme(axis.title.x = element_text(size = 16)) +
+  theme(axis.title.y = element_text(size = 16)) +
+  theme(axis.text.x = element_text(size = 15, colour = "black")) +
+  theme(axis.text.y = element_text(size = 15, colour = "black")) +
+  theme(legend.position = "none")
+
+ES_histrogram_Carneiro_selected_SESOI_1.0
+
+```
+
+# Supplementary text 1: Limitations
+
+
+

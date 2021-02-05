@@ -116,7 +116,7 @@ list_exploratory_data <-
 #the confidence interval generated here is used in the equivalence test
 exploratory_data_summary <- list()
 
-plan(multiprocess)
+plan(multisession)
 for (i in 1:length(samp_size_vector)) {
   
   exploratory_data_summary[[i]] <- 
@@ -134,7 +134,7 @@ selection_equiv <- list()
 for (i in 1:length(samp_size_vector)) {
   
   selection_equiv[[i]] <- future_map(exploratory_data_summary[[i]], get_decision_equiv,
-                                     SESOI = 0.7)
+                                     SESOI = 1.0)
   
 }
 

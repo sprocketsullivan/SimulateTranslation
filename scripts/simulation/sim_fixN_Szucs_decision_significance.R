@@ -97,7 +97,7 @@ list_exploratory_data <-
 #the confidence interval generated here is used in the equivalence test
 exploratory_data_summary <- list()
 
-plan(multiprocess)
+plan(multisession)
 for (i in 1:length(samp_size_vector)) {
   
   exploratory_data_summary[[i]] <- 

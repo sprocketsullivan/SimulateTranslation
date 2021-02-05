@@ -1,6 +1,7 @@
 setwd("~/Documents/SimulateTranslation/")
 
 rm(list = ls())
+
 library(tidyverse)
 
 source("./scripts/analysis/prior_odds_for_analysis_Szucs.R")
@@ -10,9 +11,10 @@ source("./scripts/analysis/prior_odds_for_analysis_Szucs.R")
 ### read in data sets from the different trajectories 
 ### using fixed-N design in replication study
 
-final <- read.csv(file = "./data/Carneiro_distribution/Frequentist_analysis/Carneiro_distribution_equiv_method2_0.1")
+# final <- 
+#   read.csv(file = "./data/Carneiro_distribution/Frequentist_analysis/Carneiro_distribution_equiv_method1_0.1")
 
-# final <- read.csv(file = "./data/Szucs_distribution/Frequentist_analysis/Szucs_distribution_sig_method1")
+final <- read.csv(file = "./data/Szucs_distribution/Frequentist_analysis/Szucs_distribution_equiv_method1_1.0")
 
 
 hist(final$effect, breaks = 100)
@@ -21,10 +23,10 @@ hist(final$ES_true, breaks = 100)
 
 
 ### add column that codes decision criterion from exploratory stage to confirmatory stage
-final$decision_crit <- "significance"
+final$decision_crit <- "equivalence"
 
 ### add column that codes approach to determine sample size for confirmatory study
-final$sampsize_approach <- "standard"
+final$sampsize_approach <- "SESOI"
 
 ### add column for outcome significant / not significant to match outcome column
 ### of sequential design data set
@@ -32,9 +34,9 @@ final$H0 <- ifelse(final$p_value <= .05, 2, 1)
 
 ### add column for prevalence 
 
-final$prev_pop      <- mat[1, 2]
-final$all_positives <- mat[2, 2]
-final$all_negatives <- mat[3, 2]
+final$prev_pop      <- mat[1, 1]
+final$all_positives <- mat[2, 1]
+final$all_negatives <- mat[3, 1]
 
 mat
 
@@ -44,7 +46,7 @@ dat <-
   final %>% 
   select(init_sample_size, rep_no, decision_crit, sampsize_approach, 
          rep_sample_size, ES_true, effect, H0,
-         prev_pop, all_positives, all_negatives, rep_attempts)
+         prev_pop, all_positives, all_negatives)
 
 # write.csv(dat, file = "./data/Carneiro_distribution/Frequentist_analysis/Carneiro_replication_sig_method1")
 

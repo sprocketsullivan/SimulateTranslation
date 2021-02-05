@@ -1,0 +1,101 @@
+---
+title: 'Identifying optimized decision criteria and experimental designs by simulating preclinical experiments in silico'
+csl: biomed-central.csl
+indent: yes
+output: bookdown::pdf_document2
+toc: false
+linestretch: 1.5
+fontsize: 12pt
+header-includes:
+       - \usepackage{subfig}
+bibliography: refs_repro.bib
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r libraries, echo = FALSE, message = FALSE, warning = FALSE}
+library(bookdown)
+library(knitr)
+library(tidyverse)
+```
+
+
+```{r, echo = FALSE, results = FALSE}
+library(png)
+library(knitr)
+img1_path <- "trajectory_proposal.png"
+img1 <- readPNG(img1_path, native = TRUE, info = TRUE)
+attr(img1, "info")
+```
+
+```{r trajectory, echo = FALSE, message = FALSE, out.width = "80%", fig.cap = "A preclinical research trajectory from the exploratory stage to a within-lab replication. The four panels along the arrow display four possible combinations of decision criteria and approaches to calculate the sample size for replication that can be employed throughout the trajectory.", fig.align = 'center'}
+include_graphics(img1_path)
+```
+
+## For Supplement
+
+Outcome variables are outlined in more detail in the following section. The standard trajectory constitutes our reference, as we consider it to be closest to current practice. We have stored data, results, and figures of all four trajectories in an online repository (insert URL here).
+
+## Effect size precision
+
+In both scenarios, the effect size estimates are more precise when employing T2, as can be seen by the narrower CI's in figure ??. 
+
+
+
+
+# Discussion
+
+question that came up when writing up for Nat Meth
+\ \ \ \ * Should we show that increased sample size at exploratory stage (power = 0.5; 0.8) does not increase sensitivity to levels of SESOI criterion? >> Ulf said not now
+
+for intro or discussion
+
+\ \ \ \ * Cite Howells 2014 section on power and sample sizes >> using clinically relevant SESOI to guide power calculations >> as example how to motivate high sample sizes to regulatory bodies
+
+\ \ \ \ * On the subject of inflated effect sizes work in @ioannidis2008most and @tversky1971belief
+
+\ \ \ \ * Include prior odds of a study and how that plays into evidence generation @ioannidis2005most
+
+\ \ \ \ * Check sample sizes in Carneiro and Szucs studies to compare with our 10 EUs
+
+
+## Percentage of experiments proceeding to replication stage
+
+only large ES prevail in T1
+
+\ \ \ \ When examining effect sizes that pass the filter (either related to a SESOI or conventional significance threshold) it becomes obvious that significance (with $\alpha$ = .05) it not an efficient filter for two reasons. First, it filters mostly large effects, and in both directions. Second, it misses out on many true effects which are then not further investigated. It is important to note that at this first time point in the trajectory when employing the conventional significance threshold, true positive associations are missed. This finding reinforces a systemic perspective. Only by evaluating experiments' outcomes throughout the trajectory, we are able to quantify associations we have missed. In reality, we do not know the pre-study odds of our hypothesized associations. Thus, it is all the more important that we apply decision criteria and designs that enable us to achieve high PPV even in situations when pre-study odds are low. Gievn that preclinical animal research stands at the beginning of the drug development process, we can assume that there are hundreds (if not thousands) of associations probed and only a few are true.
+
+Pre-study odds: Where do animal studies stand? Within the drug development process, preclinical studies are in the range of a few true associations within a few hundred associations probed. So, pre-study odds are likely lower than in the "pessimistic" scenario presented here. This may vary with the specific field of research.
+
+Consequently, in the first approach, the replication sample size was dependent on the outcome of the exploratory study, whereas using a SESOI always yielded the same sample size regardless of the exploratory effect size.
+
+Current practice impedes efforts to replicate preclinical experiments >> because by using significance + standard we are actually prevent ourselves from detecting effects (PPV < pre-study odds)
+
+Optimizing decision criteria and experimental designs by employing a SESOI increases chances to detect true effects >> easily applicable variations of current practice
+
+Re-evaluation of how we generate evidence that informs decisions about bringing an intervention to the clinic
+Re-evaluation: We do not want to waste animals, while it is an increase in animal numbers at first sight, in the long run, we might waste less animals because we have more robust results
+Wasting animals for research that is not robust/conclusive is unethical
+
+Regulatory authorities and animal welfare officers aim at reducing the number of animals used in experimentation. Focusing primarily on this outcome neglects aspects of quality and conclusiveness of scientific evidence generated using these animals. 
+
+Mimic phases of clinical drug development >> phase II trials >> 5 % percent significant level one-sided >> “proof-of-concept” >> effect signal >> lenient threshold at the beginning, more strict criteria as trials progress >> preclinical trials @mogil2017no
+
+From an ethical point of view, the number animals needed in any experiment needs to be well justified. Intuitively, one would argue that replication studies contradict animal welfare considerations by nature, as it is often understood as repeating an experiment that has already been done. Regulatory authorities (in Europe) use this line of argumentation and do not or extremely rarely permit studies that set out to replicate results from a former experiment. If one adopts a systemic perspective (research trajectory), it becomes clear that depending on several decisions we make throughout the trajectory animal numbers change. In our study, animal numbers vary with the decision criterion employed at the first stage and the approach to calculate sample size for the replication. 
+
+\ \ \ \ * Daniel Lakens blogpost on feasibililty justification <http://daniellakens.blogspot.com/2020/08/feasibility-sample-size-justification.html>
+
+## Limitations
+
+in the limitations section you could cite the Bioarxiv paper (Bonapersona 2019) and compare the two distributions to support your choice and that it may not be overly pessimistic. Particular in fields where there was no progress like neurodegenerative diseases
+
+Regarding the choice of 10 EUs: for the limitation section we need to argue that different initial sample sizes like 7 or 15 will not change results dramatically
+
+Regarding Ioannidis distribution: We acknowledge that the effect sizes were mainly extracted from human studies. However, in large parts the distribution is in agreement with effect sizes reported to be typical of (some areas of) preclinical research (find good ref here \textcolor{red}{[This could be infectious diseases, usually antibiotics are all or nothing effects]}). 
+
+## Take home message
+
+am Ende muss als take home message etwas stehen, dass Leute anwenden können. Also sowas wie: Unsere Simulationen zeigen 1., 2. 3. Deshalb schlagen wir folgendes vor, um präklinische Experimente valider (oder so in der Art) zu machen und Translation zu erleichtern: 1., 2. 3. Hier soll es ca. 3 konkrete Handlungsanweisungen geben, die leicht zu implementieren sind.

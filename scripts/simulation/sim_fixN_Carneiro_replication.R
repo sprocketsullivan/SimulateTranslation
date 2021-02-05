@@ -1,6 +1,6 @@
 setwd("~/Documents/SimulateTranslation")
 
-rm(list = ls())
+# rm(list = ls())
 
 
 # source additional scripts
@@ -16,13 +16,13 @@ sum(dat$effect > 0)
 sum(dat$ES_true < 0)
 
 # data <-
-#   dat %>% 
-#   group_by(init_sample_size, study_id) %>% 
+#   dat %>%
+#   group_by(init_sample_size, study_id) %>%
 #   filter(selection_equiv == 1)
 
 data <-
-  dat %>% 
-  group_by(init_sample_size, study_id) %>% 
+  dat %>%
+  group_by(init_sample_size, study_id) %>%
   filter(selection_sig == 1)
 
 sum(data$effect < 0)
@@ -30,13 +30,13 @@ sum(data$effect > 0)
 sum(data$effect == 0)
 
 # selected <-
-#   data %>% 
-#   group_by(init_sample_size) %>% 
+#   data %>%
+#   group_by(init_sample_size) %>%
 #   summarize(selected = sum(selection_equiv == 1))
 
 selected <-
-  data %>% 
-  group_by(init_sample_size) %>% 
+  data %>%
+  group_by(init_sample_size) %>%
   summarize(selected = sum(selection_sig == 1))
 
 # now estimate sample size for replication study
@@ -47,13 +47,13 @@ rep_sample_size_std <- NULL
 
 for (i in 1:nrow(data)) {
 
-  rep_sample_size_std[i] <-
-    ceiling(calc_sample_size(data = data[i, ], sample_size = data[i, ]$init_sample_size,
-                             method = 1))
-  
   # rep_sample_size_std[i] <-
   #   ceiling(calc_sample_size(data = data[i, ], sample_size = data[i, ]$init_sample_size,
-  #                            method = 2, SESOI = 0.5, power = .5))
+  #                            method = 1))
+  
+  rep_sample_size_std[i] <-
+    ceiling(calc_sample_size(data = data[i, ], sample_size = data[i, ]$init_sample_size,
+                             method = 2, SESOI = 0.1, power = .5))
 }
 
 data$rep_samp_size_std <- rep_sample_size_std
@@ -115,43 +115,37 @@ for(i in select_experiments) {
     mutate(study_id = rep_exp_no)
 }
 
-# replication_data[[11138]]
 
-plan(multiprocess)
+plan(multisession)
 rep_data_summary <- 
   future_map(replication_data, get_summary_study_rep)
-
-# rep_data_summary[[9559]]
-
-# data$ES_true[select_experiments]
 
 res_summary_rep <-
   data.frame(init_sample_size = data$init_sample_size[select_experiments],
              rep_no = c(1:rep_exp_no),
              rep_sample_size = rep_sample_size_std[select_experiments],
-             #rep_sample_size = rep_sample_size_std,
              t_value = unlist(map(rep_data_summary, "t_value")),
              p_value = unlist(map(rep_data_summary, "p_value")), #[seq(1, 2*rep_exp_no, 2)],
              effect = unlist(map(rep_data_summary, "effect")),
-             ES_true = data$ES_true[select_experiments])
-             # rep_attempts = rep_attempts)
-
-hist(res_summary_rep$effect, breaks = 200)
-
+             ES_true = data$ES_true[select_experiments],
+             rep_attempts = rep_attempts)
 
 res_summary_rep$effect <- ifelse(res_summary_rep$effect < 0,
                                  -res_summary_rep$effect, -res_summary_rep$effect)
 
+setwd("~/Documents/SimulateTranslation")
+
 # write.csv(res_summary_rep,
-#           file = "./data/Carneiro_distribution/Frequentist_analysis/Carneiro_distribution_sig_method1_p0.1")
+#           file = "./data/Carneiro_distribution/Frequentist_analysis/Carneiro_distribution_sig_p0.1_method2_0.1")
 
-res_summary_rep <-
-  res_summary_rep %>%
-  filter(init_sample_size == 10)
 
-ggplot(aes(y = effect, x = ES_true, col = p_value < .05),
-       data = res_summary_rep) +
-  facet_wrap(~ factor(init_sample_size)) +
-  geom_point(alpha = 0.2) +
-  #geom_hline(aes(yintercept = .7), color = "red") +
-  theme_bw()
+# res_summary_rep <-
+#   res_summary_rep %>%
+#   filter(init_sample_size == 10)
+# 
+# ggplot(aes(y = effect, x = ES_true, col = p_value < .05),
+#        data = res_summary_rep) +
+#   facet_wrap(~ factor(init_sample_size)) +
+#   geom_point(alpha = 0.2) +
+#   #geom_hline(aes(yintercept = .7), color = "red") +
+#   theme_bw()
