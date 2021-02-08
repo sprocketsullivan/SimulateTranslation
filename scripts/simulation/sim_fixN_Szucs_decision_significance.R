@@ -5,19 +5,13 @@ rm(list = ls())
 # Here we simulate a preclinical research trajectory
 # in the first stage an exploratory study is conducted with a limited number of animals
 # in the second stage this experiment is replicated based on some information from the first experiment
-# in the third stage a multi center study is conducted
-# outcome for each experiment is 
-# 1. the measured effect size after each run (with associated CI) and p-value
-# 2. the number of animals 
-# 3. the true effect size
 
-
-# source additional functions
+# source additional scripts
 source("./scripts/simulation/load_packages.R")
 source("./scripts/simulation/load_data_Szucs.R")
 source("./scripts/simulation/functions_for_sim_BF.R")
 
-
+# load additional libraries for parallel processing
 library(foreach)
 library(doMC)
 registerDoMC(cores = 4)
@@ -25,17 +19,21 @@ library(doParallel)
 registerDoParallel()
 getDoParWorkers()
 
-n_exp <- 10000
-ES_true <- ES_data_Szucs$D
+n_exp <- 10000 # number of experiments we run in 1st stage (exploration)
+ES_true <- ES_data_Szucs$D # empirical effect sizes (ES)
 
+# set seed to reproduce results
 set.seed(4321)
+
+# sample from ES distribution and show histograms of empirical and sampled ES
 current_ES <- sample(ES_true, n_exp)
 hist(ES_true, breaks = 200)
 hist(current_ES, breaks = 200)
 
-max(current_ES)
 
-#how many hypothesis over SESOI threshold
+# how many hypothesis over SESOI threshold
+# make a matrix of prevalence, positives, and negatives for each SESOI
+# important for calculation of outcomes (PPV, FPR, FNR) later
 SESOI <- c(.1, .3, .5, .7, 1)
 
 mat <- matrix(NA, nrow = 3, ncol = length(SESOI),
@@ -71,8 +69,12 @@ mat[3, ] <- all_negatives
 
 mat
 
+# here starts the actual simulation
+# we test three initial sample sizes (robustness check)
 samp_size_vector <- c(7, 10, 15)
 
+# we create a list of exploratory data
+# function generate_study() taken from script functions_for_sim.R
 list_exploratory_data <- 
   
   foreach(samp_size = samp_size_vector) %do% {
@@ -94,7 +96,9 @@ list_exploratory_data <-
   }
 
 
-#the confidence interval generated here is used in the equivalence test
+# we run a t-test and create a summary of results (CI and p-value)
+# the p-value is the criterion by which we decide which studies move to confirmation
+# function get_summary_study() taken from script functions_for_sim.R
 exploratory_data_summary <- list()
 
 plan(multisession)
@@ -108,6 +112,7 @@ for (i in 1:length(samp_size_vector)) {
 # decision to go on
 # this decision depends on whether exploratory result is significant (p <= .05 / p <= .1) or not
 # select studies for replication if p-value < .05 or < .1
+# in the function get_decision_sig() you can change the value of pval_threshold
 selection_sig <- list()
 
 for (i in 1:length(samp_size_vector)) {
@@ -119,6 +124,7 @@ for (i in 1:length(samp_size_vector)) {
   
 }
 
+# create a data frame which can be used in script sim_fixN_Szucs_replication.R
 row_names <- NULL
 col_names <- c("init_sample_size", "study_id", "t_value",
                "p_value", "CI_lower", "CI_upper", "effect")
@@ -142,6 +148,7 @@ dat <- bind_cols(df, df_sig)
 
 dat$ES_true <- rep(current_ES, 3)
 
-# write.csv(dat, file = "./data/Szucs_distribution/Frequentist_analysis/exploratory_stage_sig_0.1")
+# save data frame
+# write.csv(dat, file = " ")
 
 

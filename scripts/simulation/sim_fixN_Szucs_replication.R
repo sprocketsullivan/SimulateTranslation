@@ -1,13 +1,12 @@
 setwd("~/Documents/SimulateTranslation")
 
-rm(list = ls())
+# source script that runs the first part of the simulation and
+# provides the data frame with outcomes from the exploratory stage
+# either with significance as decision criterion
+# or SESOI as decision criterion
 
-
-# source additional scripts
-
-source("./scripts/simulation/sim_fixN_Szucs_decision_equivalence_with_SESOI.R")
-
-# source("./scripts/simulation/sim_fixN_Szucs_decision_significance.R")
+# source("./scripts/simulation/sim_fixN_Szucs_decision_equivalence_with_SESOI.R")
+source("./scripts/simulation/sim_fixN_Szucs_decision_significance.R")
 
 dat
 
@@ -15,34 +14,37 @@ sum(dat$effect < 0) # empirical effect sizes are negative because t.test functio
 sum(dat$effect > 0) 
 sum(dat$ES_true < 0)
 
-# data <-
-#   dat %>%
-#   group_by(init_sample_size, study_id) %>%
-#   filter(selection_sig == 1)
-
+# select only those experiments that were selected via the respective decision criterion
 data <-
   dat %>%
   group_by(init_sample_size, study_id) %>%
-  filter(selection_equiv == 1)
+  filter(selection_sig == 1)
+
+# data <-
+#   dat %>%
+#   group_by(init_sample_size, study_id) %>%
+#   filter(selection_equiv == 1)
 
 sum(data$effect < 0)
 sum(data$effect > 0)
 sum(data$effect == 0)
 
-# selected <-
-#   data %>%
-#   group_by(init_sample_size) %>%
-#   summarize(selected = sum(selection_sig == 1))
-
+# check how many were selected depending on initial sample size
 selected <-
   data %>%
   group_by(init_sample_size) %>%
-  summarize(selected = sum(selection_equiv == 1))
+  summarize(selected = sum(selection_sig == 1))
+
+# selected <-
+#   data %>%
+#   group_by(init_sample_size) %>%
+#   summarize(selected = sum(selection_equiv == 1))
 
 
 # now estimate sample size for replication study
-# A. Initial effect size (probably the worst solution but good as a floor benchmark, 1 in function)
-# B. Set a SESOI. With this all experiments will have the same number of EU (2 as function parameter)
+# using calc_sample_size() function
+# method 1: Initial effect size (probably the worst solution but good as a floor benchmark)
+# method 2: Set a SESOI. With this all experiments will have the same number of EU
 
 rep_sample_size_std <- NULL
 
@@ -59,20 +61,17 @@ for (i in 1:nrow(data)) {
 
 data$rep_samp_size_std <- rep_sample_size_std
 
-max(data$rep_samp_size_std)
-
-hist(data$effect, breaks = 100)
-
-# hist(data$rep_samp_size_std, breaks = 100)
+# max(data$rep_samp_size_std)
+# hist(data$effect, breaks = 100)
 
 data$effect <- ifelse(data$effect < 0, -data$effect, -data$effect)
 
-hist(data$effect, breaks = 200)
-hist(data$ES_true, breaks = 200)
+# hist(data$effect, breaks = 200)
+# hist(data$ES_true, breaks = 200)
 
-sum(data$effect > 0)
-sum(data$effect < 0)
-sum(data$effect == 0)
+# sum(data$effect > 0)
+# sum(data$effect < 0)
+# sum(data$effect == 0)
 
 negative_ES <-
   data %>% 
@@ -83,7 +82,7 @@ percent_selected <-
   selected %>% 
   mutate(neg_ES = negative_ES$neg_ES,
          selected_no_negatives = selected-neg_ES,
-         per_selected = selected_no_negatives / 10000 * 100)
+         per_selected = selected_no_negatives / n_exp * 100)
 
 rep_attempts <- 
   rep(c(percent_selected$selected_no_negatives[1],
@@ -97,9 +96,9 @@ rep_attempts <-
 replication_data <- list()
 rep_exp_no <- 0
 
-# select_experiments <- which(data$selection_sig == 1)
+select_experiments <- which(data$selection_sig == 1)
 
-select_experiments <- which(data$selection_equiv == 1)
+# select_experiments <- which(data$selection_equiv == 1)
 
 select_experiments <- select_experiments[data$effect[select_experiments] >= 0 ]
 
@@ -139,17 +138,16 @@ res_summary_rep$effect <- ifelse(res_summary_rep$effect < 0,
 
 setwd("~/Documents/SimulateTranslation")
 
-# write.csv(res_summary_rep, file = "./data/Szucs_distribution/Frequentist_analysis/Szucs_distribution_sig_p0.05_method2_0.1")
+# save data frame
+# write.csv(res_summary_rep, file = " ")
 
-write.csv(res_summary_rep, file = "./data/Szucs_distribution/Frequentist_analysis/Szucs_distribution_equiv_method1_1.0")
-
-res_summary_rep <-
-  res_summary_rep %>%
-  filter(init_sample_size == 10)
-
-ggplot(aes(y = effect, x = ES_true, col = p_value < .05),
-       data = res_summary_rep) +
-  facet_wrap(~ factor(init_sample_size)) +
-  geom_point(alpha = 0.4) +
-  geom_hline(aes(yintercept = .3), color = "red") +
-  theme_bw()
+# res_summary_rep <-
+#   res_summary_rep %>%
+#   filter(init_sample_size == 10)
+# 
+# ggplot(aes(y = effect, x = ES_true, col = p_value < .05),
+#        data = res_summary_rep) +
+#   facet_wrap(~ factor(init_sample_size)) +
+#   geom_point(alpha = 0.4) +
+#   geom_hline(aes(yintercept = .3), color = "red") +
+#   theme_bw()

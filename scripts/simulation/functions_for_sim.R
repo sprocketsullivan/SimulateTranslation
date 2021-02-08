@@ -1,4 +1,5 @@
 
+# generates study data for exploratory phase
 generate_study <- function(ES_true = 1, sample_size = samp_size, l_bias = 0, pop_sd = 1) {
   ES_mod <- ES_true + l_bias
   sample_data <- data.frame(values = c(rnorm(sample_size, 0, pop_sd),
@@ -11,7 +12,7 @@ generate_study <- function(ES_true = 1, sample_size = samp_size, l_bias = 0, pop
   return(sample_data)
 }
 
-
+# performs t-test and generates summary of study data for exploratory phase
 get_summary_study <- function(study_data) {
   
   t <- t.test(study_data$values ~ study_data$treatment,
@@ -46,7 +47,7 @@ get_summary_study <- function(study_data) {
   
 }
 
-
+# performs t-test and generates summary of study data for replication
 get_summary_study_rep <- function(study_data) {
 
   t <- t.test(study_data$values ~ study_data$treatment,
@@ -76,7 +77,7 @@ get_summary_study_rep <- function(study_data) {
 
 }
 
-
+# performs t-test and generates summary of study data for replication with Bayes factors
 get_summary_study_rep_BF <- function(study_data) {
 
   BF <- ttestBF(x = study_data$values[study_data$treatment == "treat"],
@@ -104,6 +105,7 @@ get_summary_study_rep_BF <- function(study_data) {
   
 }
 
+# decision criterion significance at exploratory stage
 get_decision_sig <- function(study_summary, pval_threshold) {
   
   bb <- study_summary$p_value
@@ -111,7 +113,7 @@ get_decision_sig <- function(study_summary, pval_threshold) {
   
 }
 
-
+# decision criterion SESOI at exploratory stage
 get_decision_equiv <- function(exploratory_data_summary,
                                SESOI) {
   
@@ -125,35 +127,10 @@ get_decision_equiv <- function(exploratory_data_summary,
   
 }
 
-
-# calc_sample_size <- function(study_summary, study_data, max_sample_size = 200,
-#                              alpha = .05, power = .8, SESOI, method = 2) {
-#   aa <- study_summary
-#   
-#   #if (method == 1) es_measured <- abs(aa$effect) #take initial study main effect
-#   if (method == 1) {
-#     es_measured <- abs(aa$effect) #take initial study main effect
-#     es_measured <- ifelse(es_measured > 16, 16, es_measured)
-#   }  
-#   
-#   if (method == 2) es_measured <- SESOI #fixed effect size for all experiments
-#   sample_size <- aa$sample_size
-#   #sample_size <- nrow(study_data)/2
-#   #sd_measured<-sqrt((aa$sd_effect[1]^2+aa$sd_effect[2]^2)/2)
-#   bb <- power.t.test(delta = es_measured, sd = 1, sig.level = alpha, power = power,
-#                      type = "two.sample",
-#                      alternative = "one.sided")
-#   if (es_measured > 0) {
-#     if(bb$n > max_sample_size) 
-#       return(max_sample_size) 
-#     else return(bb$n)
-#     
-#   }
-#   
-# }
-
-
-
+# sample size calculation for replication
+# option to change method
+# method 1: standard sample size calculation
+# method 2: sample size calculation using SESOI, requires specification of SESOI and power
 calc_sample_size <- function(data, sample_size, max_sample_size = 200,
                              alpha = .05, power = .8, SESOI, method = 2) {
   
